@@ -2,7 +2,7 @@
 order: 2
 category: "Creative services"
 title: "A&R Consulting"
-summary: "Talent discovery, music evaluation, catalog strategy, and industry expertise."
+summary: "Talent scouting, song selection, and catalog planning, backed by 30 years in the industry."
 bullets:
   - "Talent discovery and evaluation"
   - "Song selection and repertoire strategy"

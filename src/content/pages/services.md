@@ -1,5 +1,5 @@
 ---
 title: Services
 headline: "Our services."
-lede: "Creative services for artists, labels, publishers, managers, and creative partners."
+lede: "Four ways we work with artists, labels, publishers, managers, and creative partners."
 ---

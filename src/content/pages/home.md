@@ -2,7 +2,7 @@
 title: Home
 eyebrow: "Independent music creative company / New York"
 headline: "Where music meets vision."
-lede: "We develop artists, create remarkable music, and help bold creative ideas find their place in the world."
-cta: { label: "Explore our services", href: "/services" }
+lede: 'We develop artists, write and produce their songs, and help labels and publishers find and grow new talent. Credits include a co-write on Miley Cyrus''s "Wrecking Ball."'
+cta: { label: "See what we do", href: "/services" }
 strapline: "Artist Development / A&R Consulting / Songwriting / Music Production"
 ---

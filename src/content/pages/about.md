@@ -1,17 +1,17 @@
 ---
 title: About
 headline: "Creative by nature."
-lede: "Independent thinking, global experience, and a belief that the most compelling music comes from authentic creative vision."
+lede: "We're an independent company that works worldwide, and we think the strongest music comes from artists who know who they are."
 eyebrow: "New York / Worldwide"
 sections:
   - heading: "Built for the music."
     body: |
-      Wicked Dream Music is a creative company working at the intersection of artist development, A&R, songwriting, and production.
+      Wicked Dream Music works across artist development, A&R, songwriting, and production.
 
-      Drawing on more than three decades of professional music-industry experience, we connect artistic ambition with practical expertise, trusted relationships, and a global perspective.
+      We bring more than 30 years in the music industry to each project, along with relationships in markets around the world. We use that experience to turn an artist's ambition into a workable plan.
   - heading: "Artist first. Always forward."
     body: |
-      We work closely with artists to understand their voice, refine their sound, and build music around what makes them distinctive.
+      We start by working out what makes an artist different, then shape their sound and build the music around it.
 
-      We collaborate with music businesses to evaluate talent, develop repertoire, and create projects with artistic and commercial potential.
+      For labels, publishers, and managers, we assess talent, develop repertoire, and put together projects that can succeed creatively and commercially.
 ---

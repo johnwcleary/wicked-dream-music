@@ -2,7 +2,7 @@
 order: 3
 category: "Creative services"
 title: "Songwriting"
-summary: "Original songs, co-writing, toplines, and creative sessions across genres."
+summary: "Original songs, co-writes, and toplines, written in sessions across genres."
 bullets:
   - "Original composition and co-writing"
   - "Lyrics, melody, and topline development"
