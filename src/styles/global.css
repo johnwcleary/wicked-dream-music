@@ -305,6 +305,10 @@
     opacity: 1;
     transform: none;
   }
+  html.js [data-reveal='mark'] {
+    opacity: 1;
+    transform: none;
+  }
   html.js [data-reveal='lines'] .ln > span {
     transform: translateY(105%);
     transition: transform 1.1s var(--ease-out);

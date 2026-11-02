@@ -44,6 +44,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url).href;
       var h = document.documentElement;
       h.classList.add('js');
       if (intro) {
+        h.classList.add('on-hero');
         try {
           if (!matchMedia('(prefers-reduced-motion: reduce)').matches && !sessionStorage.getItem('wdm-intro-seen')) {
             sessionStorage.setItem('wdm-intro-seen', '1');

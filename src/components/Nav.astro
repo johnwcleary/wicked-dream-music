@@ -7,8 +7,9 @@ const mark = initials(site.name);
 
 <header class="site-header">
   <div class="bar wrap">
-    <a href="/#top" class="mark" aria-label={site.name}>
+    <a href="/#top" class="mark">
       <span aria-hidden="true">{mark}<span class="mark-c">©</span></span>
+      <span class="sr-only">{site.name}</span>
     </a>
     <p class="loc label">{site.location}</p>
     <button type="button" class="menu-btn label" aria-expanded="false" aria-controls="site-menu" data-open={site.ui.menu_open} data-close={site.ui.menu_close}>
@@ -60,6 +61,27 @@ const mark = initials(site.name);
   :global(html.scrolled) .site-header::before {
     border-bottom-color: var(--rule);
   }
+  /* Over the dark hero band the header goes dark too, so the top reads as one band. */
+  .site-header,
+  .site-header::before {
+    transition:
+      color 0.35s,
+      background-color 0.35s,
+      border-color 0.4s;
+  }
+  :global(html.on-hero:not(.menu-open)) .site-header {
+    color: var(--paper);
+  }
+  :global(html.on-hero:not(.menu-open)) .site-header::before {
+    background: var(--ink);
+    border-bottom-color: transparent;
+  }
+  :global(html.on-hero:not(.menu-open)) .loc {
+    color: rgb(253 252 248 / 0.62);
+  }
+  :global(html.on-hero:not(.menu-open)) .site-header :focus-visible {
+    outline-color: var(--paper);
+  }
   .bar {
     display: flex;
     align-items: center;
@@ -92,7 +114,7 @@ const mark = initials(site.name);
     padding: 0.55rem 0;
     background: none;
     border: 0;
-    color: var(--ink);
+    color: inherit;
     cursor: pointer;
   }
   .menu-btn-icon {
@@ -137,7 +159,7 @@ const mark = initials(site.name);
     content: '';
     width: 0.4rem;
     height: 0.4rem;
-    background: var(--ink);
+    background: currentColor;
     transform: scale(0);
     transition: transform 0.35s var(--ease-out);
   }
@@ -185,6 +207,7 @@ const mark = initials(site.name);
       gap: 2rem;
       padding: 5.5rem var(--gutter) 1.75rem;
       background: var(--paper);
+      color: var(--ink);
       overflow-y: auto;
       animation: menu-in 0.35s var(--ease-out);
     }
@@ -251,6 +274,7 @@ const mark = initials(site.name);
       menu.classList.toggle('is-open', open);
       if (label) label.textContent = (open ? btn.dataset.close : btn.dataset.open) ?? '';
       document.documentElement.style.overflow = open ? 'hidden' : '';
+      document.documentElement.classList.toggle('menu-open', open);
       if (open) links()[0]?.focus();
       else if (returnFocus) btn.focus();
     };
@@ -314,8 +338,15 @@ const mark = initials(site.name);
     sections.forEach((el) => io.observe(el));
   }
 
-  // Hairline under the sticky header once the page has scrolled.
-  const onScroll = () => document.documentElement.classList.toggle('scrolled', scrollY > 8);
+  // Hairline under the sticky header once the page has scrolled; dark header
+  // while the hero band is still underneath it.
+  const hero = document.getElementById('top');
+  const header = document.querySelector<HTMLElement>('.site-header');
+  const onScroll = () => {
+    const root = document.documentElement;
+    root.classList.toggle('scrolled', scrollY > 8);
+    if (hero && header) root.classList.toggle('on-hero', hero.getBoundingClientRect().bottom > header.offsetHeight);
+  };
   addEventListener('scroll', onScroll, { passive: true });
   onScroll();
 </script>
