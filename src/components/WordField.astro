@@ -33,6 +33,7 @@ const crops = [
         const fit = img ? [240, 360, 480, 720, 960].filter((n) => n <= img.width) : [];
         return (
           <>
+            <span class="wf-pair">
             <span class="wf-word" data-reveal style={`--i: ${i * 2}`}>
               {word}
             </span>{' '}
@@ -54,7 +55,8 @@ const crops = [
                 </span>
                 <span class="sr-only">{w.data.title}</span>
               </a>
-            )}{' '}
+            )}
+            </span>{' '}
           </>
         );
       })
@@ -65,17 +67,24 @@ const crops = [
 <style>
   .wf {
     padding-block: clamp(3.5rem, 8vw, 7rem);
+    container-type: inline-size;
   }
   .wf-line {
     margin: 0;
-    font-size: clamp(3rem, 13vw, 10rem);
+    font-size: clamp(3rem, 13cqi, 10rem);
     line-height: 1.02;
     letter-spacing: -0.045em;
   }
   @media (min-width: 768px) {
     .wf-line {
-      font-size: clamp(4rem, 8.6vw, 10.5rem);
+      font-size: 8.1cqi; /* sized to the column, so two pairs per line at any desktop width */
     }
+  }
+  /* A word and its plate travel together: they never break across lines. */
+  .wf-pair {
+    display: inline-block;
+    white-space: nowrap;
+    margin-right: 0.12em;
   }
   .wf-word {
     display: inline-block;

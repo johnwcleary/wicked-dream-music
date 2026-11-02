@@ -260,8 +260,9 @@
 .ln {
   display: block;
   overflow: clip;
-  padding-bottom: 0.1em;
-  margin-bottom: -0.1em;
+  /* Room for descenders (g, y, p) inside the mask, without changing line spacing. */
+  padding-bottom: 0.24em;
+  margin-bottom: -0.24em;
 }
 .ln > span {
   display: block;

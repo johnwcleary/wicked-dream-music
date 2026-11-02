@@ -106,7 +106,7 @@ const quote = firstParas[firstParas.length - 1];
       <div class="chaps grid12">
         {
           chapters.map((c, i) => (
-            <article class={`chap chap-${i + 1}`} data-reveal style={`--i: ${i + 1}`}>
+            <article class="chap" data-reveal style={`--i: ${i + 1}`}>
               <p class="chap-no label" aria-hidden="true">
                 {pad(2)}.{i + 1}
               </p>
@@ -123,7 +123,7 @@ const quote = firstParas[firstParas.length - 1];
       {
         quote && (
           <figure class="pull" aria-hidden="true">
-            <blockquote class="pull-q display" data-reveal="mark">
+            <blockquote class="pull-q display" data-reveal>
               <p>
                 <span class="pull-fill">“{quote}”</span>
               </p>
@@ -224,7 +224,7 @@ const quote = firstParas[firstParas.length - 1];
     width: 100%;
   }
   .hero-logo {
-    grid-column: 1 / span 7;
+    grid-column: 1 / span 9;
   }
   .hero-logo :global(.hero-logo-svg) {
     display: block;
@@ -317,10 +317,10 @@ const quote = firstParas[firstParas.length - 1];
       row-gap: 2rem;
     }
     .hero-logo {
-      grid-column: 1 / span 5;
+      grid-column: 1 / span 7;
     }
     .hero-copy {
-      grid-column: 7 / -1;
+      grid-column: 9 / -1;
       padding-bottom: 0.25rem;
     }
     .hero-title {
@@ -397,10 +397,17 @@ const quote = firstParas[firstParas.length - 1];
   .chaps {
     row-gap: clamp(3rem, 7vw, 5rem);
   }
+  /* Each chapter is a row: title left, body right. */
   .chap {
     grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: var(--col-gap);
     padding-top: 1rem;
     border-top: 1px solid rgb(253 252 248 / 0.22);
+  }
+  .chap > * {
+    grid-column: 1 / -1;
   }
   .chap-no {
     margin: 0 0 1.25rem;
@@ -433,28 +440,18 @@ const quote = firstParas[firstParas.length - 1];
     margin-top: 1.5rem;
     color: var(--wdm-lavender);
   }
-  /* Highlighter: each line sits on a lavender→pink block with ink type,
-     drawn in left to right as the quote arrives. */
+  /* The quote is set in the brand gradient (lavender to pink across each line). */
   .pull-fill {
-    color: var(--ink);
-    background-image: linear-gradient(90deg, var(--wdm-lavender), var(--wdm-pink));
-    background-repeat: no-repeat;
-    background-size: 100% 100%;
-    -webkit-box-decoration-break: clone;
-    box-decoration-break: clone;
-    padding: 0 0.12em;
+    color: var(--wdm-lavender);
   }
-  @media (prefers-reduced-motion: no-preference) {
-    :global(html.js) .pull-fill {
-      color: var(--paper);
-      background-size: 0% 100%;
-      transition:
-        background-size 1.5s var(--ease-out) 0.1s,
-        color 0.9s var(--ease-out) 0.5s;
-    }
-    :global(html.js) .is-in .pull-fill {
-      color: var(--ink);
-      background-size: 100% 100%;
+  @supports ((-webkit-background-clip: text) or (background-clip: text)) {
+    .pull-fill {
+      color: transparent;
+      background-image: linear-gradient(90deg, var(--wdm-lavender), var(--wdm-pink));
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-box-decoration-break: clone;
+      box-decoration-break: clone;
     }
   }
 
@@ -518,11 +515,11 @@ const quote = firstParas[firstParas.length - 1];
   }
 
   @media (min-width: 900px) {
-    .chap {
-      grid-column: span 6;
+    .chap > :global(.chap-title) {
+      grid-column: 1 / span 5;
     }
-    .chap-2 {
-      margin-top: clamp(4rem, 10vw, 9rem);
+    .chap > .chap-body {
+      grid-column: 7 / -1;
     }
     .pull-q,
     .pull-cap {
@@ -531,6 +528,9 @@ const quote = firstParas[firstParas.length - 1];
     }
     .cta-lede {
       grid-column: 1 / span 6;
+    }
+    .cta-mail {
+      font-size: clamp(3rem, 6.4vw, 8rem);
     }
   }
 </style>
