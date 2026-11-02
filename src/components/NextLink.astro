@@ -1,0 +1,45 @@
+---
+import { getSite, isCurrent } from '../lib/content';
+
+/** Large "next page" link at the foot of a page: the following nav item. */
+const site = await getSite();
+const path = Astro.url.pathname;
+const i = site.nav.findIndex((n) => isCurrent(n.href, path));
+const next = site.nav[(i + 1) % site.nav.length];
+---
+
+{
+  next && (
+    <div class="wrap">
+      <a class="next" href={next.href}>
+        <span class="next-arrow" aria-hidden="true">→</span>
+        <span class="next-label display">{next.label}</span>
+      </a>
+    </div>
+  )
+}
+
+<style>
+  .next {
+    display: flex;
+    align-items: baseline;
+    gap: 0.25em;
+    margin-top: clamp(5rem, 10vw, 9rem);
+    padding-top: 1rem;
+    border-top: 1px solid var(--rule);
+    font-size: clamp(2.5rem, 7vw, 6.5rem);
+  }
+  .next-arrow {
+    font-weight: 400;
+    line-height: 1;
+    transition: transform 0.4s var(--ease-out);
+  }
+  .next:hover .next-arrow {
+    transform: translateX(0.18em);
+  }
+  .next:hover .next-label {
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 0.1em;
+  }
+</style>

@@ -1,16 +1,117 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import ServiceCard from '../components/ServiceCard.astro';
-import { getPage, getServices } from '../lib/content';
+import PageHead from '../components/PageHead.astro';
+import NextLink from '../components/NextLink.astro';
+import { anchor, getPage, getServices, pad } from '../lib/content';
 
 const page = await getPage('services');
 const services = await getServices();
 ---
 
 <BaseLayout title={page.title} description={page.lede}>
-  <h1 class="text-4xl font-bold">{page.headline}</h1>
-  <p>{page.lede}</p>
-  <div class="grid gap-4 py-8 md:grid-cols-2">
-    {services.map((s) => <ServiceCard service={s} />)}
+  <PageHead title={page.title} headline={page.headline} lede={page.lede} />
+
+  <div class="wrap">
+    <ol class="svc">
+      {
+        services.map((s) => {
+          const no = pad(s.data.order);
+          return (
+            <li class="svc-item grid12" id={anchor(s.id)}>
+              <p class="svc-no display" aria-hidden="true">{no}</p>
+              <p class="svc-cat label label-muted">{s.data.category}</p>
+              <h2 class="svc-title display d-md">{s.data.title}</h2>
+              <p class="svc-sum statement">{s.data.summary}</p>
+              <ul class="svc-list">
+                {s.data.bullets.map((b, j) => (
+                  <li>
+                    <span class="label label-muted" aria-hidden="true">
+                      {no}.{j + 1}
+                    </span>
+                    <span>{b}</span>
+                  </li>
+                ))}
+              </ul>
+            </li>
+          );
+        })
+      }
+    </ol>
   </div>
+
+  <NextLink />
 </BaseLayout>
+
+<style>
+  .svc {
+    list-style: none;
+    margin: clamp(4rem, 9vw, 8rem) 0 0;
+    padding: 0;
+  }
+  .svc-item {
+    row-gap: 1rem;
+    align-items: start;
+    padding-block: 1.25rem clamp(3rem, 6vw, 5.5rem);
+    border-top: 1px solid var(--rule-strong);
+    scroll-margin-top: 1rem;
+  }
+  .svc-no {
+    grid-column: 1 / span 6;
+    margin: 0;
+    font-size: clamp(1rem, 1.2vw, 1.125rem);
+    font-family: var(--font-mono);
+    font-weight: 400;
+    letter-spacing: 0;
+    line-height: 1.3;
+  }
+  .svc-cat {
+    grid-column: 7 / -1;
+    margin: 0;
+    text-align: right;
+  }
+  .svc-title {
+    grid-column: 1 / -1;
+    margin: 1.5rem 0 0;
+  }
+  .svc-sum {
+    grid-column: 1 / -1;
+    margin: 0.5rem 0 0;
+    max-width: 24ch;
+  }
+  .svc-list {
+    grid-column: 1 / -1;
+    list-style: none;
+    margin: 1rem 0 0;
+    padding: 0;
+    border-top: 1px solid var(--rule);
+  }
+  .svc-list li {
+    display: grid;
+    grid-template-columns: 3.25rem 1fr;
+    gap: 0.75rem;
+    align-items: baseline;
+    padding-block: 0.7rem;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  @media (min-width: 900px) {
+    .svc-item {
+      row-gap: 1.5rem;
+    }
+    .svc-title {
+      grid-column: 1 / span 6;
+      grid-row: 2 / span 2;
+      margin-top: 2.5rem;
+    }
+    .svc-sum {
+      grid-column: 7 / -1;
+      grid-row: 2;
+      margin-top: 2.5rem;
+    }
+    .svc-list {
+      grid-column: 7 / -1;
+      grid-row: 3;
+      margin-top: 1rem;
+    }
+  }
+</style>

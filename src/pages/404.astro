@@ -1,13 +1,80 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHead from '../components/PageHead.astro';
 import { getPage } from '../lib/content';
 
 const page = await getPage('not-found');
 ---
 
 <BaseLayout title={page.title} description={page.lede}>
-  <p class="text-sm uppercase">{page.eyebrow}</p>
-  <h1 class="text-4xl font-bold">{page.headline}</h1>
-  <p>{page.lede}</p>
-  {page.cta && <a class="underline" href={page.cta.href}>{page.cta.label}</a>}
+  <PageHead title={page.title} headline={page.headline} number={page.eyebrow}>
+    <div class="nf">
+      <p class="nf-lede statement">{page.lede}</p>
+      {
+        page.cta && (
+          <a class="nf-cta" href={page.cta.href}>
+            <span aria-hidden="true">←</span> <span class="link-line">{page.cta.label}</span>
+          </a>
+        )
+      }
+    </div>
+    <figure class="missing" aria-hidden="true">
+      <div class="missing-frame">
+        <span class="missing-no display">{page.eyebrow}</span>
+      </div>
+      <figcaption class="label label-muted">[{page.eyebrow}]</figcaption>
+    </figure>
+  </PageHead>
 </BaseLayout>
+
+<style>
+  .nf {
+    grid-column: 1 / -1;
+    display: grid;
+    gap: 1.5rem;
+    justify-items: start;
+    align-content: start;
+    margin-top: 1.5rem;
+  }
+  .nf-lede {
+    margin: 0;
+    max-width: 22ch;
+  }
+  .nf-cta {
+    font-size: 1.0625rem;
+    font-weight: 500;
+    padding-block: 0.25rem;
+  }
+  .missing {
+    grid-column: 1 / -1;
+    margin: 2.5rem 0 0;
+  }
+  .missing-frame {
+    display: grid;
+    place-items: center;
+    aspect-ratio: 3 / 2;
+    border: 1px dashed var(--rule-strong);
+    background:
+      linear-gradient(to top right, transparent calc(50% - 0.5px), var(--rule) calc(50% - 0.5px), var(--rule) calc(50% + 0.5px), transparent calc(50% + 0.5px)),
+      linear-gradient(to top left, transparent calc(50% - 0.5px), var(--rule) calc(50% - 0.5px), var(--rule) calc(50% + 0.5px), transparent calc(50% + 0.5px));
+  }
+  .missing-no {
+    padding: 0 0.2em;
+    background: var(--paper);
+    font-size: clamp(3rem, 9vw, 8rem);
+  }
+  .missing figcaption {
+    margin-top: 0.6rem;
+  }
+
+  @media (min-width: 768px) {
+    .nf {
+      grid-column: 1 / span 5;
+      margin-top: clamp(1.5rem, 4vw, 3.5rem);
+    }
+    .missing {
+      grid-column: 7 / -1;
+      margin-top: clamp(1.5rem, 4vw, 3.5rem);
+    }
+  }
+</style>

@@ -1,28 +1,317 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import ServiceCard from '../components/ServiceCard.astro';
-import WorkCard from '../components/WorkCard.astro';
-import { getPage, getServices, getSite, getWork } from '../lib/content';
+import Logo from '../components/Logo.astro';
+import PhotoField from '../components/PhotoField.astro';
+import SectionHead from '../components/SectionHead.astro';
+import ServiceIndex from '../components/ServiceIndex.astro';
+import WorkIndex from '../components/WorkIndex.astro';
+import { getPage, getServices, getSite, getWork, pad, splitHeadline } from '../lib/content';
+import { logoSize } from '../lib/brand';
 
 const site = await getSite();
 const page = await getPage('home');
+const servicesPage = await getPage('services');
+const workPage = await getPage('work');
 const services = await getServices();
 const work = await getWork();
+const [h1a, h1b] = splitHeadline(page.headline);
+const workNav = site.nav.find((n) => n.href === '/work');
 ---
 
-<BaseLayout title={page.title} description={page.lede}>
-  <section class="grid gap-4 py-8">
-    <p class="text-sm uppercase">{page.eyebrow}</p>
-    <h1 class="text-4xl font-bold">{page.headline}</h1>
-    <p>{page.lede}</p>
-    {page.cta && <a class="justify-self-start border px-4 py-2" href={page.cta.href}>{page.cta.label}</a>}
-    <p class="font-bold uppercase">{site.ticker.join(' ')}</p>
-    <p>{page.strapline}</p>
+<BaseLayout title={page.title} description={page.lede} intro>
+  <section class="hero wrap" aria-labelledby="hero-title">
+    <div class="grid12 hero-grid">
+      <p class="hero-eyebrow label"><span class="label-muted" aria-hidden="true">{pad(0)} —</span> {page.eyebrow}</p>
+      <h1 id="hero-title" class="hero-title display d-xl">
+        <span>{h1a}</span>
+        <span>{h1b}</span>
+      </h1>
+
+      <figure class="plate0">
+        <div class="plate0-ground">
+          <span class="tick tl" aria-hidden="true"></span>
+          <span class="tick tr" aria-hidden="true"></span>
+          <span class="tick bl" aria-hidden="true"></span>
+          <span class="tick br" aria-hidden="true"></span>
+          <Logo label={site.name} variant="gradient" id="hero-logo" class="plate0-logo" />
+        </div>
+        <figcaption class="plate0-cap label">
+          <span>[{pad(0)}]</span>
+          <span class="plate0-name">{site.name}</span>
+          <span class="plate0-dim label-muted" aria-hidden="true">{logoSize.width}×{logoSize.height}</span>
+          <span class="plate0-count" aria-hidden="true" data-count></span>
+        </figcaption>
+      </figure>
+
+      <div class="hero-copy">
+        <p class="hero-lede statement">{page.lede}</p>
+        {
+          page.cta && (
+            <a class="hero-cta" href={page.cta.href}>
+              <span class="link-line">{page.cta.label}</span> <span aria-hidden="true">→</span>
+            </a>
+          )
+        }
+      </div>
+      <p class="hero-strap label label-muted">{page.strapline}</p>
+    </div>
   </section>
-  <section class="grid gap-4 py-8 md:grid-cols-2" aria-label={site.nav[2]?.label}>
-    {services.map((s) => <ServiceCard service={s} />)}
+
+  <PhotoField items={work} />
+
+  <div class="tick-sec wrap">
+    <p class="ticker display">
+      {
+        site.ticker.map((word, i) => (
+          <span class={`tw tw-${i + 1}`}>
+            <span class="tw-no label" aria-hidden="true">{pad(i + 1)}</span>
+            {word}{' '}
+          </span>
+        ))
+      }
+    </p>
+  </div>
+
+  <section class="sec wrap" aria-labelledby="services-title">
+    <SectionHead id="services-title" title={servicesPage.headline} count={services.length} kicker={servicesPage.lede} />
+    <ServiceIndex items={services} />
+    {
+      page.cta && (
+        <p class="sec-more">
+          <a class="label" href={page.cta.href}>
+            <span class="link-line">{page.cta.label}</span> <span aria-hidden="true">→</span>
+          </a>
+        </p>
+      )
+    }
   </section>
-  <section class="grid gap-4 py-8 md:grid-cols-2" aria-label={site.nav[3]?.label}>
-    {work.map((w) => <WorkCard item={w} />)}
+
+  <section class="sec wrap" aria-labelledby="work-title">
+    <SectionHead id="work-title" title={workPage.headline} count={work.length} kicker={workPage.lede} />
+    <WorkIndex items={work} />
+    <div class="sec-foot">
+      {workPage.footnote && <p class="label label-muted">{workPage.footnote}</p>}
+      {
+        workNav && (
+          <a class="label" href={workNav.href}>
+            <span class="link-line">{workNav.label}</span> <span aria-hidden="true">→</span>
+          </a>
+        )
+      }
+    </div>
   </section>
 </BaseLayout>
+
+<style>
+  .hero {
+    padding-top: clamp(1.5rem, 4vw, 3.5rem);
+  }
+  .hero-grid {
+    row-gap: 1.5rem;
+    align-items: start;
+  }
+  .hero-eyebrow {
+    grid-column: 1 / -1;
+  }
+  .hero-title {
+    grid-column: 1 / -1;
+    margin: 0;
+  }
+  .hero-title span {
+    display: block;
+  }
+
+  /* Plate 00 — the wordmark, catalogued like a photograph. */
+  .plate0 {
+    grid-column: 1 / -1;
+    margin: 0.75rem 0 0;
+  }
+  .plate0-ground {
+    position: relative;
+    display: grid;
+    place-items: center;
+    aspect-ratio: 4 / 3.1;
+    background: var(--wdm-ink);
+    color: rgb(253 252 248 / 0.09);
+  }
+  .plate0-ground :global(.plate0-logo) {
+    width: 62%;
+    height: auto;
+    overflow: visible;
+  }
+  .tick {
+    position: absolute;
+    width: 0.75rem;
+    height: 0.75rem;
+    border-color: rgb(253 252 248 / 0.45);
+    border-style: solid;
+    border-width: 0;
+  }
+  .tl { top: 0.9rem; left: 0.9rem; border-top-width: 1px; border-left-width: 1px; }
+  .tr { top: 0.9rem; right: 0.9rem; border-top-width: 1px; border-right-width: 1px; }
+  .bl { bottom: 0.9rem; left: 0.9rem; border-bottom-width: 1px; border-left-width: 1px; }
+  .br { bottom: 0.9rem; right: 0.9rem; border-bottom-width: 1px; border-right-width: 1px; }
+
+  .plate0-cap {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 0.6rem;
+  }
+  .plate0-name {
+    flex: 1;
+  }
+  .plate0-count {
+    display: none;
+  }
+  :global(html.counting) .plate0-dim {
+    display: none;
+  }
+  :global(html.counting) .plate0-count {
+    display: inline;
+  }
+
+  /* One-time intro: the gradient fills the wordmark from the bottom up. */
+  :global(html.intro .plate0-logo .logo-fill) {
+    animation: logo-load 1.1s cubic-bezier(0.33, 1, 0.68, 1) both;
+  }
+  @keyframes logo-load {
+    from {
+      clip-path: inset(100% 0 0 0);
+    }
+    to {
+      clip-path: inset(0 0 0 0);
+    }
+  }
+
+  .hero-copy {
+    grid-column: 1 / -1;
+    display: grid;
+    gap: 1.25rem;
+    justify-items: start;
+    margin-top: 0.5rem;
+  }
+  .hero-lede {
+    margin: 0;
+    max-width: 22ch;
+  }
+  .hero-cta {
+    font-size: 1.0625rem;
+    font-weight: 500;
+    padding-block: 0.25rem;
+  }
+  .hero-cta span[aria-hidden] {
+    display: inline-block;
+    transition: transform 0.4s var(--ease-out);
+  }
+  .hero-cta:hover span[aria-hidden] {
+    transform: translateX(0.3rem);
+  }
+  .hero-strap {
+    grid-column: 1 / -1;
+    margin-top: 0.5rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--rule);
+  }
+
+  @media (min-width: 768px) {
+    .hero-grid {
+      row-gap: 2rem;
+    }
+    .plate0 {
+      grid-column: 6 / -1;
+      grid-row: 3 / span 2;
+      margin-top: 1rem;
+    }
+    .plate0-ground {
+      aspect-ratio: 16 / 10;
+    }
+    .plate0-ground :global(.plate0-logo) {
+      width: 54%;
+    }
+    .hero-copy {
+      grid-column: 1 / span 4;
+      grid-row: 3;
+      margin-top: 1rem;
+    }
+    .hero-strap {
+      grid-column: 1 / span 4;
+      grid-row: 4;
+      align-self: end;
+    }
+  }
+
+  /* Ticker — a staircase statement, not a marquee. */
+  .tick-sec {
+    padding-block: clamp(2rem, 6vw, 6rem) clamp(4rem, 9vw, 8rem);
+  }
+  .ticker {
+    margin: 0;
+    font-size: clamp(3.25rem, 10.5vw, 11rem);
+    line-height: 0.86;
+  }
+  .tw {
+    display: block;
+    width: max-content;
+    max-width: 100%;
+  }
+  .tw-no {
+    display: inline-block;
+    vertical-align: top;
+    margin-right: 0.5rem;
+    margin-top: 0.35em;
+    font-size: 0.75rem;
+    letter-spacing: 0;
+    color: var(--muted);
+  }
+  .tw-2 { margin-left: 12%; }
+  .tw-3 { margin-left: 30%; }
+  .tw-4 { margin-left: 8%; }
+
+  @media (min-width: 768px) {
+    .tw-2 { margin-left: 25%; }
+    .tw-3 { margin-left: 50%; }
+    .tw-4 { margin-left: 33.333%; }
+  }
+
+  .sec {
+    padding-block: clamp(3rem, 7vw, 6rem);
+  }
+  .sec-more,
+  .sec-foot {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 1rem 2rem;
+    margin-top: 1.25rem;
+  }
+  .sec-more {
+    justify-content: flex-end;
+  }
+  .sec-more a,
+  .sec-foot a {
+    padding-block: 0.3rem;
+  }
+  .sec-foot p {
+    margin: 0;
+    max-width: 52ch;
+  }
+</style>
+
+<script>
+  // Once-per-session load counter (the inline head script decides; this only counts).
+  const root = document.documentElement;
+  const out = document.querySelector<HTMLElement>('[data-count]');
+  if (root.classList.contains('intro') && out) {
+    root.classList.add('counting');
+    const start = performance.now();
+    const DURATION = 1100;
+    const step = (now: number) => {
+      const t = Math.min((now - start) / DURATION, 1);
+      const eased = 1 - Math.pow(1 - t, 3);
+      out.textContent = `${String(Math.round(eased * 100)).padStart(2, '0')}%`;
+      if (t < 1) requestAnimationFrame(step);
+      else setTimeout(() => root.classList.remove('counting', 'intro'), 450);
+    };
+    requestAnimationFrame(step);
+  }
+</script>

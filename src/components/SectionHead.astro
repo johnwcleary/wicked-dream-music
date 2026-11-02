@@ -1,0 +1,44 @@
+---
+import { pad } from '../lib/content';
+
+interface Props {
+  title: string;
+  id: string;
+  /** Number of entries in the section, shown as an archival count. */
+  count?: number;
+  /** Optional kicker (e.g. an eyebrow from content). */
+  kicker?: string;
+}
+const { title, id, count, kicker } = Astro.props;
+---
+
+<div class="sh grid12">
+  {kicker && <p class="sh-kicker label label-muted">{kicker}</p>}
+  <h2 id={id} class="sh-title display d-md">
+    {title}{count !== undefined && <sup class="sh-count label" aria-hidden="true">({pad(count)})</sup>}
+  </h2>
+</div>
+
+<style>
+  .sh {
+    row-gap: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--rule-strong);
+    margin-bottom: clamp(2rem, 5vw, 4.5rem);
+  }
+  .sh-kicker {
+    grid-column: 1 / -1;
+  }
+  .sh-title {
+    grid-column: 1 / -1;
+    margin: 0;
+  }
+  .sh-count {
+    font-size: 0.8125rem;
+    letter-spacing: 0;
+    margin-left: 0.4em;
+    vertical-align: top;
+    position: relative;
+    top: 0.1em;
+  }
+</style>

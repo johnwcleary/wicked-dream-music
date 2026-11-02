@@ -1,11 +1,37 @@
 ---
-import LogoSvg from '../assets/brand/logo.svg';
+/**
+ * The client's wordmark, inlined from src/assets/brand/logo.svg.
+ * - variant "ink": flat, currentColor.
+ * - variant "gradient": lavender → pink (vertical) over a faint base layer;
+ *   the fill layer is what the one-time intro "loads" from the bottom up.
+ */
+import { logoPath as d, logoViewBox as viewBox } from '../lib/brand';
 
 interface Props {
-  class?: string;
   label: string;
+  class?: string;
+  variant?: 'ink' | 'gradient';
+  id?: string;
 }
-const { class: className, label } = Astro.props;
+const { label, class: className, variant = 'ink', id = 'wdm-logo' } = Astro.props;
 ---
 
-<LogoSvg class={className} aria-label={label} role="img" />
+<svg viewBox={viewBox} class={className} role="img" aria-label={label} focusable="false">
+  {
+    variant === 'gradient' ? (
+      <>
+        <defs>
+          <linearGradient id={`${id}-g`} x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" style="stop-color: var(--wdm-lavender)" />
+            <stop offset="1" style="stop-color: var(--wdm-pink)" />
+          </linearGradient>
+          <path id={`${id}-p`} d={d} fill-rule="evenodd" />
+        </defs>
+        <use href={`#${id}-p`} class="logo-base" fill="currentColor" />
+        <use href={`#${id}-p`} class="logo-fill" fill={`url(#${id}-g)`} />
+      </>
+    ) : (
+      <path d={d} fill="currentColor" fill-rule="evenodd" />
+    )
+  }
+</svg>

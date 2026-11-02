@@ -1,0 +1,260 @@
+---
+/**
+ * Selected work as an editorial list. With a fine pointer (and JS), hovering
+ * or keyboard-focusing a row reveals its plate in a floating, fixed-position
+ * frame — the one place the brand gradient appears outside the logo, as a
+ * duotone wash. On touch / small screens / no JS the plates sit inline as
+ * thumbnails.
+ */
+import { Image } from 'astro:assets';
+import { anchor, pad, type Work } from '../lib/content';
+
+interface Props {
+  items: Work[];
+}
+const { items } = Astro.props;
+---
+
+<ol class="wi" data-wi>
+  {
+    items.map((w) => (
+      <li class="wi-row">
+        <a class="wi-link grid12" href={`/work#${anchor(w.id)}`}>
+          <span class="wi-num label" aria-hidden="true">{pad(w.data.order)}</span>
+          <h3 class="wi-title display d-sm">{w.data.title}</h3>
+          <span class="wi-cat label label-muted">{w.data.category}</span>
+          {w.data.image && (
+            <span class="wi-media" aria-hidden="true">
+              <Image
+                src={w.data.image}
+                alt=""
+                widths={[160, 320, 480, 720]}
+                sizes="(min-width: 768px) 24vw, 88px"
+                loading="lazy"
+                decoding="async"
+              />
+            </span>
+          )}
+        </a>
+      </li>
+    ))
+  }
+</ol>
+
+<style>
+  .wi {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-bottom: 1px solid var(--rule);
+  }
+  .wi-row {
+    border-top: 1px solid var(--rule);
+  }
+  .wi-link {
+    position: relative;
+    row-gap: 0.5rem;
+    align-items: baseline;
+    padding-block: 1.1rem 1.3rem;
+  }
+  .wi-num {
+    grid-column: 1 / span 2;
+  }
+  .wi-title {
+    grid-column: 1 / span 9;
+    grid-row: 2;
+    margin: 0;
+    transition:
+      transform 0.45s var(--ease-out),
+      color 0.3s;
+  }
+  .wi-cat {
+    grid-column: 3 / span 7;
+    grid-row: 1;
+  }
+
+  /* Inline thumbnail (touch, small screens, no JS). */
+  .wi-media {
+    grid-column: 10 / -1;
+    grid-row: 1 / span 2;
+    align-self: center;
+    justify-self: end;
+    width: 100%;
+    max-width: 5.5rem;
+    aspect-ratio: 4 / 5;
+    overflow: hidden;
+    background: var(--plate);
+  }
+  .wi-media :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: grayscale(1) contrast(1.06);
+  }
+
+  @media (min-width: 900px) {
+    .wi-link {
+      padding-block: 1.4rem 1.6rem;
+    }
+    .wi-num {
+      grid-column: 1 / span 1;
+    }
+    .wi-title {
+      grid-column: 2 / span 7;
+      grid-row: 1;
+    }
+    .wi-cat {
+      grid-column: 9 / span 3;
+    }
+    .wi-media {
+      grid-column: 12;
+      grid-row: 1;
+      max-width: 4.5rem;
+    }
+  }
+
+  /* Floating plate: fine pointer + JS only. */
+  @media (hover: hover) and (pointer: fine) and (min-width: 768px) {
+    :global(html.js) .wi-cat {
+      grid-column: 9 / -1;
+      text-align: right;
+    }
+    :global(html.js) .wi-media {
+      position: fixed;
+      left: 0;
+      top: 0;
+      z-index: 40;
+      display: none;
+      width: clamp(15rem, 24vw, 24rem);
+      max-width: none;
+      aspect-ratio: auto;
+      pointer-events: none;
+      transform: translate3d(var(--wi-x, 60vw), var(--wi-y, 30vh), 0);
+      transition:
+        opacity 0.3s var(--ease-out),
+        scale 0.4s var(--ease-out);
+    }
+    :global(html.js) .wi-media :global(img) {
+      height: auto;
+    }
+    /* The one hover moment: a duotone in the brand gradient. */
+    :global(html.js) .wi-media::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: var(--wdm-gradient);
+      mix-blend-mode: multiply;
+    }
+    :global(html.js) .wi-link.is-active .wi-media {
+      display: block;
+      opacity: 1;
+      scale: 1;
+    }
+    @starting-style {
+      :global(html.js) .wi-link.is-active .wi-media {
+        opacity: 0;
+        scale: 0.96;
+      }
+    }
+    .wi:has(.is-active) .wi-link:not(.is-active) .wi-title {
+      color: var(--muted);
+    }
+    .wi-link.is-active .wi-title {
+      transform: translateX(0.5rem);
+    }
+  }
+</style>
+
+<script>
+  const list = document.querySelector<HTMLElement>('[data-wi]');
+  const fine = matchMedia('(hover: hover) and (pointer: fine) and (min-width: 768px)');
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)');
+
+  if (list) {
+    const links = Array.from(list.querySelectorAll<HTMLAnchorElement>('.wi-link'));
+    let active: HTMLAnchorElement | null = null;
+    let tx = 0, ty = 0, x = 0, y = 0, raf = 0, placed = false;
+
+    // Arm (preload the hidden floating plates) shortly before the list scrolls in.
+    const arm = () => {
+      if (!fine.matches) return;
+      list.querySelectorAll<HTMLImageElement>('.wi-media img').forEach((img) => (img.loading = 'eager'));
+    };
+    const io = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((e) => e.isIntersecting)) {
+          arm();
+          io.disconnect();
+        }
+      },
+      { rootMargin: '600px 0px' },
+    );
+    io.observe(list);
+
+    const media = (a: HTMLAnchorElement | null) => a?.querySelector<HTMLElement>('.wi-media') ?? null;
+
+    const apply = () => {
+      list.style.setProperty('--wi-x', `${x}px`);
+      list.style.setProperty('--wi-y', `${y}px`);
+    };
+
+    const tick = () => {
+      x += (tx - x) * 0.18;
+      y += (ty - y) * 0.18;
+      apply();
+      if (Math.abs(tx - x) > 0.4 || Math.abs(ty - y) > 0.4) raf = requestAnimationFrame(tick);
+      else raf = 0;
+    };
+
+    const moveTo = (_nx: number, ny: number, instant = false) => {
+      const m = media(active);
+      const h = m?.offsetHeight ?? 240;
+      // Calm, editorial placement: a fixed column (between title and category);
+      // only the vertical position tracks the pointer. Kept on screen.
+      const lr = list.getBoundingClientRect();
+      const left = lr.left + lr.width * 0.6;
+      const top = Math.min(Math.max(ny - h / 2, 16), innerHeight - h - 16);
+      tx = left;
+      ty = top;
+      if (instant || reduce.matches || !placed) {
+        x = tx;
+        y = ty;
+        placed = true;
+        apply();
+        return;
+      }
+      if (!raf) raf = requestAnimationFrame(tick);
+    };
+
+    const setActive = (a: HTMLAnchorElement | null) => {
+      if (active === a) return;
+      active?.classList.remove('is-active');
+      active = a;
+      a?.classList.add('is-active');
+      if (!a) placed = false;
+    };
+
+    links.forEach((a) => {
+      a.addEventListener('pointerenter', (e) => {
+        if (!fine.matches || e.pointerType !== 'mouse') return;
+        arm();
+        setActive(a);
+        moveTo(e.clientX, e.clientY);
+      });
+      a.addEventListener('focus', () => {
+        if (!fine.matches || !a.matches(':focus-visible')) return;
+        arm();
+        setActive(a);
+        // Keyboard: park the plate at a fixed spot beside the row.
+        const r = a.getBoundingClientRect();
+        moveTo(innerWidth * 0.56, r.top + r.height / 2, true);
+      });
+      a.addEventListener('blur', () => setActive(null));
+    });
+
+    list.addEventListener('pointermove', (e) => {
+      if (active && e.pointerType === 'mouse') moveTo(e.clientX, e.clientY);
+    });
+    list.addEventListener('pointerleave', () => setActive(null));
+  }
+</script>

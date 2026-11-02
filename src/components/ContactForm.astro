@@ -1,37 +1,160 @@
 ---
-import { getPage } from '../lib/content';
+import { getPage, pad } from '../lib/content';
 
 const page = await getPage('contact');
 const fields = page.form_fields ?? [];
+const auto: Record<string, string> = { name: 'name', email: 'email', company: 'organization' };
 ---
 
 <!--
   Phase 2: wire this form to a Cloudflare Pages Function or a Netlify form.
   It intentionally has no action yet; method and field names are final.
 -->
-<form method="POST" class="grid gap-4">
+<form method="POST" class="form">
   {
-    fields.map((f) => (
-      <div class="grid gap-1">
-        <label for={`field-${f.name}`}>{f.label}</label>
+    fields.map((f, i) => (
+      <div class={`field ${f.type === 'textarea' ? 'field-wide' : ''}`}>
+        <label for={`field-${f.name}`} class="label">
+          <span class="label-muted" aria-hidden="true">
+            {pad(i + 1)}
+          </span>
+          <span>{f.label}</span>
+          {f.required && (
+            <span class="req" aria-hidden="true">
+              *
+            </span>
+          )}
+        </label>
         {f.type === 'textarea' ? (
-          <textarea id={`field-${f.name}`} name={f.name} rows="5" required={f.required} class="border p-2" />
+          <textarea id={`field-${f.name}`} name={f.name} rows="5" required={f.required} />
         ) : f.type === 'select' ? (
-          <select id={`field-${f.name}`} name={f.name} required={f.required} class="border p-2">
-            {(f.options ?? []).map((o) => <option value={o}>{o}</option>)}
-          </select>
+          <div class="select">
+            <select id={`field-${f.name}`} name={f.name} required={f.required}>
+              {(f.options ?? []).map((o) => (
+                <option value={o}>{o}</option>
+              ))}
+            </select>
+            <span class="select-caret" aria-hidden="true">↓</span>
+          </div>
         ) : (
-          <input
-            id={`field-${f.name}`}
-            name={f.name}
-            type={f.type}
-            required={f.required}
-            autocomplete={f.type === 'email' ? 'email' : f.name === 'name' ? 'name' : f.name === 'company' ? 'organization' : undefined}
-            class="border p-2"
-          />
+          <input id={`field-${f.name}`} name={f.name} type={f.type} required={f.required} autocomplete={auto[f.name]} />
         )}
       </div>
     ))
   }
-  <button type="submit" class="justify-self-start border px-4 py-2">{page.submit_label}</button>
+  <div class="submit-row">
+    <button type="submit" class="submit">
+      <span>{page.submit_label}</span>
+      <span aria-hidden="true">→</span>
+    </button>
+  </div>
 </form>
+
+<style>
+  .form {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: var(--col-gap);
+    row-gap: 2rem;
+  }
+  .field {
+    grid-column: 1 / -1;
+    display: grid;
+    gap: 0.5rem;
+  }
+  .field label {
+    display: flex;
+    gap: 0.6rem;
+    align-items: baseline;
+  }
+  .req {
+    color: var(--ink);
+  }
+  input,
+  select,
+  textarea {
+    width: 100%;
+    padding: 0.5rem 0 0.6rem;
+    border: 0;
+    border-bottom: 1px solid var(--rule-strong);
+    border-radius: 0;
+    background: transparent;
+    color: var(--ink);
+    font: inherit;
+    font-size: clamp(1.125rem, 1.6vw, 1.5rem);
+    letter-spacing: -0.01em;
+    appearance: none;
+  }
+  textarea {
+    resize: vertical;
+    min-height: 8rem;
+    line-height: 1.4;
+  }
+  input:hover,
+  select:hover,
+  textarea:hover {
+    border-bottom-color: var(--ink);
+  }
+  input:focus-visible,
+  select:focus-visible,
+  textarea:focus-visible {
+    outline: 2px solid var(--ink);
+    outline-offset: 4px;
+    border-bottom-color: var(--ink);
+  }
+  .select {
+    position: relative;
+  }
+  .select select {
+    padding-right: 2rem;
+    cursor: pointer;
+  }
+  .select-caret {
+    position: absolute;
+    right: 0.25rem;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+  }
+  .submit-row {
+    grid-column: 1 / -1;
+    margin-top: 0.5rem;
+  }
+  .submit {
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 3rem;
+    min-width: min(100%, 18rem);
+    padding: 1.1rem 1.25rem;
+    border: 1px solid var(--ink);
+    background: var(--ink);
+    color: var(--paper);
+    font: inherit;
+    font-size: 1.0625rem;
+    font-weight: 520;
+    cursor: pointer;
+    transition:
+      background-color 0.25s,
+      color 0.25s;
+  }
+  .submit:hover {
+    background: var(--paper);
+    color: var(--ink);
+  }
+  .submit span[aria-hidden] {
+    transition: transform 0.4s var(--ease-out);
+  }
+  .submit:hover span[aria-hidden] {
+    transform: translateX(0.3rem);
+  }
+
+  @media (min-width: 640px) {
+    .field {
+      grid-column: span 1;
+    }
+    .field-wide {
+      grid-column: 1 / -1;
+    }
+  }
+</style>

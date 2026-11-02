@@ -1,6 +1,8 @@
+@import "@fontsource-variable/instrument-sans/standard.css";
+@import "@fontsource/ibm-plex-mono/latin-400.css";
 @import "tailwindcss";
 
-/* Brand tokens, sampled from the supplied logo PNGs. Directions may override. */
+/* Brand tokens, sampled from the supplied logo PNGs. */
 :root {
   --wdm-ink: #13061a;      /* gradient logo ground */
   --wdm-lavender: #d4b2fd; /* gradient top */
@@ -8,6 +10,21 @@
   --wdm-paper: #fdfcf8;    /* flat logo letterforms */
   --wdm-black: #111111;
   --wdm-gradient: linear-gradient(180deg, var(--wdm-lavender), var(--wdm-pink));
+
+  /* design/archive — light ground, near-black type, one precious gradient. */
+  --ink: var(--wdm-ink);
+  --paper: var(--wdm-paper);
+  --muted: #66626b;               /* 5.8:1 on paper — AA for all sizes */
+  --rule: rgb(19 6 26 / 0.16);    /* hairlines */
+  --rule-strong: rgb(19 6 26 / 0.85);
+  --plate: #ece9e1;               /* empty image ground */
+
+  --font-sans: "Instrument Sans Variable", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+
+  --gutter: clamp(1rem, 2.2vw, 2rem);
+  --col-gap: clamp(0.75rem, 1.6vw, 1.5rem);
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 @theme {
@@ -16,4 +33,145 @@
   --color-pink: var(--wdm-pink);
   --color-paper: var(--wdm-paper);
   --color-black: var(--wdm-black);
+  --color-muted: #66626b;
+  --font-sans: "Instrument Sans Variable", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+
+@layer base {
+  html {
+    background: var(--paper);
+    color: var(--ink);
+    -webkit-text-size-adjust: 100%;
+    text-rendering: optimizeLegibility;
+  }
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--font-sans);
+    font-size: 1.0625rem;
+    line-height: 1.5;
+    font-feature-settings: "ss01", "kern";
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: clip;
+  }
+  ::selection {
+    background: var(--wdm-lavender);
+    color: var(--ink);
+  }
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+  :focus-visible {
+    outline: 2px solid var(--ink);
+    outline-offset: 3px;
+    border-radius: 1px;
+  }
+  main:focus {
+    outline: none;
+  }
+  img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+  }
+}
+
+@layer components {
+  .wrap {
+    width: 100%;
+    max-width: 1720px;
+    margin-inline: auto;
+    padding-inline: var(--gutter);
+  }
+  .grid12 {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: var(--col-gap);
+  }
+
+  /* Small monospace for labels, numbering and captions. */
+  .label {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    line-height: 1.35;
+    letter-spacing: 0.01em;
+    text-transform: uppercase;
+    font-variant-numeric: tabular-nums;
+  }
+  .label-muted {
+    color: var(--muted);
+  }
+
+  /* Display type: large, condensed a touch, tight leading. */
+  .display {
+    font-weight: 540;
+    font-stretch: 88%;
+    letter-spacing: -0.035em;
+    line-height: 0.88;
+  }
+  .d-xl {
+    font-size: clamp(3.4rem, 9.4vw, 10rem);
+  }
+  .d-lg {
+    font-size: clamp(3rem, 8vw, 8.25rem);
+  }
+  .d-md {
+    font-size: clamp(2.25rem, 5vw, 4.75rem);
+    line-height: 0.92;
+  }
+  .d-sm {
+    font-size: clamp(1.75rem, 3.4vw, 3.25rem);
+    line-height: 0.96;
+    letter-spacing: -0.03em;
+  }
+  @media (max-width: 767px) {
+    .d-xl {
+      font-size: 16vw;
+    }
+    .d-lg {
+      font-size: 14.5vw;
+    }
+  }
+  .statement {
+    font-size: clamp(1.5rem, 2.9vw, 2.75rem);
+    font-weight: 470;
+    line-height: 1.06;
+    letter-spacing: -0.022em;
+  }
+  .body-lg {
+    font-size: clamp(1.125rem, 1.35vw, 1.3125rem);
+    line-height: 1.5;
+    letter-spacing: -0.005em;
+  }
+
+  .hairline {
+    border-top: 1px solid var(--rule);
+  }
+
+  /* Archival photograph treatment. */
+  .bw {
+    filter: grayscale(1) contrast(1.06);
+  }
+
+  .link-line {
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.18em;
+  }
+  .link-line:hover {
+    text-decoration-thickness: 2px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
 }

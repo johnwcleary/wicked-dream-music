@@ -1,26 +1,265 @@
 ---
-import Logo from './Logo.astro';
-import { getSite, isCurrent } from '../lib/content';
+import { getSite, initials, isCurrent, pad } from '../lib/content';
 
 const site = await getSite();
 const path = Astro.url.pathname;
+const mark = initials(site.name);
 ---
 
-<div class="flex flex-wrap items-center justify-between gap-4 p-4">
-  <a href="/" class="block w-24" aria-label={site.name}>
-    <Logo class="h-auto w-full" label={site.name} />
-  </a>
-  <nav aria-label={site.ui.nav_label}>
-    <ul class="flex flex-wrap gap-4">
-      {
-        site.nav.map((item) => (
-          <li>
-            <a href={item.href} aria-current={isCurrent(item.href, path) ? 'page' : undefined} class="underline">
-              {item.label}
-            </a>
-          </li>
-        ))
+<header class="site-header">
+  <div class="bar wrap">
+    <a href="/" class="mark" aria-label={site.name}>
+      <span aria-hidden="true">{mark}<span class="mark-c">©</span></span>
+    </a>
+    <p class="loc label">{site.location}</p>
+    <button type="button" class="menu-btn label" aria-expanded="false" aria-controls="site-menu" data-open={site.ui.menu_open} data-close={site.ui.menu_close}>
+      <span class="menu-btn-text">{site.ui.menu_open}</span>
+      <span class="menu-btn-icon" aria-hidden="true"></span>
+    </button>
+    <div id="site-menu" class="menu">
+      <nav aria-label={site.ui.nav_label}>
+        <ul class="menu-list">
+          {
+            site.nav.map((item, i) => (
+              <li>
+                <a href={item.href} aria-current={isCurrent(item.href, path) ? 'page' : undefined}>
+                  <span class="menu-num label" aria-hidden="true">{pad(i + 1)}</span>
+                  <span class="menu-text">{item.label}</span>
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </nav>
+      <div class="menu-meta">
+        <a class="label link-line" href={`mailto:${site.email}`}>{site.email}</a>
+        <p class="label label-muted">{site.location}</p>
+      </div>
+    </div>
+  </div>
+</header>
+
+<style>
+  .site-header {
+    position: relative;
+    z-index: 50;
+  }
+  .bar {
+    display: flex;
+    align-items: center;
+    gap: var(--col-gap);
+    min-height: 4.25rem;
+  }
+  .mark {
+    font-size: 1.375rem;
+    font-weight: 620;
+    font-stretch: 85%;
+    letter-spacing: -0.04em;
+    line-height: 1;
+    padding-block: 0.4rem;
+    margin-right: auto;
+  }
+  .mark-c {
+    font-size: 0.6em;
+    vertical-align: 0.55em;
+    margin-left: 0.04em;
+    letter-spacing: 0;
+  }
+  .loc {
+    display: none;
+    color: var(--muted);
+  }
+  .menu-btn {
+    display: none;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.55rem 0;
+    background: none;
+    border: 0;
+    color: var(--ink);
+    cursor: pointer;
+  }
+  .menu-btn-icon {
+    position: relative;
+    width: 1.25rem;
+    height: 0.5rem;
+    border-block: 1.5px solid currentColor;
+    transition: transform 0.3s var(--ease-out), height 0.3s var(--ease-out);
+  }
+  .menu-btn[aria-expanded='true'] .menu-btn-icon {
+    height: 0;
+    border-bottom-width: 0;
+  }
+
+  /* Desktop + no-JS: inline nav. */
+  .menu-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 1.5rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .menu-list a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding-block: 0.35rem;
+    font-size: 0.9375rem;
+    font-weight: 480;
+    letter-spacing: -0.01em;
+  }
+  .menu-list a:hover .menu-text {
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.22em;
+  }
+  .menu-num {
+    display: none;
+  }
+  .menu-list a[aria-current='page']::before {
+    content: '';
+    width: 0.4rem;
+    height: 0.4rem;
+    background: var(--ink);
+  }
+  .menu-meta {
+    display: none;
+  }
+
+  @media (min-width: 1100px) {
+    .loc {
+      display: block;
+      margin-right: auto;
+    }
+  }
+
+  @media (max-width: 767px) {
+    :global(html:not(.js)) .bar {
+      flex-wrap: wrap;
+      padding-bottom: 0.75rem;
+    }
+    :global(html:not(.js)) .menu {
+      width: 100%;
+    }
+    :global(html.js) .menu-btn {
+      display: inline-flex;
+      position: relative;
+      z-index: 2;
+    }
+    :global(html.js) .mark {
+      position: relative;
+      z-index: 2;
+    }
+    :global(html.js) .menu {
+      display: none;
+    }
+    :global(html.js) .menu.is-open {
+      position: fixed;
+      inset: 0;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 2rem;
+      padding: 5.5rem var(--gutter) 1.75rem;
+      background: var(--paper);
+      overflow-y: auto;
+      animation: menu-in 0.35s var(--ease-out);
+    }
+    .menu.is-open .menu-list {
+      flex-direction: column;
+      gap: 0;
+      border-bottom: 1px solid var(--rule);
+    }
+    .menu.is-open .menu-list li {
+      border-top: 1px solid var(--rule);
+    }
+    .menu.is-open .menu-list a {
+      display: flex;
+      align-items: baseline;
+      gap: 0.9rem;
+      width: 100%;
+      padding-block: 0.7rem 0.6rem;
+      font-size: clamp(2.25rem, 11vw, 3.25rem);
+      font-weight: 540;
+      font-stretch: 88%;
+      letter-spacing: -0.035em;
+      line-height: 1;
+    }
+    .menu.is-open .menu-list a::before {
+      display: none;
+    }
+    .menu.is-open .menu-num {
+      display: inline;
+      min-width: 1.75rem;
+      color: var(--muted);
+    }
+    .menu.is-open .menu-list a[aria-current='page'] .menu-num {
+      color: var(--ink);
+    }
+    .menu.is-open .menu-list a[aria-current='page'] .menu-text {
+      text-decoration: underline;
+      text-decoration-thickness: 2px;
+      text-underline-offset: 0.12em;
+    }
+    .menu.is-open .menu-meta {
+      display: grid;
+      gap: 0.4rem;
+    }
+  }
+
+  @keyframes menu-in {
+    from {
+      opacity: 0;
+      transform: translateY(-0.5rem);
+    }
+  }
+</style>
+
+<script>
+  const btn = document.querySelector<HTMLButtonElement>('.menu-btn');
+  const menu = document.getElementById('site-menu');
+  if (btn && menu) {
+    const label = btn.querySelector('.menu-btn-text');
+    const links = () => Array.from(menu.querySelectorAll<HTMLElement>('a'));
+    const isOpen = () => btn.getAttribute('aria-expanded') === 'true';
+
+    const setOpen = (open: boolean, returnFocus = true) => {
+      btn.setAttribute('aria-expanded', String(open));
+      menu.classList.toggle('is-open', open);
+      if (label) label.textContent = (open ? btn.dataset.close : btn.dataset.open) ?? '';
+      document.documentElement.style.overflow = open ? 'hidden' : '';
+      if (open) links()[0]?.focus();
+      else if (returnFocus) btn.focus();
+    };
+
+    btn.addEventListener('click', () => setOpen(!isOpen()));
+
+    document.addEventListener('keydown', (e) => {
+      if (!isOpen()) return;
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        setOpen(false);
+        return;
       }
-    </ul>
-  </nav>
-</div>
+      if (e.key !== 'Tab') return;
+      // Keep focus inside the open menu (button + menu links).
+      const items = [btn, ...links()];
+      const first = items[0]!;
+      const last = items[items.length - 1]!;
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    });
+
+    // Close if the viewport grows past the mobile breakpoint.
+    matchMedia('(min-width: 768px)').addEventListener('change', (e) => {
+      if (e.matches && isOpen()) setOpen(false, false);
+    });
+  }
+</script>

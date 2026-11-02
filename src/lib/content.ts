@@ -45,3 +45,14 @@ export const paragraphs = (body: string) =>
 /** Normalise a path for active-nav comparison. */
 export const isCurrent = (href: string, path: string) =>
   href === '/' ? path === '/' : path.replace(/\/$/, '') === href.replace(/\/$/, '');
+
+/** Monogram from a name: "Wicked Dream Music" → "WDM". */
+export const initials = (name: string) =>
+  name
+    .split(/\s+/)
+    .filter(Boolean)
+    .map((w) => w[0]!.toUpperCase())
+    .join('');
+
+/** Fragment id for a collection entry, used for cross-page anchors. */
+export const anchor = (id: string) => id.replace(/[^a-z0-9-]/gi, '-').toLowerCase();
