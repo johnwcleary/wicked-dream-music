@@ -56,17 +56,25 @@ Photos are grayscale and high contrast, multiplied over the gradient, with the b
 
 **Pitch.** The whole company on one fast scroll. It opens on a full-screen loop from the ALL MY GIRLS video with the lavender wordmark over it, then runs through services, about and work as numbered, expandable sections, and ends on a single big email link.
 
-**Type.** Instrument Sans Variable, using the width axis at ~88% for tight statements that echo the logo (`@fontsource-variable/instrument-sans`, preloaded) + IBM Plex Mono 400 for labels and numbering (`@fontsource/ibm-plex-mono`).
+**Type.** Archivo Variable (`@fontsource-variable/archivo`, preloaded). Display is set at 70% width and weight 780, a heavy condensed cut that echoes the wordmark; body text uses Archivo at normal width. JetBrains Mono Variable handles labels and numbering. Both are OFL.
+
+**Palette: "chrome".** Ink `#0F0F10`, paper `#F7F7F5`, a silver accent `#E4E2DC` and a pewter accent `#A9A9B3`.
+- The wordmark is silver on the dark hero, and the button and contact band are silver.
+- The hero loop is graded black and white to match.
+- Every text pairing passes AA: ink/paper 17.9:1, silver/ink 14.8:1, muted/paper 6.0:1.
+- The brand lavender and pink remain the client's logo colours in `--wdm-*`, but this direction doesn't use them.
+
+Chosen from an in-page audition of 6 palettes × 5 type pairings. The comparison sheets are in `screenshots/design/archive/audition/` (local).
 
 **Page order.**
-1. **Hero.** A full-screen video loop under a transparent header, with the solid lavender wordmark, headline, intro and a lavender "See what we do" button. The footer row lists the services and the video title.
+1. **Hero.** A full-screen black-and-white video loop under a transparent header, with the silver wordmark, headline, intro and a silver "See what we do" button. The footer row lists the services and the video title.
 2. **Words and photos.** "Artists. Ideas. Sound. Culture." set huge, with the four work photos inline. Each word keeps its photo beside it: two pairs per line on desktop, one per line on phones. Each photo opens its work entry.
 3. **Services** (`#services`). Numbered rows that expand to show their bullets.
 4. **About** (`#about`). An ink band. Each chapter is a row with the title on the left and the body on the right; there is one chapter for now, to be expanded. The pull quote below is set in lavender-to-pink gradient type.
 5. **Selected work** (`#work`). Expandable rows: the Miley portrait, the click-to-play YouTube video for International A&R, and the photos.
-6. **Contact** (`#contact`). A lavender band with the headline, intro and one giant `mailto:` link. **The form was removed at John's request.** Phase 2 needs no form backend for this direction.
+6. **Contact** (`#contact`). A silver band with the headline, intro and one giant `mailto:` link. **The form was removed at John's request.** Phase 2 needs no form backend for this direction.
 
-**Gradient.** Used on the hovered photos, the video play button and the pull quote's type. The wordmark is solid lavender, and lavender also fills the contact band and the main button.
+**Accent.** The silver-to-pewter gradient is used on the hovered photos, the video play button and the pull quote's type. The wordmark, the main button and the contact band are solid silver.
 
 **Video hero.**
 - The loop starts after the page has loaded, pauses off-screen, and never autoplays for visitors with reduced motion turned on.
@@ -186,7 +194,7 @@ The strip's progress bar uses CSS scroll-driven animation, no JS.
 7. **YouTube video** on International A&R: "ALICE - ALL MY GIRLS (VISUALIZER)", title taken from YouTube's oEmbed. Confirm it's the right video and that the client has the right to feature it. Only archive renders it.
 8. **Hero video (archive).**
    - The loop behind archive's hero is cut from John's "Alice Vid.mp4" (the ALL MY GIRLS music video).
-   - It uses six shots, about 10.5 seconds in all, with no sound. The strobe-like stretch at 47–50s is deliberately left out.
+   - It uses six shots, about 10.5 seconds in all, with no sound, graded black and white for archive's chrome palette. The strobe-like stretch at 47–50s is deliberately left out.
    - There are two encodes in `public/media/hero/`: a 1280×720 landscape cut and a 720×1280 portrait crop for phones, each as MP4 and WebM (1.2–2 MB each).
    - It is set in `pages/home.md` under `hero_video`, so it can be swapped later.
    - The source files in `src/assets/videos/` are gitignored. Confirm the client may use this footage.
