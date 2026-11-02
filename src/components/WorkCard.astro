@@ -19,8 +19,8 @@ const Heading = headingLevel;
       <Image
         src={image}
         alt={image_alt ?? ''}
-        width={1200}
-        widths={[400, 800, 1200]}
+        width={Math.min(1200, image.width)}
+        widths={[400, 800, 1200].filter((w) => w <= image.width)}
         sizes="(min-width: 768px) 50vw, 100vw"
         loading={eager ? 'eager' : 'lazy'}
         class="h-auto w-full"

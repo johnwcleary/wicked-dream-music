@@ -22,6 +22,7 @@ const site = defineCollection({
       nav_label: z.string(),
       footer_nav_label: z.string(),
       rights: z.string(),
+      play_video: z.string(),
     }),
   }),
 });
@@ -75,6 +76,13 @@ const work = defineCollection({
       summary: z.string(),
       image: image().optional(),
       image_alt: z.string().optional(),
+      // Optional YouTube video; the image above doubles as its poster.
+      video: z
+        .object({
+          youtube_id: z.string().regex(/^[\w-]{11}$/),
+          title: z.string(),
+        })
+        .optional(),
     }),
 });
 
