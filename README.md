@@ -1,43 +1,40 @@
-# Astro Starter Kit: Minimal
+# Wicked Dream Music — website
 
-```sh
-npm create astro@latest -- --template minimal
+Astro + Tailwind CSS v4 + TypeScript, static output. Phase 1: local design audition only.
+
+## Run locally
+
+```bash
+npm install
+npm run dev          # http://localhost:4321
 ```
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+## Design audition
 
-## 🚀 Project Structure
+`main` holds the content and a deliberately plain baseline. Each design direction lives on its own branch:
 
-Inside of your Astro project, you'll see the following folders and files:
-
-```text
-/
-├── public/
-├── src/
-│   └── pages/
-│       └── index.astro
-└── package.json
+```bash
+npm run audition     # lists the directions and how to switch
+git switch design/signal && npm run dev
 ```
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
+## Scripts
 
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
+| Command | What it does |
+|---|---|
+| `npm run build` | Static build to `dist/` |
+| `npm run preview` | Serve `dist/` |
+| `npm run check` | `astro check` (strict TS + content schemas) |
+| `npm test` | Playwright smoke + accessibility tests against the built site |
+| `npm run screenshots` | Full-page screenshots of every route at 1440×900 and 390×844 → `screenshots/<branch>/` |
+| `npm run lighthouse` | Lighthouse (mobile + desktop) on every route → `lighthouse/<branch>.json` |
 
-Any static assets, like images, can be placed in the `public/` directory.
+## Content
 
-## 🧞 Commands
+All copy lives in `src/content/` (Astro Content Collections, schemas in `src/content.config.ts`):
 
-All commands are run from the root of the project, from a terminal:
+- `site/global.json` — name, nav, ticker, contact email, UI strings
+- `pages/*.md` — one file per page, structured frontmatter
+- `services/*.md`, `work/*.md` — one file per item, sorted by `order`
 
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
-
-## 👀 Want to learn more?
-
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+Edit copy there; never in `.astro` files.

@@ -10,7 +10,11 @@
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
-    "check": "astro check"
+    "check": "astro check",
+    "screenshots": "node scripts/screenshot.ts",
+    "audition": "node scripts/audition.ts",
+    "test": "playwright test",
+    "lighthouse": "node scripts/lighthouse.ts"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.3.3",
@@ -21,6 +25,8 @@
   "devDependencies": {
     "@astrojs/check": "^0.9.12",
     "@playwright/test": "^1.64.1",
+    "chrome-launcher": "^1.2.2",
+    "lighthouse": "^13.6.0",
     "typescript": "^6.0.3"
   }
 }
