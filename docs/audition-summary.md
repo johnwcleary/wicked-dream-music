@@ -200,7 +200,7 @@ The strip's progress bar uses CSS scroll-driven animation, no JS.
 6. **Miley Cyrus portrait** (`src/assets/photos/miley-cyrus.png`), supplied by John for the Wrecking Ball entry:
    - It is a third-party press-style photo. Confirm the licence or permission before launch.
    - It is only 344×344px, so it is shown no larger than its native size and will look soft on high-density screens. Ask for a larger original.
-   - All three directions use it. Each caps it at its native size so it is never upscaled, which leaves it noticeably smaller than the other photos in signal's poster bands and dream's work strip.
+   - All three directions use it and serve the file at its native 344px. Archive also displays it no larger than that. Signal's poster band and dream's work cards stretch it to fill their frames, so it looks soft there, especially on high-density screens.
 7. **YouTube video** on International A&R: "ALICE - ALL MY GIRLS (VISUALIZER)", title taken from YouTube's oEmbed. Confirm it's the right video and that the client has the right to feature it. Only archive renders it.
 8. **Photos are Unsplash placeholders** and must be replaced with licensed or owned imagery before launch. Their pairing with work entries is arbitrary.
 9. **Contact form** has correct `name`s and `method="POST"` but no action. A comment marks the Phase 2 hookup (Cloudflare Pages Function or Netlify form).
