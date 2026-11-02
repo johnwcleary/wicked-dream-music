@@ -23,6 +23,7 @@ const site = defineCollection({
       footer_nav_label: z.string(),
       rights: z.string(),
       play_video: z.string(),
+      pause_video: z.string(),
     }),
   }),
 });
@@ -35,10 +36,22 @@ const formField = z.object({
   options: z.array(z.string()).optional(),
 });
 
+// A muted background loop. Files live in public/ (served as-is); the poster is an
+// optimised image. The mobile cut is optional and used below 768px wide.
+const loop = (image: () => z.ZodType) =>
+  z.object({
+    title: z.string(),
+    poster: image(),
+    mp4: z.string(),
+    webm: z.string().optional(),
+    mobile_mp4: z.string().optional(),
+    mobile_webm: z.string().optional(),
+  });
+
 // One schema for every page; each page fills the fields its template uses.
 const pages = defineCollection({
   loader: glob({ pattern: '*.md', base: './src/content/pages' }),
-  schema: z.object({
+  schema: ({ image }) => z.object({
     title: z.string(),
     headline: z.string(),
     lede: z.string(),
@@ -52,6 +65,7 @@ const pages = defineCollection({
     form_fields: z.array(formField).optional(),
     submit_label: z.string().optional(),
     email_label: z.string().optional(),
+    hero_video: loop(image).optional(),
   }),
 });
 

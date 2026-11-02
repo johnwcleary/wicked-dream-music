@@ -29,3 +29,6 @@ test-results/
 playwright-report/
 lighthouse/
 .claude/worktrees/
+
+# Source footage (large originals; only the cut loops in public/media are committed)
+src/assets/videos/

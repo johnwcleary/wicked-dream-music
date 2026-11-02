@@ -197,19 +197,23 @@ The strip's progress bar uses CSS scroll-driven animation, no JS.
    - The site meta description.
    - Alt text for the four photos.
    - UI strings in `site.ui` (skip link, Menu/Close, nav landmark labels, "All rights reserved.").
-6. **Miley Cyrus portrait** (`src/assets/photos/miley-cyrus.png`), supplied by John for the Wrecking Ball entry:
-   - It is a third-party press-style photo. Confirm the licence or permission before launch.
-   - It is only 344×344px, so it is shown no larger than its native size and will look soft on high-density screens. Ask for a larger original.
-   - All three directions use it and serve the file at its native 344px. Archive also displays it no larger than that. Signal's poster band and dream's work cards stretch it to fill their frames, so it looks soft there, especially on high-density screens.
+6. **Miley Cyrus portrait** (`src/assets/photos/miley-cyrus.webp`, 2400×3600), supplied by John for the Wrecking Ball entry. It is a third-party press-style photo, so confirm the licence or permission before launch.
 7. **YouTube video** on International A&R: "ALICE - ALL MY GIRLS (VISUALIZER)", title taken from YouTube's oEmbed. Confirm it's the right video and that the client has the right to feature it. Only archive renders it.
-8. **Photos are Unsplash placeholders** and must be replaced with licensed or owned imagery before launch. Their pairing with work entries is arbitrary.
-9. **Contact form** has correct `name`s and `method="POST"` but no action. A comment marks the Phase 2 hookup (Cloudflare Pages Function or Netlify form).
-10. **Content the designers wished existed** (not added, to keep content identical across branches; worth deciding before Phase 2):
+8. **Hero video (archive).**
+   - The loop behind archive's hero is cut from John's "Alice Vid.mp4" (the ALL MY GIRLS music video).
+   - It uses six shots, about 10.5 seconds in all, with no sound. The strobe-like stretch at 47–50s is deliberately left out.
+   - There are two encodes in `public/media/hero/`: a 1280×720 landscape cut and a 720×1280 portrait crop for phones, each as MP4 and WebM (1.2–2 MB each).
+   - It is set in `pages/home.md` under `hero_video`, so it can be swapped later.
+   - The source files in `src/assets/videos/` are gitignored. Confirm the client may use this footage.
+   - The loops were cut with `ffmpeg-static`, a dev dependency.
+9. **Photos are Unsplash placeholders** and must be replaced with licensed or owned imagery before launch. Their pairing with work entries is arbitrary.
+10. **Contact form** has correct `name`s and `method="POST"` but no action. A comment marks the Phase 2 hookup (Cloudflare Pages Function or Netlify form).
+11. **Content the designers wished existed** (not added, to keep content identical across branches; worth deciding before Phase 2):
    - Per-work `year`/`role` fields.
    - A short label for home section headings (nav labels are reused).
    - An explicit about-page `pull_quote`.
    - An optional about-page image.
    - Labels for prev/next and "next page" controls.
-11. **Image sizing.** Astro emits the full-size original (2–3.5 MB here) when an `<Image>` has `widths` but no `width`. I fixed this on `main` and on every branch, so the largest shipped photo variant is now ~0.6–1 MB (a 2200px confetti shot, which compresses badly).
-12. **Mobile Performance is 96 on `/work`** in signal and dream (archive no longer has a `/work` page). That page leads with large, noisy confetti photos. It's comfortably above the floor, but real photography will change the numbers.
-13. **Constraints not met:** none.
+12. **Image sizing.** Astro emits the full-size original (2–3.5 MB here) when an `<Image>` has `widths` but no `width`. I fixed this on `main` and on every branch, so the largest shipped photo variant is now ~0.6–1 MB (a 2200px confetti shot, which compresses badly).
+13. **Mobile Performance is 96 on `/work`** in signal and dream (archive no longer has a `/work` page). That page leads with large, noisy confetti photos. It's comfortably above the floor, but real photography will change the numbers.
+14. **Constraints not met:** none.
