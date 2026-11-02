@@ -20,8 +20,8 @@ const Heading = headingLevel;
         <Image
           src={image}
           alt={image_alt ?? ''}
-          width={1120}
-          widths={[360, 560, 800, 1120]}
+          width={Math.min(1120, image.width)}
+          widths={[360, 560, 800, 1120].filter((w) => w <= image.width).concat(image.width < 360 ? [image.width] : [])}
           sizes="(min-width: 768px) 36rem, calc(100vw - 2rem)"
           loading="lazy"
           decoding="async"

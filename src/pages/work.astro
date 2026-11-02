@@ -27,8 +27,8 @@ const navIndex = site.nav.findIndex((n) => n.href === '/work');
               <Image
                 src={w.data.image}
                 alt={w.data.image_alt ?? ''}
-                width={1600}
-                widths={[480, 720, 960, 1280, 1600]}
+                width={Math.min(1600, w.data.image.width)}
+                widths={[480, 720, 960, 1280, 1600].filter((n) => n <= w.data.image!.width).concat(w.data.image.width < 480 ? [w.data.image.width] : [])}
                 sizes="(min-width: 900px) 56vw, calc(100vw - 2rem)"
                 loading={i === 0 ? 'eager' : 'lazy'}
                 fetchpriority={i === 0 ? 'high' : undefined}
@@ -121,6 +121,18 @@ const navIndex = site.nav.findIndex((n) => n.href === '/work');
     font-size: 0.875rem;
     padding-top: 1.5rem;
     border-top: 1px solid var(--wdm-line);
+  }
+  /* Phones: frames step in from alternating sides; the portrait still stays portrait. */
+  @media (max-width: 899.98px) {
+    .scene:nth-child(odd) .scene-media {
+      margin-right: 10%;
+    }
+    .scene:nth-child(even) .scene-media {
+      margin-left: 10%;
+    }
+    .scene--portrait .scene-media {
+      aspect-ratio: 4 / 5;
+    }
   }
   @media (min-width: 900px) {
     .scene {
