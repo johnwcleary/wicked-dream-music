@@ -3,35 +3,139 @@ import { getPage } from '../lib/content';
 
 const page = await getPage('contact');
 const fields = page.form_fields ?? [];
+const auto = (name: string, type: string) =>
+  type === 'email' ? 'email' : name === 'name' ? 'name' : name === 'company' ? 'organization' : undefined;
 ---
 
 <!--
   Phase 2: wire this form to a Cloudflare Pages Function or a Netlify form.
   It intentionally has no action yet; method and field names are final.
 -->
-<form method="POST" class="grid gap-4">
+<form method="POST" class="cf">
   {
-    fields.map((f) => (
-      <div class="grid gap-1">
-        <label for={`field-${f.name}`}>{f.label}</label>
+    fields.map((f, i) => (
+      <div class:list={['cf-field', { 'cf-wide': f.type === 'textarea' || f.type === 'select' }]}>
+        <label class="label cf-label" for={`field-${f.name}`}>
+          <span class="idx cf-idx" aria-hidden="true">
+            {String(i + 1).padStart(2, '0')}
+          </span>
+          {f.label}
+          {f.required && (
+            <span class="cf-req" aria-hidden="true">
+              *
+            </span>
+          )}
+        </label>
         {f.type === 'textarea' ? (
-          <textarea id={`field-${f.name}`} name={f.name} rows="5" required={f.required} class="border p-2" />
+          <textarea id={`field-${f.name}`} name={f.name} rows="5" required={f.required} class="cf-input cf-area" />
         ) : f.type === 'select' ? (
-          <select id={`field-${f.name}`} name={f.name} required={f.required} class="border p-2">
-            {(f.options ?? []).map((o) => <option value={o}>{o}</option>)}
-          </select>
+          <div class="cf-select">
+            <select id={`field-${f.name}`} name={f.name} required={f.required} class="cf-input">
+              {(f.options ?? []).map((o) => (
+                <option value={o}>{o}</option>
+              ))}
+            </select>
+            <span class="cf-chev" aria-hidden="true" />
+          </div>
         ) : (
           <input
             id={`field-${f.name}`}
             name={f.name}
             type={f.type}
             required={f.required}
-            autocomplete={f.type === 'email' ? 'email' : f.name === 'name' ? 'name' : f.name === 'company' ? 'organization' : undefined}
-            class="border p-2"
+            autocomplete={auto(f.name, f.type)}
+            class="cf-input"
           />
         )}
       </div>
     ))
   }
-  <button type="submit" class="justify-self-start border px-4 py-2">{page.submit_label}</button>
+  <div class="cf-actions">
+    <button type="submit" class="cta">
+      {page.submit_label}
+      <span class="arrow" aria-hidden="true">→</span>
+    </button>
+  </div>
 </form>
+
+<style>
+  .cf {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 28px var(--gutter);
+  }
+  @media (min-width: 768px) {
+    .cf {
+      grid-template-columns: 1fr 1fr;
+    }
+    .cf-wide,
+    .cf-actions {
+      grid-column: 1 / -1;
+    }
+  }
+  .cf-field {
+    display: grid;
+    gap: 6px;
+  }
+  .cf-label {
+    display: flex;
+    gap: 8px;
+    align-items: baseline;
+  }
+  .cf-idx {
+    color: var(--muted);
+    font-size: 10px;
+  }
+  .cf-req {
+    color: var(--muted);
+  }
+  .cf-input {
+    width: 100%;
+    appearance: none;
+    background: transparent;
+    color: inherit;
+    border: 0;
+    border-bottom: 1.5px solid currentColor;
+    border-radius: 0;
+    padding: 10px 0 12px;
+    font: inherit;
+    font-size: 20px;
+    line-height: 1.3;
+    transition: border-color 0.2s;
+  }
+  .cf-input:hover {
+    border-bottom-width: 1.5px;
+    border-image: var(--wdm-gradient-x) 1;
+    border-image-width: 0 0 3px 0;
+  }
+  .cf-input:focus-visible {
+    outline: 2px solid var(--focus);
+    outline-offset: 4px;
+  }
+  .cf-area {
+    resize: vertical;
+    min-height: 150px;
+  }
+  .cf-select {
+    position: relative;
+  }
+  .cf-select select {
+    padding-right: 32px;
+    cursor: pointer;
+  }
+  .cf-chev {
+    position: absolute;
+    right: 4px;
+    top: 50%;
+    width: 10px;
+    height: 10px;
+    margin-top: -8px;
+    border-right: 2px solid currentColor;
+    border-bottom: 2px solid currentColor;
+    transform: rotate(45deg);
+    pointer-events: none;
+  }
+  .cf-actions {
+    padding-top: 8px;
+  }
+</style>

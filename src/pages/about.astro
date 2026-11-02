@@ -1,20 +1,97 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { getPage, paragraphs } from '../lib/content';
+import PageHero from '../components/PageHero.astro';
+import Duotone from '../components/Duotone.astro';
+import ContactBand from '../components/ContactBand.astro';
+import { getPage, getWork, pad, paragraphs } from '../lib/content';
 
 const page = await getPage('about');
+const work = await getWork();
+// Reuse the haze/guitarist photograph from the work collection (no new imagery).
+const photo = work.find((w) => w.id === 'creative-partnerships' && w.data.image) ?? work.find((w) => w.data.image);
+const sections = page.sections ?? [];
 ---
 
 <BaseLayout title={page.title} description={page.lede}>
-  <h1 class="text-4xl font-bold">{page.headline}</h1>
-  <p>{page.lede}</p>
-  <p class="text-sm uppercase">{page.eyebrow}</p>
+  <PageHero headline={page.headline} lede={page.lede} aside={page.eyebrow} />
+
   {
-    page.sections?.map((s) => (
-      <section class="py-4">
-        <h2 class="text-2xl font-bold">{s.heading}</h2>
-        {paragraphs(s.body).map((p) => <p class="mt-2">{p}</p>)}
+    photo?.data.image && (
+      <div class="ab-photo" data-reveal>
+        <Duotone src={photo.data.image} alt={photo.data.image_alt ?? ''} sizes="100vw" class="ab-img" position="50% 45%" />
+      </div>
+    )
+  }
+
+  {
+    sections.map((s, i) => (
+      <section class:list={['ab-sec wrap', i % 2 === 0 ? 'band-paper' : 'band-ink']}>
+        <div class="g12 ab-grid">
+          <p class="label ab-idx">
+            <span class="idx">{pad(i + 1)}</span>
+            <span class="muted" aria-hidden="true">
+              / {pad(sections.length)}
+            </span>
+          </p>
+          <h2 class="display huge ab-h" data-reveal>
+            {s.heading}
+          </h2>
+          <div class="ab-copy">
+            {paragraphs(s.body).map((p) => (
+              <p>{p}</p>
+            ))}
+          </div>
+        </div>
       </section>
     ))
   }
+
+  <ContactBand tone={sections.length % 2 === 0 ? 'paper' : 'ink'} />
 </BaseLayout>
+
+<style>
+  .ab-photo :global(.ab-img) {
+    aspect-ratio: 4 / 3;
+  }
+  @media (min-width: 768px) {
+    .ab-photo :global(.ab-img) {
+      aspect-ratio: 12 / 5;
+    }
+  }
+  .ab-sec {
+    padding-top: clamp(64px, 9vw, 140px);
+    padding-bottom: clamp(64px, 9vw, 140px);
+  }
+  .ab-grid {
+    row-gap: 24px;
+  }
+  .ab-idx {
+    grid-column: 1 / -1;
+    display: flex;
+    gap: 8px;
+  }
+  .ab-h {
+    grid-column: 1 / -1;
+    text-wrap: balance;
+  }
+  .ab-copy {
+    grid-column: 1 / -1;
+    display: grid;
+    gap: 1em;
+    font-size: 17px;
+    margin-top: 12px;
+    max-width: 44ch;
+  }
+  @media (min-width: 768px) {
+    .ab-h {
+      grid-column: 1 / span 10;
+    }
+    .ab-copy {
+      grid-column: 7 / span 6;
+      max-width: none;
+      grid-template-columns: 1fr 1fr;
+      column-gap: var(--gutter);
+      margin-top: clamp(24px, 3vw, 48px);
+    }
+  }
+</style>

@@ -1,16 +1,214 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import ServiceCard from '../components/ServiceCard.astro';
-import { getPage, getServices } from '../lib/content';
+import PageHero from '../components/PageHero.astro';
+import ContactBand from '../components/ContactBand.astro';
+import { getPage, getServices, pad } from '../lib/content';
 
 const page = await getPage('services');
 const services = await getServices();
 ---
 
 <BaseLayout title={page.title} description={page.lede}>
-  <h1 class="text-4xl font-bold">{page.headline}</h1>
-  <p>{page.lede}</p>
-  <div class="grid gap-4 py-8 md:grid-cols-2">
-    {services.map((s) => <ServiceCard service={s} />)}
-  </div>
+  <PageHero headline={page.headline} lede={page.lede}>
+    <p class="label muted svc-count" aria-hidden="true">
+      {pad(1)}—{pad(services.length)}
+    </p>
+  </PageHero>
+
+  <section class="band-paper wrap svc" aria-label={page.title}>
+    <div class="svc-list">
+      {
+        services.map((s, i) => (
+          <details class="svc-row" id={s.id} open={i === 0} data-reveal>
+            <summary class="svc-sum g12">
+              <span class="svc-idx idx" aria-hidden="true">
+                {pad(s.data.order)}
+              </span>
+              <h2 class="svc-title display huge">{s.data.title}</h2>
+              <span class="svc-cat label">{s.data.category}</span>
+              <span class="svc-toggle" aria-hidden="true">
+                <span />
+                <span />
+              </span>
+            </summary>
+            <div class="svc-body g12">
+              <p class="svc-summary">{s.data.summary}</p>
+              <ul class="svc-bullets">
+                {s.data.bullets.map((b, j) => (
+                  <li>
+                    <span class="idx svc-bidx" aria-hidden="true">
+                      {pad(s.data.order)}.{j + 1}
+                    </span>
+                    <span>{b}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </details>
+        ))
+      }
+    </div>
+  </section>
+
+  <ContactBand tone="ink" />
 </BaseLayout>
+
+<script>
+  // Deep links from the home page (/services#songwriting) open the matching row.
+  const open = () => {
+    const id = decodeURIComponent(location.hash.slice(1));
+    const el = id ? document.getElementById(id) : null;
+    if (el instanceof HTMLDetailsElement) {
+      el.open = true;
+      el.classList.add('is-in');
+    }
+  };
+  open();
+  window.addEventListener('hashchange', open);
+</script>
+
+<style>
+  .svc-count {
+    font-variant-numeric: tabular-nums;
+  }
+  .svc {
+    padding-top: clamp(24px, 4vw, 56px);
+    padding-bottom: clamp(64px, 9vw, 140px);
+  }
+  .svc-list {
+    border-bottom: 1px solid var(--rule);
+  }
+  .svc-row {
+    border-top: 1px solid var(--rule);
+  }
+  .svc-sum {
+    position: relative;
+    isolation: isolate;
+    list-style: none;
+    cursor: pointer;
+    align-items: start;
+    row-gap: 10px;
+    padding: 18px 0 18px;
+  }
+  .svc-sum::-webkit-details-marker {
+    display: none;
+  }
+  .svc-sum::before {
+    content: '';
+    position: absolute;
+    inset: 0 calc(var(--margin) * -1);
+    z-index: -1;
+    background: var(--wdm-gradient-x);
+    transform: scaleY(0);
+    transform-origin: bottom;
+    transition: transform 0.45s var(--ease);
+  }
+  .svc-sum:hover::before {
+    transform: scaleY(1);
+  }
+  .svc-idx {
+    grid-column: 1 / span 6;
+    grid-row: 1;
+  }
+  .svc-cat {
+    grid-column: 7 / span 6;
+    grid-row: 1;
+    justify-self: end;
+    color: var(--muted);
+  }
+  .svc-title {
+    grid-column: 1 / span 10;
+    grid-row: 2;
+  }
+  .svc-toggle {
+    grid-column: 11 / span 2;
+    grid-row: 2;
+    justify-self: end;
+    align-self: center;
+    position: relative;
+    width: 28px;
+    height: 28px;
+  }
+  .svc-toggle span {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 2px;
+    margin-top: -1px;
+    background: currentColor;
+    transition: transform 0.35s var(--ease);
+  }
+  .svc-toggle span:last-child {
+    transform: rotate(90deg);
+  }
+  .svc-row[open] .svc-toggle span:last-child {
+    transform: rotate(0deg);
+  }
+
+  .svc-body {
+    row-gap: 28px;
+    padding: 8px 0 40px;
+  }
+  .svc-summary {
+    grid-column: 1 / -1;
+    font-size: clamp(19px, 1.6vw, 24px);
+    line-height: 1.35;
+    font-weight: 480;
+    max-width: 26ch;
+    text-wrap: pretty;
+  }
+  .svc-bullets {
+    grid-column: 1 / -1;
+    border-top: 1px solid var(--rule);
+  }
+  .svc-bullets li {
+    display: grid;
+    grid-template-columns: 4.5ch 1fr;
+    gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--rule);
+    font-size: 16px;
+    line-height: 1.4;
+  }
+  .svc-bidx {
+    color: var(--muted);
+    padding-top: 0.2em;
+  }
+
+  @media (min-width: 768px) {
+    .svc-sum {
+      align-items: center;
+      padding: 20px 0 16px;
+    }
+    .svc-idx {
+      grid-column: 1;
+      grid-row: 1;
+      align-self: start;
+      padding-top: 0.5em;
+    }
+    .svc-title {
+      grid-column: 2 / span 8;
+      grid-row: 1;
+    }
+    .svc-cat {
+      grid-column: 10 / span 2;
+      grid-row: 1;
+      justify-self: start;
+    }
+    .svc-toggle {
+      grid-column: 12;
+      grid-row: 1;
+    }
+    .svc-body {
+      padding: 12px 0 56px;
+    }
+    .svc-summary {
+      grid-column: 2 / span 5;
+    }
+    .svc-bullets {
+      grid-column: 8 / span 5;
+    }
+  }
+
+</style>

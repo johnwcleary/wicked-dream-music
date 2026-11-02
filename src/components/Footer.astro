@@ -1,17 +1,124 @@
 ---
-import { getSite } from '../lib/content';
+import Marquee from './Marquee.astro';
+import { getSite, pad } from '../lib/content';
 
+interface Props {
+  marquee?: boolean;
+}
+const { marquee = true } = Astro.props;
 const site = await getSite();
 const year = new Date().getFullYear();
+const contact = site.nav.find((n) => n.href === '/contact');
 ---
 
-<div class="border-t p-4 text-sm">
-  <p>{site.name} — {site.location}</p>
-  <p><a class="underline" href={`mailto:${site.email}`}>{site.email}</a></p>
-  <nav aria-label={site.ui.footer_nav_label}>
-    <ul class="flex flex-wrap gap-4">
-      {site.nav.map((item) => <li><a class="underline" href={item.href}>{item.label}</a></li>)}
-    </ul>
-  </nav>
-  <p>© {year} {site.name}. {site.ui.rights}</p>
+{marquee && <Marquee />}
+<div class="foot band-ink wrap">
+  <div class="g12 foot-top">
+    <p class="label muted foot-kicker">{contact?.label}</p>
+    <a class="foot-mail display" href={`mailto:${site.email}`}>
+      <span>{site.email}</span>
+    </a>
+  </div>
+
+  <div class="g12 foot-grid hair">
+    <div class="foot-col foot-id">
+      <p class="label">{site.name}</p>
+      <p class="label muted">{site.tagline}</p>
+    </div>
+    <nav class="foot-col foot-nav" aria-label={site.ui.footer_nav_label}>
+      <ul>
+        {
+          site.nav.map((item, i) => (
+            <li>
+              <a class="label ulink-hover" href={item.href}>
+                <span class="idx muted" aria-hidden="true">{pad(i + 1)}</span> {item.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+    <div class="foot-col foot-loc">
+      <p class="label muted">{site.location}</p>
+      <p class="label muted">© {year} {site.name}. {site.ui.rights}</p>
+    </div>
+  </div>
 </div>
+
+<style>
+  .foot {
+    padding-top: clamp(56px, 9vw, 140px);
+    padding-bottom: 28px;
+  }
+  .foot-top {
+    row-gap: 16px;
+    padding-bottom: clamp(48px, 7vw, 112px);
+  }
+  .foot-kicker {
+    grid-column: 1 / -1;
+  }
+  .foot-mail {
+    grid-column: 1 / -1;
+    justify-self: start;
+    font-size: clamp(22px, 6.55vw, 120px);
+    line-height: 0.95;
+    overflow-wrap: anywhere;
+  }
+  .foot-mail span {
+    background-image: var(--wdm-gradient-x);
+    background-size: 0 0.06em;
+    background-position: 0 100%;
+    background-repeat: no-repeat;
+    transition: background-size 0.45s var(--ease);
+  }
+  .foot-mail:hover span {
+    background-size: 100% 0.06em;
+  }
+  .foot-grid {
+    padding-top: 24px;
+    row-gap: 28px;
+  }
+  .foot-col {
+    grid-column: 1 / -1;
+    display: grid;
+    align-content: start;
+    gap: 6px;
+  }
+  .foot-nav ul {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2px 16px;
+  }
+  .foot-nav a {
+    display: inline-block;
+    padding: 6px 0;
+  }
+  .ulink-hover {
+    background-image: var(--wdm-gradient-x);
+    background-size: 0 2px;
+    background-position: 0 calc(100% - 3px);
+    background-repeat: no-repeat;
+    transition: background-size 0.3s var(--ease);
+  }
+  .ulink-hover:hover {
+    background-size: 100% 2px;
+  }
+  @media (min-width: 768px) {
+    .foot-id {
+      grid-column: 1 / span 4;
+    }
+    .foot-nav {
+      grid-column: 5 / span 4;
+    }
+    .foot-loc {
+      grid-column: 9 / span 4;
+      text-align: right;
+    }
+    .foot-nav ul {
+      grid-template-columns: 1fr;
+    }
+    .foot-nav a {
+      padding: 2px 0;
+    }
+  }
+</style>

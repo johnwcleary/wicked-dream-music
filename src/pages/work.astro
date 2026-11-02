@@ -1,17 +1,46 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import WorkCard from '../components/WorkCard.astro';
+import PageHero from '../components/PageHero.astro';
+import WorkPoster from '../components/WorkPoster.astro';
+import ContactBand from '../components/ContactBand.astro';
 import { getPage, getWork } from '../lib/content';
 
 const page = await getPage('work');
 const work = await getWork();
+const layouts = ['split', 'full', 'split-rev', 'full'] as const;
 ---
 
 <BaseLayout title={page.title} description={page.lede}>
-  <h1 class="text-4xl font-bold">{page.headline}</h1>
-  <p>{page.lede}</p>
-  <div class="grid gap-4 py-8 md:grid-cols-2">
-    {work.map((w, i) => <WorkCard item={w} eager={i < 2} />)}
+  <PageHero headline={page.headline} lede={page.lede} />
+
+  {
+    work.map((w, i) => (
+      <WorkPoster
+        item={w}
+        total={work.length}
+        layout={layouts[i % layouts.length]}
+        tone={i % 2 === 0 ? 'paper' : 'ink'}
+        eager={i === 0}
+      />
+    ))
+  }
+
+  <div class:list={['wrap foot-note', work.length % 2 === 0 ? 'band-ink' : 'band-paper']}>
+    <p class="label muted">{page.footnote}</p>
   </div>
-  <p class="text-sm">{page.footnote}</p>
+
+  <ContactBand tone={work.length % 2 === 0 ? 'paper' : 'ink'} />
 </BaseLayout>
+
+<style>
+  .foot-note {
+    padding-top: 8px;
+    padding-bottom: clamp(48px, 6vw, 88px);
+    border-top: 0;
+  }
+  .foot-note p {
+    border-top: 1px solid var(--rule);
+    padding-top: 16px;
+    max-width: none;
+  }
+</style>

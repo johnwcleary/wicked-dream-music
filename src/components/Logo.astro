@@ -1,11 +1,28 @@
 ---
-import LogoSvg from '../assets/brand/logo.svg';
-
+/**
+ * The wordmark. `tone="gradient"` fills it with the brand lavender→pink
+ * gradient (vertical, per the logo); `tone="current"` uses currentColor.
+ * Requires <LogoSprite /> once on the page (BaseLayout does this).
+ */
 interface Props {
   class?: string;
-  label: string;
+  label?: string;
+  tone?: 'gradient' | 'current';
+  decorative?: boolean;
 }
-const { class: className, label } = Astro.props;
+const { class: className, label, tone = 'gradient', decorative = false } = Astro.props;
+const a11y = decorative || !label ? { 'aria-hidden': 'true' as const } : { role: 'img' as const, 'aria-label': label };
 ---
 
-<LogoSvg class={className} aria-label={label} role="img" />
+<svg class:list={['logo', className]} viewBox="0 0 2002 1391" focusable="false" {...a11y}>
+  <use href="#wdm-logo" fill={tone === 'gradient' ? 'url(#wdm-grad)' : 'currentColor'}></use>
+</svg>
+
+<style>
+  .logo {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 2002 / 1391;
+  }
+</style>

@@ -1,0 +1,28 @@
+---
+// One inline copy of the wordmark path per page; every <Logo> references it via <use>.
+import raw from '../assets/brand/logo.svg?raw';
+
+const viewBox = raw.match(/viewBox="([^"]+)"/)?.[1] ?? '0 0 2002 1391';
+const d = raw.match(/\sd="([^"]+)"/)?.[1] ?? '';
+---
+
+<svg class="logo-sprite" width="0" height="0" aria-hidden="true" focusable="false">
+  <defs>
+    <linearGradient id="wdm-grad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#d4b2fd"></stop>
+      <stop offset="1" stop-color="#fec0d0"></stop>
+    </linearGradient>
+    <symbol id="wdm-logo" viewBox={viewBox}>
+      <path fill-rule="evenodd" d={d}></path>
+    </symbol>
+  </defs>
+</svg>
+
+<style>
+  .logo-sprite {
+    position: absolute;
+    width: 0;
+    height: 0;
+    overflow: hidden;
+  }
+</style>

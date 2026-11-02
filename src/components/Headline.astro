@@ -1,0 +1,42 @@
+---
+/**
+ * Display headline split into the mockup's two-line rhythm. A trailing full
+ * stop is picked out in the gradient (ink grounds only).
+ */
+import { splitHeadline } from '../lib/content';
+
+interface Props {
+  text: string;
+  as?: 'h1' | 'h2' | 'p';
+  class?: string;
+  accent?: boolean;
+  split?: boolean;
+}
+const { text, as: Tag = 'h1', class: className, accent = true, split = true } = Astro.props;
+const lines = (split ? splitHeadline(text) : [text, '']).filter(Boolean);
+const last = lines.length - 1;
+// Approximate Anton advance width (~0.43em per uppercase glyph) so short
+// headlines can grow to fill a phone screen (see .mega in global.css).
+const fitEm = Math.max(...lines.map((l) => l.length)) * 0.43;
+const parts = lines.map((line, i) => {
+  if (i === last && accent && /[.!?]$/.test(line)) return { body: line.slice(0, -1), stop: line.slice(-1) };
+  return { body: line, stop: '' };
+});
+---
+
+<Tag class:list={['display', 'headline', className]} style={`--fit-em: ${fitEm.toFixed(2)}`}>
+  {
+    parts.map((p) => (
+      <span class="hl-line">
+        {p.body}
+        {p.stop && <span class="grad-text">{p.stop}</span>}
+      </span>
+    ))
+  }
+</Tag>
+
+<style>
+  .hl-line {
+    display: block;
+  }
+</style>

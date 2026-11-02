@@ -1,0 +1,80 @@
+---
+import { getPage, getSite, pad } from '../lib/content';
+
+interface Props {
+  tone?: 'paper' | 'ink';
+}
+const { tone = 'paper' } = Astro.props;
+const site = await getSite();
+const contactPage = await getPage('contact');
+const i = site.nav.findIndex((n) => n.href === '/contact');
+const contact = site.nav[i];
+---
+
+{
+  contact && (
+    <section class:list={['cb wrap', tone === 'ink' ? 'band-ink' : 'band-paper']} aria-labelledby="cb-h">
+      <div class="g12">
+        <p class="label cb-label">
+          <span class="idx" aria-hidden="true">
+            {pad(i + 1)}
+          </span>
+          <span>{contact.label}</span>
+        </p>
+        <h2 id="cb-h" class="display huge cb-h" data-reveal>
+          {contactPage.headline}
+        </h2>
+        <p class="cb-lede">{contactPage.lede}</p>
+        <div class="cb-cta">
+          <a class="cta" href={contact.href}>
+            {contact.label}
+            <span class="arrow" aria-hidden="true">
+              →
+            </span>
+          </a>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+<style>
+  .cb {
+    padding-top: clamp(64px, 9vw, 140px);
+    padding-bottom: clamp(64px, 9vw, 140px);
+  }
+  .cb .g12 {
+    row-gap: 24px;
+  }
+  .cb-label {
+    grid-column: 1 / -1;
+    display: flex;
+    gap: 10px;
+  }
+  .cb-h {
+    grid-column: 1 / -1;
+    text-wrap: balance;
+  }
+  .cb-lede {
+    grid-column: 1 / -1;
+    font-size: 18px;
+    max-width: 30ch;
+  }
+  .cb-cta {
+    grid-column: 1 / -1;
+  }
+  @media (min-width: 768px) {
+    .cb-h {
+      grid-column: 1 / span 10;
+    }
+    .cb-lede {
+      grid-column: 1 / span 5;
+      margin-top: 12px;
+    }
+    .cb-cta {
+      grid-column: 9 / span 4;
+      justify-self: end;
+      align-self: end;
+    }
+  }
+</style>

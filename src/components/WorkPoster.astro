@@ -1,0 +1,138 @@
+---
+import Duotone from './Duotone.astro';
+import type { Work } from '../lib/content';
+import { pad } from '../lib/content';
+
+interface Props {
+  item: Work;
+  total: number;
+  layout: 'full' | 'split' | 'split-rev';
+  tone: 'ink' | 'paper';
+  eager?: boolean;
+}
+const { item, total, layout, tone, eager = false } = Astro.props;
+const { order, category, title, summary, image, image_alt } = item.data;
+const portrait = image ? image.height > image.width : false;
+---
+
+<article id={item.id} class:list={['wp wrap', `wp-${layout}`, tone === 'ink' ? 'band-ink' : 'band-paper']}>
+  <div class="g12 wp-grid">
+    <p class="wp-meta label">
+      <span class="idx">{pad(order)}</span>
+      <span class="wp-of muted" aria-hidden="true">/ {pad(total)}</span>
+    </p>
+    <p class="wp-cat label muted">{category}</p>
+    {
+      image && (
+        <div class="wp-media" data-reveal>
+          <Duotone
+            src={image}
+            alt={image_alt ?? ''}
+            sizes={layout === 'full' ? 'calc(100vw - 32px)' : '(min-width: 768px) 58vw, 100vw'}
+            class={`wp-img ${portrait ? 'is-portrait' : ''}`}
+            eager={eager}
+            position={portrait ? '50% 38%' : '50% 50%'}
+          />
+        </div>
+      )
+    }
+    <h2 class="wp-title display huge">{title}</h2>
+    <p class="wp-sum">{summary}</p>
+  </div>
+</article>
+
+<style>
+  .wp {
+    padding-top: clamp(40px, 6vw, 96px);
+    padding-bottom: clamp(48px, 7vw, 112px);
+  }
+  .wp-grid {
+    row-gap: 18px;
+  }
+  .wp-meta {
+    grid-column: 1 / span 6;
+    display: flex;
+    gap: 8px;
+  }
+  .wp-cat {
+    grid-column: 7 / span 6;
+    justify-self: end;
+    text-align: right;
+  }
+  .wp-media {
+    grid-column: 1 / -1;
+    margin-top: 6px;
+  }
+  .wp-media :global(.wp-img) {
+    aspect-ratio: 4 / 5;
+  }
+  .wp-title {
+    grid-column: 1 / -1;
+    margin-top: 10px;
+    text-wrap: balance;
+  }
+  .wp-sum {
+    grid-column: 1 / -1;
+    font-size: 16px;
+    max-width: 34ch;
+    color: var(--muted);
+  }
+
+  @media (min-width: 768px) {
+    .wp-grid {
+      row-gap: 22px;
+    }
+    /* full: wide image, title below */
+    .wp-full .wp-media :global(.wp-img) {
+      aspect-ratio: 21 / 9;
+    }
+    .wp-full .wp-title {
+      grid-column: 1 / span 9;
+    }
+    .wp-full .wp-sum {
+      grid-column: 10 / span 3;
+      align-self: end;
+      padding-bottom: 0.6em;
+    }
+
+    /* split: text left, image right (or reversed) */
+    .wp-split .wp-media,
+    .wp-split-rev .wp-media {
+      grid-row: 2 / span 2;
+      margin-top: 18px;
+    }
+    .wp-split .wp-media {
+      grid-column: 6 / span 7;
+    }
+    .wp-split-rev .wp-media {
+      grid-column: 1 / span 7;
+    }
+    .wp-split .wp-media :global(.wp-img),
+    .wp-split-rev .wp-media :global(.wp-img) {
+      aspect-ratio: 4 / 3;
+    }
+    .wp-split .wp-media :global(.wp-img.is-portrait),
+    .wp-split-rev .wp-media :global(.wp-img.is-portrait) {
+      aspect-ratio: 1 / 1;
+    }
+    .wp-split .wp-title,
+    .wp-split-rev .wp-title {
+      grid-row: 2;
+      align-self: end;
+      font-size: clamp(56px, 5.8vw, 112px);
+    }
+    .wp-split .wp-sum,
+    .wp-split-rev .wp-sum {
+      grid-row: 3;
+      align-self: start;
+    }
+    .wp-split .wp-title,
+    .wp-split .wp-sum {
+      grid-column: 1 / span 5;
+    }
+    .wp-split-rev .wp-title,
+    .wp-split-rev .wp-sum {
+      grid-column: 8 / span 5;
+    }
+  }
+</style>

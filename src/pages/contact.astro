@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from '../components/PageHero.astro';
 import ContactForm from '../components/ContactForm.astro';
 import { getPage, getSite } from '../lib/content';
 
@@ -8,13 +9,69 @@ const page = await getPage('contact');
 ---
 
 <BaseLayout title={page.title} description={page.lede}>
-  <h1 class="text-4xl font-bold">{page.headline}</h1>
-  <p>{page.lede}</p>
-  <section class="py-8">
-    <h2 class="text-2xl font-bold">{page.intro_heading}</h2>
-    <p>{page.intro}</p>
-    <div class="mt-4"><ContactForm /></div>
-    <p class="mt-4">{page.email_label} <a class="underline" href={`mailto:${site.email}`}>{site.email}</a></p>
-    <p class="mt-4 text-sm uppercase">{site.location}</p>
+  <PageHero headline={page.headline} lede={page.lede} />
+
+  <section class="band-paper wrap ct" aria-labelledby="ct-h">
+    <div class="g12 ct-grid">
+      <div class="ct-side">
+        <h2 id="ct-h" class="display big">{page.intro_heading}</h2>
+        <p class="ct-intro">{page.intro}</p>
+        <div class="ct-mail">
+          <p class="label muted">{page.email_label}</p>
+          <a class="ct-mail-link ulink" href={`mailto:${site.email}`}>{site.email}</a>
+        </div>
+        <p class="label muted ct-loc">{site.location}</p>
+      </div>
+      <div class="ct-form">
+        <ContactForm />
+      </div>
+    </div>
   </section>
 </BaseLayout>
+
+<style>
+  .ct {
+    padding-top: clamp(56px, 8vw, 120px);
+    padding-bottom: clamp(64px, 9vw, 140px);
+  }
+  .ct-grid {
+    row-gap: 56px;
+  }
+  .ct-side {
+    grid-column: 1 / -1;
+    display: grid;
+    gap: 20px;
+    align-content: start;
+  }
+  .ct-intro {
+    max-width: 34ch;
+    font-size: 17px;
+  }
+  .ct-mail {
+    display: grid;
+    gap: 6px;
+    margin-top: 16px;
+    padding-top: 18px;
+    border-top: 1px solid var(--rule);
+  }
+  .ct-mail-link {
+    justify-self: start;
+    font-size: clamp(17px, 1.5vw, 21px);
+    font-weight: 560;
+    overflow-wrap: anywhere;
+  }
+  .ct-form {
+    grid-column: 1 / -1;
+  }
+  @media (min-width: 900px) {
+    .ct-side {
+      grid-column: 1 / span 4;
+      position: sticky;
+      top: calc(var(--nav-h) + 32px);
+      align-self: start;
+    }
+    .ct-form {
+      grid-column: 6 / span 7;
+    }
+  }
+</style>

@@ -1,28 +1,432 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import ServiceCard from '../components/ServiceCard.astro';
-import WorkCard from '../components/WorkCard.astro';
-import { getPage, getServices, getSite, getWork } from '../lib/content';
+import Logo from '../components/Logo.astro';
+import Headline from '../components/Headline.astro';
+import Marquee from '../components/Marquee.astro';
+import Duotone from '../components/Duotone.astro';
+import ContactBand from '../components/ContactBand.astro';
+import { getPage, getServices, getSite, getWork, pad } from '../lib/content';
 
 const site = await getSite();
 const page = await getPage('home');
+const servicesPage = await getPage('services');
+const workPage = await getPage('work');
 const services = await getServices();
 const work = await getWork();
+const [featured, ...rest] = work;
+const navLabel = (href: string) => site.nav.find((n) => n.href === href)?.label ?? '';
+const navIdx = (href: string) => pad(site.nav.findIndex((n) => n.href === href) + 1);
 ---
 
-<BaseLayout title={page.title} description={page.lede}>
-  <section class="grid gap-4 py-8">
-    <p class="text-sm uppercase">{page.eyebrow}</p>
-    <h1 class="text-4xl font-bold">{page.headline}</h1>
-    <p>{page.lede}</p>
-    {page.cta && <a class="justify-self-start border px-4 py-2" href={page.cta.href}>{page.cta.label}</a>}
-    <p class="font-bold uppercase">{site.ticker.join(' ')}</p>
-    <p>{page.strapline}</p>
+<BaseLayout title={page.title} description={page.lede} footerMarquee={false}>
+  <!-- HERO -->
+  <section class="hh band-ink wrap">
+    <div class="g12 hh-top">
+      <p class="label hh-eyebrow">{page.eyebrow}</p>
+      <p class="label muted hh-strap">{page.strapline}</p>
+    </div>
+
+    <div class="g12 hh-body">
+      <div class="hh-logo">
+        <Logo label={site.name} />
+      </div>
+      <div class="hh-side">
+        <p class="lede">{page.lede}</p>
+        {
+          page.cta && (
+            <a class="cta" href={page.cta.href}>
+              {page.cta.label}
+              <span class="arrow" aria-hidden="true">→</span>
+            </a>
+          )
+        }
+      </div>
+      <Headline text={page.headline} class="mega hh-h1" />
+    </div>
   </section>
-  <section class="grid gap-4 py-8 md:grid-cols-2" aria-label={site.nav[2]?.label}>
-    {services.map((s) => <ServiceCard service={s} />)}
+
+  <Marquee />
+
+  <!-- SERVICES -->
+  <section class="band-paper wrap sec" aria-labelledby="home-services">
+    <div class="g12 sec-head">
+      <h2 id="home-services" class="label sec-label">
+        <span class="idx" aria-hidden="true">{navIdx('/services')}</span>
+        <span>{navLabel('/services')}</span>
+      </h2>
+      <p class="sec-lede muted">{servicesPage.lede}</p>
+    </div>
+    <ol class="rows">
+      {
+        services.map((s) => (
+          <li class="row-li" data-reveal>
+            <a class="row g12" href={`/services#${s.id}`}>
+              <span class="row-idx idx" aria-hidden="true">
+                {pad(s.data.order)}
+              </span>
+              <h3 class="row-title display big">{s.data.title}</h3>
+              <p class="row-sum">{s.data.summary}</p>
+              <span class="row-arrow" aria-hidden="true">→</span>
+            </a>
+          </li>
+        ))
+      }
+    </ol>
   </section>
-  <section class="grid gap-4 py-8 md:grid-cols-2" aria-label={site.nav[3]?.label}>
-    {work.map((w) => <WorkCard item={w} />)}
+
+  <!-- WORK -->
+  <section class="band-ink wrap sec" aria-labelledby="home-work">
+    <div class="g12 work-head">
+      <p class="label work-label">
+        <span class="idx muted" aria-hidden="true">{navIdx('/work')}</span>
+        <span>{navLabel('/work')}</span>
+      </p>
+      <Headline as="h2" text={workPage.headline} split={false} class="huge work-h2" />
+      <p class="sec-lede muted work-lede">{workPage.lede}</p>
+    </div>
+
+    {
+      featured && (
+        <article class="g12 feat" data-reveal>
+          {featured.data.image && (
+            <a class="feat-media" href={`/work#${featured.id}`} tabindex="-1" aria-hidden="true">
+              <Duotone
+                src={featured.data.image}
+                alt=""
+                sizes="(min-width: 768px) 50vw, 100vw"
+                widths={[480, 720, 960, 1400]}
+                class="feat-img"
+                position="50% 40%"
+              />
+            </a>
+          )}
+          <div class="feat-text">
+            <p class="label">
+              <span class="idx" aria-hidden="true">
+                {pad(featured.data.order)}
+              </span>{' '}
+              / <span class="muted">{featured.data.category}</span>
+            </p>
+            <h3 class="display huge feat-title">
+              <a href={`/work#${featured.id}`}>{featured.data.title}</a>
+            </h3>
+            <p class="feat-sum">{featured.data.summary}</p>
+          </div>
+        </article>
+      )
+    }
+
+    <ol class="wrows">
+      {
+        rest.map((w) => (
+          <li data-reveal>
+            <a class="wrow g12" href={`/work#${w.id}`}>
+              <span class="wrow-idx idx muted" aria-hidden="true">
+                {pad(w.data.order)}
+              </span>
+              <h3 class="wrow-title display big">{w.data.title}</h3>
+              <p class="wrow-cat label muted">{w.data.category}</p>
+            </a>
+          </li>
+        ))
+      }
+    </ol>
+    <div class="work-more">
+      <a class="label ulink" href="/work">
+        {navLabel('/work')} <span aria-hidden="true">→</span>
+      </a>
+    </div>
   </section>
+
+  <ContactBand />
 </BaseLayout>
+
+<style>
+  /* ---------- hero ---------- */
+  .hh {
+    padding-top: calc(var(--nav-h) + 20px);
+    padding-bottom: clamp(32px, 4vw, 56px);
+    min-height: min(100svh, 1000px);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 36px;
+  }
+  .hh-top {
+    row-gap: 6px;
+  }
+  .hh-eyebrow,
+  .hh-strap {
+    grid-column: 1 / -1;
+  }
+  .hh-body {
+    row-gap: 28px;
+    align-items: end;
+  }
+  .hh-logo {
+    grid-column: 1 / -1;
+    margin-left: -0.4%;
+  }
+  .hh-body :global(.hh-h1) {
+    grid-column: 1 / -1;
+    margin-left: -0.03em;
+  }
+  .hh-side {
+    grid-column: 1 / -1;
+    display: grid;
+    gap: 24px;
+    justify-items: start;
+  }
+  @media (min-width: 768px) {
+    .hh-eyebrow {
+      grid-column: 1 / span 5;
+    }
+    .hh-strap {
+      grid-column: 6 / span 7;
+      text-align: right;
+    }
+    .hh-logo {
+      grid-column: 1 / span 6;
+      /* keep the wordmark + headline inside one viewport */
+      max-width: calc((100svh - var(--nav-h) - 24vw - 150px) * 1.44);
+      min-width: 300px;
+    }
+    .hh-side {
+      grid-column: 8 / span 5;
+      padding-bottom: 6px;
+    }
+    .hh-body :global(.hh-h1) {
+      margin-top: clamp(8px, 2vw, 32px);
+    }
+  }
+  @media (max-width: 767.98px) {
+    .hh-side {
+      order: 3;
+    }
+  }
+
+  /* ---------- shared section ---------- */
+  .sec {
+    padding-top: clamp(64px, 9vw, 140px);
+    padding-bottom: clamp(64px, 9vw, 140px);
+  }
+  .sec-head {
+    row-gap: 16px;
+    padding-bottom: clamp(28px, 4vw, 56px);
+  }
+  .sec-label {
+    grid-column: 1 / -1;
+    display: flex;
+    gap: 10px;
+  }
+  .sec-lede {
+    grid-column: 1 / -1;
+    font-size: 15px;
+    max-width: 40ch;
+  }
+  @media (min-width: 768px) {
+    .sec-label {
+      grid-column: 1 / span 6;
+    }
+    .sec-lede {
+      grid-column: 9 / span 4;
+    }
+  }
+
+  /* ---------- service rows (paper) ---------- */
+  .rows {
+    border-bottom: 1px solid var(--rule);
+  }
+  .row-li {
+    border-top: 1px solid var(--rule);
+  }
+  .row {
+    position: relative;
+    isolation: isolate;
+    align-items: start;
+    row-gap: 10px;
+    padding: 18px 0 20px;
+  }
+  .row::before {
+    content: '';
+    position: absolute;
+    inset: 0 calc(var(--margin) * -1);
+    z-index: -1;
+    background: var(--wdm-gradient-x);
+    transform: scaleY(0);
+    transform-origin: bottom;
+    transition: transform 0.45s var(--ease);
+  }
+  .row:hover::before {
+    transform: scaleY(1);
+  }
+  .row-idx {
+    grid-column: 1 / span 2;
+    padding-top: 0.4em;
+  }
+  .row-title {
+    grid-column: 1 / -1;
+  }
+  .row-sum {
+    grid-column: 1 / span 10;
+    font-size: 15px;
+    line-height: 1.45;
+    max-width: 36ch;
+  }
+  .row-arrow {
+    grid-column: 11 / span 2;
+    justify-self: end;
+    align-self: end;
+    font-size: 22px;
+    line-height: 1;
+    transition: transform 0.3s var(--ease);
+  }
+  .row:hover .row-arrow {
+    transform: translateX(6px);
+  }
+  @media (min-width: 768px) {
+    .row {
+      align-items: center;
+      padding: 14px 0 12px;
+    }
+    .row-idx {
+      grid-column: 1;
+      align-self: start;
+    }
+    .row-title {
+      grid-column: 2 / span 7;
+      padding-top: 0.06em;
+    }
+    .row-sum {
+      grid-column: 9 / span 3;
+    }
+    .row-arrow {
+      grid-column: 12;
+      align-self: center;
+    }
+  }
+
+  /* ---------- work (ink) ---------- */
+  .work-head {
+    row-gap: 18px;
+    padding-bottom: clamp(36px, 5vw, 72px);
+    align-items: end;
+  }
+  .work-label {
+    grid-column: 1 / -1;
+    display: flex;
+    gap: 10px;
+  }
+  .work-head :global(.work-h2) {
+    grid-column: 1 / -1;
+  }
+  .work-lede {
+    grid-column: 1 / -1;
+  }
+  @media (min-width: 768px) {
+    .work-head :global(.work-h2) {
+      grid-column: 1 / span 8;
+    }
+    .work-lede {
+      grid-column: 9 / span 4;
+      padding-bottom: 0.5em;
+    }
+  }
+
+  .feat {
+    row-gap: 24px;
+    padding-bottom: clamp(40px, 6vw, 88px);
+  }
+  .feat-media {
+    grid-column: 1 / -1;
+    display: block;
+  }
+  .feat-media :global(.feat-img) {
+    aspect-ratio: 4 / 5;
+  }
+  .feat-text {
+    grid-column: 1 / -1;
+    display: grid;
+    gap: 18px;
+    align-content: end;
+  }
+  .feat-title a {
+    background-image: var(--wdm-gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    background-size: 100% 0;
+    background-repeat: no-repeat;
+    transition: color 0.3s var(--ease);
+  }
+  .feat-title a:hover {
+    background-size: 100% 100%;
+    color: transparent;
+  }
+  .feat-sum {
+    max-width: 34ch;
+    font-size: 16px;
+    color: var(--muted);
+  }
+  @media (min-width: 768px) {
+    .feat-media {
+      grid-column: 1 / span 6;
+    }
+    .feat-media :global(.feat-img) {
+      aspect-ratio: 5 / 6;
+    }
+    .feat-text {
+      grid-column: 7 / span 6;
+    }
+  }
+
+  .wrows {
+    border-bottom: 1px solid var(--rule);
+  }
+  .wrows li {
+    border-top: 1px solid var(--rule);
+  }
+  .wrow {
+    align-items: center;
+    row-gap: 8px;
+    padding: 16px 0 14px;
+  }
+  .wrow-idx {
+    grid-column: 1 / span 2;
+  }
+  .wrow-cat {
+    grid-column: 3 / -1;
+    justify-self: end;
+  }
+  .wrow-title {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    transition: color 0.3s var(--ease);
+  }
+  .wrow:hover .wrow-title {
+    background: var(--wdm-gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  @media (min-width: 768px) {
+    .wrow {
+      padding: 12px 0 10px;
+    }
+    .wrow-idx {
+      grid-column: 1;
+    }
+    .wrow-title {
+      grid-column: 2 / span 8;
+      grid-row: 1;
+    }
+    .wrow-cat {
+      grid-column: 10 / span 3;
+    }
+  }
+  .work-more {
+    padding-top: 28px;
+    display: flex;
+    justify-content: flex-end;
+  }
+
+</style>

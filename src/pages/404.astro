@@ -1,13 +1,88 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { getPage } from '../lib/content';
+import Headline from '../components/Headline.astro';
+import { getPage, getSite } from '../lib/content';
 
+const site = await getSite();
 const page = await getPage('not-found');
 ---
 
 <BaseLayout title={page.title} description={page.lede}>
-  <p class="text-sm uppercase">{page.eyebrow}</p>
-  <h1 class="text-4xl font-bold">{page.headline}</h1>
-  <p>{page.lede}</p>
-  {page.cta && <a class="underline" href={page.cta.href}>{page.cta.label}</a>}
+  <section class="nf band-ink wrap">
+    <div class="g12 nf-top">
+      <p class="label">{page.eyebrow} / {page.title}</p>
+      <p class="label muted nf-aside">{site.location}</p>
+    </div>
+    <p class="nf-code display grad-text" aria-hidden="true">{page.eyebrow}</p>
+    <div class="g12 nf-body">
+      <Headline text={page.headline} class="huge nf-h" />
+      <div class="nf-side">
+        <p class="lede">{page.lede}</p>
+        {
+          page.cta && (
+            <a class="cta" href={page.cta.href}>
+              <span class="arrow" aria-hidden="true">←</span>
+              {page.cta.label}
+            </a>
+          )
+        }
+      </div>
+    </div>
+  </section>
 </BaseLayout>
+
+<style>
+  .nf {
+    min-height: min(100svh, 1000px);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 32px;
+    padding-top: calc(var(--nav-h) + 20px);
+    padding-bottom: clamp(48px, 6vw, 88px);
+  }
+  .nf-top {
+    row-gap: 6px;
+  }
+  .nf-top p {
+    grid-column: 1 / -1;
+  }
+  .nf-code {
+    font-size: min(76vw, 640px);
+    line-height: 0.8;
+    letter-spacing: -0.02em;
+    margin-left: -0.04em;
+    padding-top: 0.04em;
+  }
+  .nf-body {
+    row-gap: 28px;
+    align-items: end;
+  }
+  .nf-body :global(.nf-h) {
+    grid-column: 1 / -1;
+  }
+  .nf-side {
+    grid-column: 1 / -1;
+    display: grid;
+    gap: 24px;
+    justify-items: start;
+  }
+  .cta:hover .arrow {
+    transform: translateX(-4px);
+  }
+  @media (min-width: 768px) {
+    .nf-top p:first-child {
+      grid-column: 1 / span 6;
+    }
+    .nf-top .nf-aside {
+      grid-column: 7 / span 6;
+      text-align: right;
+    }
+    .nf-body :global(.nf-h) {
+      grid-column: 1 / span 7;
+    }
+    .nf-side {
+      grid-column: 8 / span 5;
+    }
+  }
+</style>

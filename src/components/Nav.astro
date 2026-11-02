@@ -1,26 +1,279 @@
 ---
 import Logo from './Logo.astro';
-import { getSite, isCurrent } from '../lib/content';
+import { getSite, isCurrent, pad } from '../lib/content';
 
 const site = await getSite();
 const path = Astro.url.pathname;
 ---
 
-<div class="flex flex-wrap items-center justify-between gap-4 p-4">
-  <a href="/" class="block w-24" aria-label={site.name}>
-    <Logo class="h-auto w-full" label={site.name} />
-  </a>
-  <nav aria-label={site.ui.nav_label}>
-    <ul class="flex flex-wrap gap-4">
-      {
-        site.nav.map((item) => (
-          <li>
-            <a href={item.href} aria-current={isCurrent(item.href, path) ? 'page' : undefined} class="underline">
-              {item.label}
-            </a>
-          </li>
-        ))
-      }
-    </ul>
-  </nav>
+<div class="bar band-ink" data-nav>
+  <div class="bar-inner wrap">
+    <a href="/" class="brand" aria-label={site.name}>
+      <Logo class="brand-logo" decorative />
+    </a>
+
+    <button
+      class="menu-btn"
+      type="button"
+      aria-expanded="false"
+      aria-controls="site-nav"
+      data-open-label={site.ui.menu_open}
+      data-close-label={site.ui.menu_close}
+    >
+      <span class="menu-btn-text">{site.ui.menu_open}</span>
+      <span class="menu-btn-icon" aria-hidden="true"><span></span><span></span></span>
+    </button>
+
+    <nav id="site-nav" class="panel" aria-label={site.ui.nav_label}>
+      <ul class="list">
+        {
+          site.nav.map((item, i) => (
+            <li>
+              <a href={item.href} class="item" aria-current={isCurrent(item.href, path) ? 'page' : undefined}>
+                <span class="item-idx idx" aria-hidden="true">{pad(i + 1)}</span>
+                <span class="item-label">{item.label}</span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+      <div class="panel-foot">
+        <a class="label ulink" href={`mailto:${site.email}`}>{site.email}</a>
+        <p class="label muted">{site.location}</p>
+      </div>
+    </nav>
+  </div>
+  <div class="grad-rule" aria-hidden="true"></div>
 </div>
+
+<style>
+  .bar {
+    position: fixed;
+    inset: 0 0 auto 0;
+    z-index: 50;
+    background: none;
+  }
+  /* blur lives on a pseudo-element: backdrop-filter on .bar itself would
+     become the containing block for the fixed mobile overlay */
+  .bar::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: rgb(19 6 26 / 0.9);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+  .bar-inner {
+    height: var(--nav-h);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+  }
+  .brand {
+    display: block;
+    width: 58px;
+    padding: 6px 0;
+    position: relative;
+    z-index: 2;
+  }
+  .grad-rule {
+    height: 1px;
+  }
+
+  /* desktop list */
+  .list {
+    display: flex;
+    gap: clamp(18px, 2.4vw, 40px);
+  }
+  .item {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 7px;
+    font-size: 12px;
+    font-weight: 580;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 8px 0;
+    background-image: var(--wdm-gradient-x);
+    background-size: 0 2px;
+    background-position: 0 calc(100% - 2px);
+    background-repeat: no-repeat;
+    transition: background-size 0.3s var(--ease);
+  }
+  .item-idx {
+    font-size: 10px;
+    color: var(--muted-on-ink);
+  }
+  .item:hover,
+  .item[aria-current='page'] {
+    background-size: 100% 2px;
+  }
+  .panel-foot,
+  .menu-btn {
+    display: none;
+  }
+
+  /* ---------- mobile: full-screen overlay ---------- */
+  @media (max-width: 859.98px) {
+    .menu-btn {
+      position: relative;
+      z-index: 2;
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      min-height: 44px;
+      padding: 0 4px 0 12px;
+      margin-right: -4px;
+      background: none;
+      border: 0;
+      color: var(--wdm-paper);
+      font: inherit;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      cursor: pointer;
+    }
+    .menu-btn-icon {
+      position: relative;
+      width: 22px;
+      height: 10px;
+    }
+    .menu-btn-icon span {
+      position: absolute;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: var(--wdm-gradient-x);
+      transition: transform 0.3s var(--ease), top 0.3s var(--ease);
+    }
+    .menu-btn-icon span:first-child {
+      top: 0;
+    }
+    .menu-btn-icon span:last-child {
+      top: 8px;
+    }
+    [data-open] .menu-btn-icon span:first-child {
+      top: 4px;
+      transform: rotate(45deg);
+    }
+    [data-open] .menu-btn-icon span:last-child {
+      top: 4px;
+      transform: rotate(-45deg);
+    }
+
+    .panel {
+      position: fixed;
+      inset: 0;
+      z-index: 1;
+      display: none;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: calc(var(--nav-h) + 28px) var(--margin) calc(28px + env(safe-area-inset-bottom));
+      background: var(--wdm-ink);
+      overflow-y: auto;
+    }
+    [data-open] .panel {
+      display: flex;
+    }
+    .list {
+      flex-direction: column;
+      gap: 0;
+    }
+    .list li {
+      border-top: 1px solid rgb(253 252 248 / 0.18);
+    }
+    .item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 10px 0 4px;
+      font-family: var(--display);
+      font-weight: 400;
+      font-size: clamp(48px, 14.5vw, 104px);
+      line-height: 0.9;
+      letter-spacing: -0.01em;
+      background: none;
+    }
+    .item-idx {
+      font-family: var(--body);
+      padding-top: 0.5em;
+      font-size: 11px;
+      min-width: 2ch;
+    }
+    .item[aria-current='page'] .item-label {
+      background: var(--wdm-gradient);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+    .panel-foot {
+      display: grid;
+      gap: 8px;
+      padding-top: 28px;
+    }
+    @media (prefers-reduced-motion: no-preference) {
+      [data-open] .list li {
+        animation: menu-in 0.5s var(--ease) both;
+      }
+      [data-open] .list li:nth-child(2) { animation-delay: 0.04s; }
+      [data-open] .list li:nth-child(3) { animation-delay: 0.08s; }
+      [data-open] .list li:nth-child(4) { animation-delay: 0.12s; }
+      [data-open] .list li:nth-child(5) { animation-delay: 0.16s; }
+    }
+  }
+  @keyframes menu-in {
+    from {
+      opacity: 0;
+      transform: translateY(24px);
+    }
+  }
+</style>
+
+<script>
+  const root = document.querySelector<HTMLElement>('[data-nav]');
+  const btn = root?.querySelector<HTMLButtonElement>('.menu-btn');
+  const panel = document.getElementById('site-nav');
+  const text = btn?.querySelector('.menu-btn-text');
+  const mq = window.matchMedia('(max-width: 859.98px)');
+
+  if (root && btn && panel && text) {
+    const focusables = () => [btn, ...panel.querySelectorAll<HTMLElement>('a[href]')];
+
+    const setOpen = (open: boolean, restoreFocus = true) => {
+      root.toggleAttribute('data-open', open);
+      btn.setAttribute('aria-expanded', String(open));
+      text.textContent = (open ? btn.dataset.closeLabel : btn.dataset.openLabel) ?? '';
+      document.documentElement.style.overflow = open ? 'hidden' : '';
+      if (open) panel.querySelector<HTMLElement>('a[href]')?.focus();
+      else if (restoreFocus) btn.focus();
+    };
+
+    btn.addEventListener('click', () => setOpen(!root.hasAttribute('data-open')));
+
+    document.addEventListener('keydown', (e) => {
+      if (!root.hasAttribute('data-open')) return;
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        setOpen(false);
+      } else if (e.key === 'Tab') {
+        const els = focusables();
+        const first = els[0];
+        const last = els[els.length - 1];
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
+    });
+
+    mq.addEventListener('change', () => {
+      if (!mq.matches && root.hasAttribute('data-open')) setOpen(false, false);
+    });
+  }
+</script>
