@@ -19,6 +19,7 @@ for (const d of directions) {
   console.log(`${mark} ${d.branch.padEnd(16)} ${d.pitch}${status}`);
 }
 console.log('\nTo view a direction:');
-for (const d of directions) console.log(`  git switch ${d.branch} && npm run dev`);
-console.log('\nThen open http://localhost:4321  (back to baseline: git switch main)');
+for (const d of directions) console.log(`  git switch ${d.branch} && npm install && npm run dev`);
+console.log('\n(npm install is needed after each switch: every direction ships its own font packages.)');
+console.log('Then open http://localhost:4321  (back to baseline: git switch main)');
 console.log('Screenshots per branch: npm run screenshots → screenshots/<branch>/\n');

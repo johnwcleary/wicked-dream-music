@@ -4,7 +4,7 @@ Three complete directions, each on its own branch cut from `main`. None are merg
 
 ```bash
 npm run audition                      # list directions + switch commands
-git switch design/signal && npm run dev
+git switch design/signal && npm install && npm run dev
 ```
 
 Lighthouse figures are the **lowest score across all six routes** (`/`, `/about`, `/services`, `/work`, `/contact`, `/404`). They were run one branch at a time against `astro preview` with `npm run lighthouse`: mobile uses Lighthouse's default simulated throttling (Moto G class), desktop uses the desktop preset. Per-route numbers are in `lighthouse/<branch>.json` (local, gitignored).

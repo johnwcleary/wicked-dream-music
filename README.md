@@ -15,7 +15,7 @@ npm run dev          # http://localhost:4321
 
 ```bash
 npm run audition     # lists the directions and how to switch
-git switch design/signal && npm run dev
+git switch design/signal && npm install && npm run dev
 ```
 
 ## Scripts
