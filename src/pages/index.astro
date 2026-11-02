@@ -3,11 +3,10 @@ import { Image } from 'astro:assets';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Logo from '../components/Logo.astro';
 import Lines from '../components/Lines.astro';
-import PhotoField from '../components/PhotoField.astro';
+import WordField from '../components/WordField.astro';
 import SectionHead from '../components/SectionHead.astro';
 import ServiceAccordion from '../components/ServiceAccordion.astro';
 import WorkAccordion from '../components/WorkAccordion.astro';
-import ContactForm from '../components/ContactForm.astro';
 import { getPage, getServices, getSite, getWork, pad, paragraphs, splitHeadline, toSection } from '../lib/content';
 
 const site = await getSite();
@@ -55,10 +54,6 @@ const quote = firstParas[firstParas.length - 1];
       )
     }
     <div class="wrap grid12 hero-grid">
-      <p class="hero-eyebrow label">
-        <span><span class="label-muted" aria-hidden="true">{pad(0)} —</span> {page.eyebrow}</span>
-        <span class="hero-count" aria-hidden="true" data-count></span>
-      </p>
       <div class="hero-logo">
         <Logo label={site.name} class="hero-logo-svg" />
       </div>
@@ -77,86 +72,67 @@ const quote = firstParas[firstParas.length - 1];
         <p class="hero-strap label label-muted">{page.strapline}</p>
         {
           video && (
-            <div class="hero-player">
-              <span class="hero-credit label" aria-hidden="true">
-                <span class="hero-eq">
-                  <i />
-                  <i />
-                  <i />
-                </span>
-                {video.title}
-              </span>
-              <button
-                type="button"
-                class="hero-toggle label"
-                data-hero-toggle
-                data-play={site.ui.play_video}
-                data-pause={site.ui.pause_video}
-                hidden
-              >
-                <span class="hero-toggle-icon" aria-hidden="true" />
-                <span class="hero-toggle-text">{site.ui.pause_video}</span>
-              </button>
-            </div>
+            <button
+              type="button"
+              class="hero-credit label"
+              data-hero-toggle
+              data-play={`${site.ui.play_video}: ${video.title}`}
+              data-pause={`${site.ui.pause_video}: ${video.title}`}
+              aria-label={`${site.ui.pause_video}: ${video.title}`}
+            >
+              {video.title}
+            </button>
           )
         }
       </div>
     </div>
   </section>
 
-  <PhotoField items={work} />
+  <!-- Artists. Ideas. Sound. Culture. — with the four plates set into the line -->
+  <WordField words={site.ticker} items={work} />
 
-  <div class="tick-sec wrap">
-    <p class="ticker display">
-      {
-        site.ticker.map((word, i) => (
-          <span class={`tw tw-${i + 1}`}>
-            <span class="tw-in" data-reveal style={`--i: ${i}`}>
-              <span class="tw-no label" aria-hidden="true">{pad(i + 1)}</span>
-              {word}{' '}
-            </span>
-          </span>
-        ))
-      }
-    </p>
-  </div>
-
-  <!-- 01 — About -->
-  <section id="about" class="sec sec-about wrap" aria-label={about.title}>
-    {
-      chapters.map((c, i) => (
-        <div class="chap grid12">
-          <span class="chap-rule" data-reveal="rule" aria-hidden="true" />
-          <p class="chap-no label" aria-hidden="true" data-reveal>
-            {pad(1)}.{i + 1}
-          </p>
-          <Lines as="h2" class="chap-title display d-sm" lines={splitHeadline(c.heading)} />
-          <div class="chap-body" data-reveal style="--i: 2">
-            {paragraphs(c.body).map((p) => (
-              <p>{p}</p>
-            ))}
-          </div>
-        </div>
-      ))
-    }
-    {
-      quote && (
-        <figure class="pull grid12" aria-hidden="true">
-          <blockquote class="pull-q display" data-reveal="mark">
-            <p>
-              <span class="pull-fill">“{quote}”</span>
-            </p>
-          </blockquote>
-          <figcaption class="pull-cap label label-muted">— {site.name}</figcaption>
-        </figure>
-      )
-    }
+  <!-- 01 — Services -->
+  <section id="services" class="sec wrap" aria-labelledby="services-title">
+    <SectionHead id="services-title" title={servicesPage.headline} count={services.length} kicker={servicesPage.lede} number={1} />
+    <ServiceAccordion items={services} />
   </section>
 
-  <!-- 02 — Services -->
-  <section id="services" class="sec wrap" aria-labelledby="services-title">
-    <SectionHead id="services-title" title={servicesPage.headline} count={services.length} kicker={servicesPage.lede} number={2} />
-    <ServiceAccordion items={services} />
+  <!-- 02 — About: a dark band to break the page up -->
+  <section id="about" class="band band-ink" aria-labelledby="about-label">
+    <div class="wrap">
+      <p id="about-label" class="band-label label" data-reveal>
+        <span aria-hidden="true">{pad(2)} —</span> {about.title}
+      </p>
+      <div class="chaps grid12">
+        {
+          chapters.map((c, i) => (
+            <article class={`chap chap-${i + 1}`} data-reveal style={`--i: ${i + 1}`}>
+              <p class="chap-no label" aria-hidden="true">
+                {pad(2)}.{i + 1}
+              </p>
+              <Lines as="h2" class="chap-title display d-md" lines={splitHeadline(c.heading)} i={i + 1} />
+              <div class="chap-body">
+                {paragraphs(c.body).map((p) => (
+                  <p>{p}</p>
+                ))}
+              </div>
+            </article>
+          ))
+        }
+      </div>
+      {
+        quote && (
+          <figure class="pull" aria-hidden="true">
+            <blockquote class="pull-q display" data-reveal="mark">
+              <p>
+                <span class="pull-fill">“{quote}”</span>
+              </p>
+            </blockquote>
+            <figcaption class="pull-cap label">— {site.name}</figcaption>
+          </figure>
+        )
+      }
+    </div>
   </section>
 
   <!-- 03 — Selected work -->
@@ -166,22 +142,19 @@ const quote = firstParas[firstParas.length - 1];
     {workPage.footnote && <p class="sec-foot label label-muted">{workPage.footnote}</p>}
   </section>
 
-  <!-- 04 — Contact -->
-  <section id="contact" class="sec wrap" aria-labelledby="contact-title">
-    <SectionHead id="contact-title" title={contact.headline} kicker={contact.lede} number={4} />
-    <div class="grid12 enquire">
-      <div class="aside" data-reveal>
-        <h3 class="display d-sm aside-title">{contact.intro_heading}</h3>
-        <p class="aside-intro">{contact.intro}</p>
-        <div class="aside-mail">
-          <p class="label label-muted">{contact.email_label}</p>
-          <a class="mail" href={`mailto:${site.email}`}>{site.email}</a>
-          <p class="label label-muted">{site.location}</p>
-        </div>
-      </div>
-      <div class="form-col" data-reveal style="--i: 2">
-        <ContactForm />
-      </div>
+  <!-- 04 — Contact: one big email call to action -->
+  <section id="contact" class="band band-lav" aria-labelledby="contact-title">
+    <div class="wrap grid12 cta">
+      <p class="band-label label cta-label" data-reveal>
+        <span aria-hidden="true">{pad(4)} —</span> {contact.intro_heading}
+      </p>
+      <Lines as="h2" id="contact-title" class="cta-title display d-lg" lines={splitHeadline(contact.headline)} />
+      <p class="cta-lede body-lg" data-reveal style="--i: 2">{contact.lede} {contact.intro}</p>
+      <a class="cta-mail display" href={`mailto:${site.email}`} data-reveal style="--i: 3">
+        <span class="cta-mail-text">{site.email.split('@')[0]}@<wbr />{site.email.split('@')[1]}</span>
+        <span class="cta-mail-arrow" aria-hidden="true">↗</span>
+      </a>
+      <p class="cta-loc label" data-reveal style="--i: 4">{site.location}</p>
     </div>
   </section>
 </BaseLayout>
@@ -249,24 +222,6 @@ const quote = firstParas[firstParas.length - 1];
     row-gap: 1.5rem;
     align-items: end;
     width: 100%;
-  }
-  .hero-eyebrow {
-    grid-column: 1 / -1;
-    align-self: start;
-    display: flex;
-    justify-content: space-between;
-    gap: 1rem;
-    margin: 0 0 auto;
-    text-shadow: 0 1px 12px rgb(19 6 26 / 0.6);
-  }
-  .hero.has-video .hero-eyebrow {
-    margin-bottom: clamp(1.5rem, 6svh, 3rem);
-  }
-  .hero-count {
-    display: none;
-  }
-  :global(html.counting) .hero-count {
-    display: inline;
   }
   .hero-logo {
     grid-column: 1 / span 7;
@@ -345,64 +300,19 @@ const quote = firstParas[firstParas.length - 1];
   .hero-strap {
     margin: 0;
   }
-  .hero-player {
-    display: flex;
-    align-items: center;
-    gap: 1.25rem;
-  }
+  /* The credit doubles as a quiet pause/play control for the loop. */
   .hero-credit {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.6rem;
+    padding: 0.35rem 0;
+    border: 0;
+    background: none;
     color: var(--hero-soft);
-  }
-  /* Tiny level meter: moves only while the loop plays. */
-  .hero-eq {
-    display: inline-flex;
-    align-items: flex-end;
-    gap: 2px;
-    height: 0.75rem;
-  }
-  .hero-eq i {
-    width: 2px;
-    height: 35%;
-    background: var(--wdm-lavender);
-  }
-  .hero-toggle {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.45rem 0.8rem;
-    border: 1px solid rgb(253 252 248 / 0.4);
-    border-radius: 999px;
-    background: rgb(19 6 26 / 0.35);
-    color: var(--paper);
     cursor: pointer;
-    transition: border-color 0.3s;
   }
-  .hero-toggle[hidden] {
-    display: none;
-  }
-  .hero-toggle:hover {
-    border-color: var(--paper);
-  }
-  .hero-toggle-icon {
-    width: 0.6rem;
-    height: 0.7rem;
-    border-inline: 2px solid currentColor;
-  }
-  .hero-toggle[data-state='paused'] .hero-toggle-icon {
-    width: 0;
-    height: 0;
-    border-style: solid;
-    border-width: 0.35rem 0 0.35rem 0.6rem;
-    border-color: transparent transparent transparent currentColor;
+  .hero-credit:hover {
+    color: var(--paper);
   }
 
   @media (min-width: 900px) {
-    .hero.has-video .hero-eyebrow {
-      margin-bottom: clamp(6rem, 22svh, 16rem);
-    }
     .hero-grid {
       row-gap: 2rem;
     }
@@ -415,23 +325,6 @@ const quote = firstParas[firstParas.length - 1];
     }
     .hero-title {
       font-size: clamp(2.75rem, 4.6vw, 5.25rem);
-    }
-  }
-
-  @media (prefers-reduced-motion: no-preference) {
-    .hero.is-playing .hero-eq i {
-      animation: eq 0.9s ease-in-out infinite alternate;
-    }
-    .hero.is-playing .hero-eq i:nth-child(2) {
-      animation-duration: 0.6s;
-    }
-    .hero.is-playing .hero-eq i:nth-child(3) {
-      animation-duration: 0.75s;
-    }
-    @keyframes eq {
-      to {
-        height: 100%;
-      }
     }
   }
 
@@ -464,63 +357,6 @@ const quote = firstParas[firstParas.length - 1];
     }
   }
 
-  /* ---------- Ticker: a staircase that drifts into line ---------- */
-  .tick-sec {
-    padding-block: clamp(2rem, 6vw, 6rem) clamp(4rem, 9vw, 8rem);
-    overflow-x: clip;
-  }
-  .ticker {
-    margin: 0;
-    font-size: clamp(3.25rem, 10.5vw, 11rem);
-    line-height: 0.86;
-  }
-  .tw {
-    display: block;
-    width: max-content;
-    max-width: 100%;
-  }
-  .tw-in {
-    display: inline-block;
-  }
-  .tw-no {
-    display: inline-block;
-    vertical-align: top;
-    margin-right: 0.5rem;
-    margin-top: 0.35em;
-    font-size: 0.75rem;
-    letter-spacing: 0;
-    color: var(--muted);
-  }
-  .tw-2 { margin-left: 12%; }
-  .tw-3 { margin-left: 30%; }
-  .tw-4 { margin-left: 8%; }
-  @media (min-width: 768px) {
-    .tw-2 { margin-left: 25%; }
-    .tw-3 { margin-left: 50%; }
-    .tw-4 { margin-left: 33.333%; }
-  }
-  @supports (animation-timeline: view()) {
-    @media (prefers-reduced-motion: no-preference) {
-      .tw {
-        animation: tw-drift linear both;
-        animation-timeline: view();
-        animation-range: entry 0% cover 55%;
-      }
-      .tw-1 { --from: -14vw; }
-      .tw-2 { --from: 18vw; }
-      .tw-3 { --from: -22vw; }
-      .tw-4 { --from: 12vw; }
-      @keyframes tw-drift {
-        from {
-          translate: var(--from, 0) 0;
-        }
-        to {
-          translate: 0 0;
-        }
-      }
-    }
-  }
-
   /* ---------- Sections ---------- */
   .sec {
     padding-block: clamp(3rem, 7vw, 6rem);
@@ -531,172 +367,189 @@ const quote = firstParas[firstParas.length - 1];
     max-width: 52ch;
   }
 
-  /* About */
-  .sec-about {
-    padding-top: 0;
+  /* The contact band runs straight into the footer. */
+  :global(.site-footer) {
+    margin-top: 0;
+  }
+
+  /* ---------- Full-bleed bands that break up the paper ---------- */
+  .band {
+    padding-block: clamp(4rem, 9vw, 8rem);
+    scroll-margin-top: 4rem;
+  }
+  .band-label {
+    margin: 0 0 clamp(2.5rem, 6vw, 5rem);
+  }
+
+  /* About — ink band, the two chapters side by side, the quote highlighted. */
+  .band-ink {
+    --soft: rgb(253 252 248 / 0.82);
+    background: var(--ink);
+    color: var(--paper);
+  }
+  .band-ink :global(:focus-visible) {
+    outline-color: var(--paper);
+  }
+  .band-ink .band-label,
+  .chap-no {
+    color: var(--wdm-lavender);
+  }
+  .chaps {
+    row-gap: clamp(3rem, 7vw, 5rem);
   }
   .chap {
-    position: relative;
-    row-gap: 1rem;
-    align-items: start;
-    margin-top: clamp(3.5rem, 8vw, 7rem);
+    grid-column: 1 / -1;
     padding-top: 1rem;
-  }
-  .chap-rule {
-    position: absolute;
-    inset: 0 0 auto 0;
-    height: 1px;
-    background: var(--rule);
+    border-top: 1px solid rgb(253 252 248 / 0.22);
   }
   .chap-no {
-    grid-column: 1 / -1;
-    margin: 0;
+    margin: 0 0 1.25rem;
   }
-  .chap-title {
-    grid-column: 1 / -1;
-    margin: 0.5rem 0 0;
-  }
-  .chap-body {
-    grid-column: 1 / -1;
-    max-width: 68ch;
+  .chap :global(.chap-title) {
+    margin: 0 0 1.5rem;
   }
   .chap-body p {
-    margin: 0 0 1.1em;
-    font-size: clamp(1.125rem, 1.45vw, 1.375rem);
+    margin: 0 0 1em;
+    max-width: 40ch;
+    color: var(--soft);
+    font-size: clamp(1.125rem, 1.4vw, 1.3125rem);
     line-height: 1.5;
     letter-spacing: -0.006em;
   }
   .pull {
-    margin: clamp(5rem, 11vw, 10rem) 0 clamp(1rem, 3vw, 2rem);
-    row-gap: 1.25rem;
+    margin: clamp(5rem, 11vw, 9rem) 0 0;
   }
   .pull-q {
-    grid-column: 1 / -1;
     margin: 0;
   }
   .pull-q p {
     margin: 0;
-    font-size: clamp(2rem, 4.6vw, 4.75rem);
-    line-height: 0.98;
+    font-size: clamp(2rem, 4.8vw, 5rem);
+    line-height: 1.12;
     letter-spacing: -0.03em;
     text-indent: -0.4em;
   }
   .pull-cap {
-    grid-column: 1 / -1;
+    margin-top: 1.5rem;
+    color: var(--wdm-lavender);
   }
-  /* The quote gets a highlighter stroke in the brand gradient, drawn in as it arrives. */
+  /* Highlighter: each line sits on a lavender→pink block with ink type,
+     drawn in left to right as the quote arrives. */
   .pull-fill {
+    color: var(--ink);
     background-image: linear-gradient(90deg, var(--wdm-lavender), var(--wdm-pink));
     background-repeat: no-repeat;
-    background-position: 0 92%;
-    background-size: 100% 0.44em;
+    background-size: 100% 100%;
     -webkit-box-decoration-break: clone;
     box-decoration-break: clone;
-    padding-inline: 0.06em;
+    padding: 0 0.12em;
   }
   @media (prefers-reduced-motion: no-preference) {
     :global(html.js) .pull-fill {
-      background-size: 0% 0.44em;
-      transition: background-size 1.6s var(--ease-out) 0.15s;
+      color: var(--paper);
+      background-size: 0% 100%;
+      transition:
+        background-size 1.5s var(--ease-out) 0.1s,
+        color 0.9s var(--ease-out) 0.5s;
     }
     :global(html.js) .is-in .pull-fill {
-      background-size: 100% 0.44em;
+      color: var(--ink);
+      background-size: 100% 100%;
     }
   }
 
-  /* Contact */
-  .enquire {
-    row-gap: 3rem;
+  /* Contact — lavender band, one giant email link. */
+  .band-lav {
+    --ink-soft: rgb(19 6 26 / 0.78); /* ~6:1 on lavender */
+    background: var(--wdm-lavender);
+    color: var(--ink);
   }
-  .aside {
+  .cta {
+    row-gap: 1.5rem;
+  }
+  .cta-label,
+  .cta-loc {
     grid-column: 1 / -1;
-    display: grid;
-    gap: 1.25rem;
-    align-content: start;
+    margin: 0;
+    color: var(--ink-soft);
   }
-  .aside-title {
+  .cta :global(.cta-title) {
+    grid-column: 1 / -1;
     margin: 0;
   }
-  .aside-intro {
-    margin: 0;
-    max-width: 36ch;
-    font-size: clamp(1.0625rem, 1.3vw, 1.25rem);
+  .cta-lede {
+    grid-column: 1 / -1;
+    margin: 0.5rem 0 0;
+    max-width: 44ch;
+    color: var(--ink-soft);
   }
-  .aside-mail {
-    display: grid;
-    gap: 0.4rem;
-    margin-top: 1rem;
-    padding-top: 1rem;
-    border-top: 1px solid var(--rule);
-  }
-  .aside-mail p {
-    margin: 0;
-  }
-  .mail {
+  .cta-mail {
+    grid-column: 1 / -1;
     justify-self: start;
-    font-size: clamp(1.125rem, 1.6vw, 1.5rem);
-    font-weight: 500;
-    letter-spacing: -0.015em;
-    text-decoration: underline;
-    text-decoration-thickness: 1px;
-    text-underline-offset: 0.2em;
-    overflow-wrap: anywhere;
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.25em;
+    margin-top: clamp(1.5rem, 4vw, 3rem);
+    flex-wrap: wrap;
+    max-width: 100%;
+    font-size: clamp(2rem, 8.4vw, 8.5rem);
+    line-height: 1.05;
   }
-  .mail:hover {
-    text-decoration-thickness: 2px;
+  .cta-mail-text {
+    background-image: linear-gradient(currentColor, currentColor);
+    background-size: 100% 0.06em;
+    background-position: 0 100%;
+    background-repeat: no-repeat;
+    padding-bottom: 0.06em;
+    transition: background-size 0.5s var(--ease-out);
   }
-  .form-col {
-    grid-column: 1 / -1;
+  .cta-mail:hover .cta-mail-text {
+    background-size: 100% 0.12em;
+  }
+  .cta-mail-arrow {
+    font-size: 0.6em;
+    transition: transform 0.5s var(--ease-out);
+  }
+  .cta-mail:hover .cta-mail-arrow {
+    transform: translate(0.12em, -0.12em);
+  }
+  .cta-loc {
+    margin-top: 0.5rem;
   }
 
-  @media (min-width: 768px) {
-    .chap-no {
-      grid-column: 1 / span 1;
-      margin-top: 0.4rem;
+  @media (min-width: 900px) {
+    .chap {
+      grid-column: span 6;
     }
-    .chap-title {
-      grid-column: 2 / span 4;
-      margin: 0;
-    }
-    .chap-body {
-      grid-column: 6 / -1;
-      margin-top: 0.35rem;
+    .chap-2 {
+      margin-top: clamp(4rem, 10vw, 9rem);
     }
     .pull-q,
     .pull-cap {
-      grid-column: 2 / span 10;
+      max-width: 85%;
+      margin-left: auto;
     }
-  }
-  @media (min-width: 900px) {
-    .aside {
-      grid-column: 1 / span 4;
-      position: sticky;
-      top: 6rem;
-    }
-    .form-col {
-      grid-column: 6 / -1;
-      padding-top: 0.75rem;
+    .cta-lede {
+      grid-column: 1 / span 6;
     }
   }
 </style>
 
 <script>
   // Hero loop: starts after the page has loaded (so it never competes with the
-  // poster image), pauses off-screen, never autoplays under reduced motion,
-  // and has a visible pause/play control (WCAG 2.2.2).
+  // poster image), pauses off-screen and never autoplays under reduced motion.
+  // The title credit doubles as the pause/play control (WCAG 2.2.2).
   const hero = document.getElementById('top');
   const video = document.querySelector<HTMLVideoElement>('[data-hero-video]');
   const toggle = document.querySelector<HTMLButtonElement>('[data-hero-toggle]');
   if (hero && video && toggle) {
     const reduce = matchMedia('(prefers-reduced-motion: reduce)');
-    const label = toggle.querySelector('.hero-toggle-text');
-    let wanted = !reduce.matches; // user intent: play unless they paused (or prefer reduced motion)
+    let wanted = !reduce.matches; // play unless the visitor paused it or prefers reduced motion
     let visible = true;
 
     const render = () => {
       const playing = !video.paused;
-      toggle.dataset.state = playing ? 'playing' : 'paused';
-      if (label) label.textContent = (playing ? toggle.dataset.pause : toggle.dataset.play) ?? '';
+      toggle.setAttribute('aria-label', (playing ? toggle.dataset.pause : toggle.dataset.play) ?? '');
       hero.classList.toggle('is-playing', playing);
     };
     const sync = () => {
@@ -716,27 +569,9 @@ const quote = firstParas[firstParas.length - 1];
       sync();
     }).observe(hero);
 
-    toggle.hidden = false;
     render();
     const begin = () => ('requestIdleCallback' in window ? requestIdleCallback(sync, { timeout: 1500 }) : setTimeout(sync, 300));
     if (document.readyState === 'complete') begin();
     else addEventListener('load', begin, { once: true });
-  }
-
-  // Once-per-session load counter (the inline head script decides; this only counts).
-  const root = document.documentElement;
-  const out = document.querySelector<HTMLElement>('[data-count]');
-  if (root.classList.contains('intro') && out) {
-    root.classList.add('counting');
-    const start = performance.now();
-    const DURATION = 1100;
-    const step = (now: number) => {
-      const t = Math.min((now - start) / DURATION, 1);
-      const eased = 1 - Math.pow(1 - t, 3);
-      out.textContent = `${String(Math.round(eased * 100)).padStart(2, '0')}%`;
-      if (t < 1) requestAnimationFrame(step);
-      else setTimeout(() => root.classList.remove('counting', 'intro'), 450);
-    };
-    requestAnimationFrame(step);
   }
 </script>
