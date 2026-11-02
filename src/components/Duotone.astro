@@ -13,13 +13,17 @@ interface Props {
   position?: string;
 }
 const { src, alt, sizes, widths = [480, 800, 1200, 1600, 2200], eager = false, class: className, position } = Astro.props;
+// Never upscale: a small source (e.g. a 344px press shot) is served at its own size.
+const fit = widths.filter((w) => w <= src.width);
+const usable = fit.length ? fit : [src.width];
 ---
 
 <div class:list={['duo', className]}>
   <Image
     src={src}
     alt={alt}
-    widths={widths.filter((w) => w <= src.width)}
+    width={Math.max(...usable)}
+    widths={usable}
     sizes={sizes}
     format="webp"
     quality={72}
