@@ -28,3 +28,4 @@ screenshots/
 test-results/
 playwright-report/
 lighthouse/
+.claude/worktrees/
