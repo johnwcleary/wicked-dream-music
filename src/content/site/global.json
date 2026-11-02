@@ -6,8 +6,8 @@
   "email": "hello@wickeddreammusic.com",
   "nav": [
     { "label": "Home", "href": "/" },
-    { "label": "About", "href": "/about" },
     { "label": "Services", "href": "/services" },
+    { "label": "About", "href": "/about" },
     { "label": "Selected Work", "href": "/work" },
     { "label": "Contact", "href": "/contact" }
   ],
