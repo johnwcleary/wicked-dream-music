@@ -72,9 +72,12 @@ const mark = initials(site.name);
   :global(html.on-hero:not(.menu-open)) .site-header {
     color: var(--paper);
   }
+  /* Over the hero the header is transparent: the footage runs up to the top edge. */
   :global(html.on-hero:not(.menu-open)) .site-header::before {
-    background: var(--ink);
-    border-bottom-color: transparent;
+    background: transparent;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    border-bottom-color: rgb(253 252 248 / 0.16);
   }
   :global(html.on-hero:not(.menu-open)) .loc {
     color: rgb(253 252 248 / 0.62);
@@ -86,7 +89,7 @@ const mark = initials(site.name);
     display: flex;
     align-items: center;
     gap: var(--col-gap);
-    min-height: 4.25rem;
+    min-height: var(--header-h);
   }
   .mark {
     font-size: 1.375rem;

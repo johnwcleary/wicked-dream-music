@@ -15,9 +15,8 @@ const { items } = Astro.props;
 const withImages = items.filter((w) => w.data.image);
 
 // Layout recipe per slot: crop ratio, responsive sizes, parallax drift.
-// Slot 1 is the small square: it suits a square or low-resolution source.
 const slots = [
-  { ratio: '1 / 1', sizes: '(min-width: 768px) 24vw, 72vw', drift: '5%' },
+  { ratio: '4 / 5', sizes: '(min-width: 768px) 32vw, 72vw', drift: '5%', focus: '50% 22%' },
   { ratio: '3 / 2', sizes: '(min-width: 768px) 50vw, 82vw', drift: '8%' },
   { ratio: '4 / 5', sizes: '(min-width: 768px) 26vw, 56vw', drift: '4%' },
   { ratio: '16 / 10', sizes: '(min-width: 768px) 38vw, 76vw', drift: '7%' },
@@ -46,7 +45,7 @@ const slots = [
                   loading="lazy"
                   decoding="async"
                   class="bw parallax"
-                  style={`--drift: ${slot.drift}`}
+                  style={`--drift: ${slot.drift}; object-position: ${slot.focus ?? '50% 50%'}`}
                 />
               </span>
               <span class="plate-cap label" data-reveal>
@@ -128,7 +127,7 @@ const slots = [
 
   /* Mobile: a staggered column — widths and sides alternate. */
   .plate-1 {
-    grid-column: 1 / span 8;
+    grid-column: 1 / span 9;
   }
   .plate-2 {
     grid-column: 3 / -1;
@@ -145,8 +144,8 @@ const slots = [
       row-gap: 0;
     }
     .plate-1 {
-      grid-column: 1 / span 3;
-      grid-row: 1;
+      grid-column: 1 / span 4;
+      grid-row: 1 / span 2;
     }
     .plate-2 {
       grid-column: 6 / -1;

@@ -22,6 +22,7 @@
   --font-sans: "Instrument Sans Variable", "Helvetica Neue", Helvetica, Arial, sans-serif;
   --font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
 
+  --header-h: 4.25rem;
   --gutter: clamp(1rem, 2.2vw, 2rem);
   --col-gap: clamp(0.75rem, 1.6vw, 1.5rem);
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);

@@ -34,7 +34,7 @@ const { items } = Astro.props;
                 <VideoEmbed id={w.data.video.youtube_id} title={w.data.video.title} poster={img} />
               ) : (
                 img && (
-                  <figure class="wk-fig" style={`max-width: min(100%, ${img.width}px)`}>
+                  <figure class:list={['wk-fig', { 'is-portrait': img.height > img.width }]} style={`max-width: min(100%, ${img.width}px)`}>
                     <Image
                       src={img}
                       alt={w.data.image_alt ?? ''}
@@ -76,6 +76,10 @@ const { items } = Astro.props;
   }
   .wk-fig :global(img) {
     width: 100%;
+  }
+  /* Portrait plates stay a sensible height inside an open row. */
+  .wk-fig.is-portrait {
+    width: min(100%, 28rem);
   }
 
   @media (min-width: 900px) {
