@@ -52,64 +52,50 @@ Photos are grayscale and high contrast, multiplied over the gradient, with the b
 
 ## B — `design/archive` · Editorial / one-page archive
 
-*Revised after the first review: now a single page, with a standalone logo, expandable services and work, more scroll motion, the Miley portrait and an embedded video.*
+*Revised over several review rounds: a single page with a full-screen video hero, expandable services and work, and one email call to action.*
 
-**Pitch.** The company presented as one numbered archive on a single scroll. The gradient wordmark stands on its own on a calm paper ground, the four photos are catalogued plates, and services and work open in place as numbered indexes. The gradient appears only on the wordmark, on hovered plates and on the video play button.
+**Pitch.** The whole company on one fast scroll. It opens on a full-screen loop from the ALL MY GIRLS video with the lavender wordmark over it, then runs through services, about and work as numbered, expandable sections, and ends on a single big email link.
 
-**Type.** Instrument Sans Variable, using the width axis at ~88% for tight, slightly condensed statements that echo the logo (`@fontsource-variable/instrument-sans`, preloaded) + IBM Plex Mono 400 for labels, numbering and captions (`@fontsource/ibm-plex-mono`).
+**Type.** Instrument Sans Variable, using the width axis at ~88% for tight statements that echo the logo (`@fontsource-variable/instrument-sans`, preloaded) + IBM Plex Mono 400 for labels and numbering (`@fontsource/ibm-plex-mono`).
 
-**Gradient.**
-1. The hero wordmark, on paper with no frame. It fills bottom-up during a once-per-session 00%→100% counter. The counter is skipped under reduced motion and never hides content.
-2. The photo-field plates: hovering or focusing one washes it in the gradient.
-3. The round play button on the video.
+**Page order.**
+1. **Hero.** A full-screen video loop under a transparent header, with the solid lavender wordmark, headline, intro and a lavender "See what we do" button. The footer row lists the services and the video title.
+2. **Words and photos.** "Artists. Ideas. Sound. Culture." set huge, with the four work photos inline between the words. Each photo opens its work entry.
+3. **Services** (`#services`). Numbered rows that expand to show their bullets.
+4. **About** (`#about`). An ink band with the two chapters side by side, then the pull quote as full-height lavender-to-pink highlighter blocks.
+5. **Selected work** (`#work`). Expandable rows: the Miley portrait, the click-to-play YouTube video for International A&R, and the photos.
+6. **Contact** (`#contact`). A lavender band with the headline, intro and one giant `mailto:` link. **The form was removed at John's request.** Phase 2 needs no form backend for this direction.
 
-Every photo is greyscale at rest.
+**Gradient.** Used on the hovered photos, the video play button and the quote highlight. The wordmark is solid lavender, and lavender also fills the contact band and the main button.
 
-**Structure.** One page, in this order:
-1. Hero.
-2. Photo field (the four plates).
-3. Ticker staircase.
-4. About (`#about`).
-5. Services (`#services`).
-6. Work (`#work`).
-7. Contact (`#contact`).
-8. Footer.
+**Video hero.**
+- The loop starts after the page has loaded, pauses off-screen, and never autoplays for visitors with reduced motion turned on.
+- The title in the hero's footer row ("ALICE - ALL MY GIRLS") is also the pause/play button, so the WCAG 2.2.2 pause requirement is met without a visible control.
+- The poster is the LCP image.
 
-How it behaves:
-- The header nav and footer links scroll smoothly to each section.
-- A sticky header marks the section currently in view.
-- `/about`, `/services`, `/work` and `/contact` redirect to their sections (static meta-refresh pages; Phase 2 should replace these with real 301s in the host's redirect config).
-- Services and work are accordions built on native `<details>`, one open at a time, with an animated open where the browser supports it.
-- Clicking a photo-field plate scrolls to its work entry and opens it.
-
-**Media.**
-- Wrecking Ball uses the supplied Miley Cyrus portrait.
-- International A&R plays "ALICE - ALL MY GIRLS (VISUALIZER)" through a click-to-play facade: a local poster and a link until pressed, then a `youtube-nocookie.com` iframe. Nothing is requested from YouTube until someone presses play.
+**Old routes.** `/about`, `/services`, `/work` and `/contact` redirect to their sections (static meta-refresh pages; Phase 2 should replace these with real 301s in the host's redirect config).
 
 **Motion** (all off under reduced motion):
-- Display lines rise from behind a mask.
-- Hairlines draw across.
-- Plates unmask bottom-up and drift with parallax.
-- Ticker words slide into their staircase.
-- The pull quote fills from grey to ink as it scrolls past.
-- The hero wordmark lifts and recedes as you leave it.
+- Masked line reveals.
+- Photos unmask and drift with parallax.
+- The quote highlight draws in.
+- The video pushes in and darkens, and the wordmark lifts away as you leave the hero.
 
-Continuous effects use CSS scroll-driven animations (Chrome, Edge and recent Safari); browsers without them simply show the static layout.
-
-**Push further.** Real archival metadata per work entry (year, role, label). Higher-resolution Miley imagery, so it can take a larger plate. A short motion pass on the mobile menu.
+**Push further.** Short loops cut from the Imin film for the work rows. A nav order that matches the page order (Services now comes before About). Real metadata per work entry.
 
 **JS.** Vanilla only:
 - Mobile menu.
-- One IntersectionObserver for reveals, and another for the active nav item.
-- Deep-link opener for accordion items.
-- Video facade swap.
-- Once-per-session intro: `sessionStorage` wrapped in try/catch.
+- Scroll reveals.
+- Active-section nav marker.
+- Accordion deep links.
+- Video start/stop.
+- YouTube facade swap.
 
-**Branch-specific tooling.** This branch's `scripts/routes.ts` lists only `/` and `/404`, and the smoke test also checks that each old route lands on its section.
+**Branch-specific tooling.** `scripts/routes.ts` lists `/` and `/404`, and the smoke test also checks that each old route lands on its section.
 
 | Lighthouse (min, `/` and `/404`) | Perf | A11y | Best Pr. | SEO |
 |---|---|---|---|---|
-| Mobile | 100 | 100 | 100 | 100 |
+| Mobile | 99 | 100 | 100 | 100 |
 | Desktop | 100 | 100 | 100 | 100 |
 
 ---
@@ -207,7 +193,7 @@ The strip's progress bar uses CSS scroll-driven animation, no JS.
    - The source files in `src/assets/videos/` are gitignored. Confirm the client may use this footage.
    - The loops were cut with `ffmpeg-static`, a dev dependency.
 9. **Photos are Unsplash placeholders** and must be replaced with licensed or owned imagery before launch. Their pairing with work entries is arbitrary.
-10. **Contact form** has correct `name`s and `method="POST"` but no action. A comment marks the Phase 2 hookup (Cloudflare Pages Function or Netlify form).
+10. **Contact form** has correct `name`s and `method="POST"` but no action. A comment marks the Phase 2 hookup (Cloudflare Pages Function or Netlify form). Archive has no form; it uses a single mailto link.
 11. **Content the designers wished existed** (not added, to keep content identical across branches; worth deciding before Phase 2):
    - Per-work `year`/`role` fields.
    - A short label for home section headings (nav labels are reused).
