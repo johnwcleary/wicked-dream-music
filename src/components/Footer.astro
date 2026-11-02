@@ -1,27 +1,15 @@
 ---
 import Logo from './Logo.astro';
-import { getPage, getSite, isCurrent, pad } from '../lib/content';
+import { getSite, pad, toSection } from '../lib/content';
 
 const site = await getSite();
-const contact = await getPage('contact');
 const year = new Date().getFullYear();
-const onContact = isCurrent('/contact', Astro.url.pathname);
 ---
 
 <footer class="site-footer">
   <div class="wrap">
-    {
-      !onContact && (
-        <div class="sign grid12">
-          <p class="sign-kicker label label-muted">{contact.intro_heading}</p>
-          <a class="sign-mail display" href={`mailto:${site.email}`}>
-            {site.email}
-          </a>
-        </div>
-      )
-    }
     <div class="colophon grid12">
-      <a href="/" class="colo-logo" aria-label={site.name}>
+      <a href="/#top" class="colo-logo" aria-label={site.name}>
         <Logo label={site.name} class="h-auto w-full" />
       </a>
       <p class="colo-loc label">
@@ -33,7 +21,7 @@ const onContact = isCurrent('/contact', Astro.url.pathname);
           {
             site.nav.map((item, i) => (
               <li>
-                <a class="label" href={item.href}>
+                <a class="label" href={toSection(item.href)}>
                   <span class="label-muted" aria-hidden="true">{pad(i + 1)}</span> {item.label}
                 </a>
               </li>
@@ -49,30 +37,6 @@ const onContact = isCurrent('/contact', Astro.url.pathname);
 <style>
   .site-footer {
     margin-top: clamp(5rem, 12vw, 10rem);
-  }
-  .sign {
-    row-gap: 1rem;
-    padding-block: clamp(2rem, 4vw, 3rem) clamp(3rem, 7vw, 6rem);
-    border-top: 1px solid var(--rule-strong);
-  }
-  .sign-kicker {
-    grid-column: 1 / -1;
-  }
-  .sign-mail {
-    grid-column: 1 / -1;
-    justify-self: start;
-    font-size: clamp(1.75rem, 6.6vw, 7.5rem);
-    line-height: 0.95;
-    overflow-wrap: anywhere;
-    background-image: linear-gradient(currentColor, currentColor);
-    background-size: 0% 2px;
-    background-position: 0 100%;
-    background-repeat: no-repeat;
-    padding-bottom: 0.08em;
-    transition: background-size 0.5s var(--ease-out);
-  }
-  .sign-mail:hover {
-    background-size: 100% 2px;
   }
   .colophon {
     row-gap: 1.75rem;

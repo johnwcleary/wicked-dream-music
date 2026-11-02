@@ -1,0 +1,26 @@
+---
+/**
+ * Display text set as masked lines that rise into place on reveal.
+ * Lines are passed in (content already split); each gets its own mask.
+ */
+type Tag = 'h1' | 'h2' | 'h3' | 'p';
+interface Props {
+  lines: string[];
+  as?: Tag;
+  id?: string;
+  class?: string;
+  /** Stagger index shared with sibling reveals. */
+  i?: number;
+}
+const { lines, as: Tag = 'p', id, class: className, i = 0 } = Astro.props;
+---
+
+<Tag id={id} class={className} data-reveal="lines" style={`--i: ${i}`}>
+  {
+    lines.filter(Boolean).map((line, l) => (
+      <span class="ln" style={`--l: ${l}`}>
+        <span>{line}</span>
+      </span>
+    ))
+  }<slot />
+</Tag>

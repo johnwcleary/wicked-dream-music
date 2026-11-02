@@ -1,0 +1,87 @@
+---
+/**
+ * The four services as a numbered index. Each row opens (native <details>,
+ * one at a time) to reveal its sub-numbered bullets.
+ */
+import { anchor, pad, type Service } from '../lib/content';
+
+interface Props {
+  items: Service[];
+}
+const { items } = Astro.props;
+---
+
+<div class="acc-list">
+  {
+    items.map((s, i) => {
+      const no = pad(s.data.order);
+      return (
+        <details class="acc svc" name="services" id={`services-${anchor(s.id)}`} data-reveal style={`--i: ${i}`}>
+          <summary class="acc-sum grid12">
+            <span class="acc-num label" aria-hidden="true">{no}</span>
+            <h3 class="acc-title display d-sm">{s.data.title}</h3>
+            <span class="svc-sum">{s.data.summary}</span>
+            <span class="acc-icon" aria-hidden="true" />
+          </summary>
+          <div class="acc-body grid12">
+            <p class="svc-cat label label-muted">{s.data.category}</p>
+            <ul class="svc-list">
+              {s.data.bullets.map((b, j) => (
+                <li>
+                  <span class="label label-muted" aria-hidden="true">
+                    {no}.{j + 1}
+                  </span>
+                  <span>{b}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </details>
+      );
+    })
+  }
+</div>
+
+<style>
+  .svc-sum {
+    grid-column: 3 / span 9;
+    max-width: 34ch;
+    color: var(--muted);
+  }
+  .svc-cat {
+    grid-column: 3 / -1;
+    margin: 0 0 0.75rem;
+  }
+  .svc-list {
+    grid-column: 3 / -1;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-top: 1px solid var(--rule);
+  }
+  .svc-list li {
+    display: grid;
+    grid-template-columns: 3.25rem 1fr;
+    gap: 0.75rem;
+    align-items: baseline;
+    padding-block: 0.7rem;
+    border-bottom: 1px solid var(--rule);
+    font-size: clamp(1.0625rem, 1.3vw, 1.25rem);
+    letter-spacing: -0.01em;
+  }
+
+  @media (min-width: 900px) {
+    .svc-sum {
+      grid-column: 8 / span 4;
+      grid-row: 1;
+      max-width: 36ch;
+    }
+    .svc-cat {
+      grid-column: 2 / span 5;
+    }
+    .svc-list {
+      grid-column: 8 / -1;
+      grid-row: 1;
+    }
+  }
+</style>

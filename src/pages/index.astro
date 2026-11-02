@@ -1,57 +1,53 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Logo from '../components/Logo.astro';
+import Lines from '../components/Lines.astro';
 import PhotoField from '../components/PhotoField.astro';
 import SectionHead from '../components/SectionHead.astro';
-import ServiceIndex from '../components/ServiceIndex.astro';
-import WorkIndex from '../components/WorkIndex.astro';
-import { getPage, getServices, getSite, getWork, pad, splitHeadline } from '../lib/content';
+import ServiceAccordion from '../components/ServiceAccordion.astro';
+import WorkAccordion from '../components/WorkAccordion.astro';
+import ContactForm from '../components/ContactForm.astro';
+import { getPage, getServices, getSite, getWork, pad, paragraphs, splitHeadline, toSection } from '../lib/content';
 
 const site = await getSite();
 const page = await getPage('home');
+const about = await getPage('about');
 const servicesPage = await getPage('services');
 const workPage = await getPage('work');
+const contact = await getPage('contact');
 const services = await getServices();
 const work = await getWork();
 const [h1a, h1b] = splitHeadline(page.headline);
-const workNav = site.nav.find((n) => n.href === '/work');
+
+const chapters = about.sections ?? [];
+// Pull quote: the credentials line from the first chapter, repeated as a closing statement.
+const firstParas = chapters[0] ? paragraphs(chapters[0].body) : [];
+const quote = firstParas[firstParas.length - 1];
 ---
 
 <BaseLayout title={page.title} description={page.lede} intro>
-  <section class="hero wrap" aria-labelledby="hero-title">
+  <!-- 00 — Hero: the wordmark on its own -->
+  <section id="top" class="hero wrap" aria-labelledby="hero-title">
     <div class="grid12 hero-grid">
-      <p class="hero-eyebrow label"><span class="label-muted" aria-hidden="true">{pad(0)} —</span> {page.eyebrow}</p>
-      <h1 id="hero-title" class="hero-title display d-xl">
-        <span>{h1a}</span>
-        <span>{h1b}</span>
-      </h1>
-
-      <figure class="plate0">
-        <div class="plate0-ground">
-          <span class="tick tl" aria-hidden="true"></span>
-          <span class="tick tr" aria-hidden="true"></span>
-          <span class="tick bl" aria-hidden="true"></span>
-          <span class="tick br" aria-hidden="true"></span>
-          <Logo label={site.name} variant="gradient" id="hero-logo" class="plate0-logo" />
-        </div>
-        <figcaption class="plate0-cap label">
-          <span>[{pad(0)}]</span>
-          <span class="plate0-name">{site.name}</span>
-          <span class="plate0-count" aria-hidden="true" data-count></span>
-        </figcaption>
-      </figure>
-
+      <p class="hero-eyebrow label">
+        <span><span class="label-muted" aria-hidden="true">{pad(0)} —</span> {page.eyebrow}</span>
+        <span class="hero-count" aria-hidden="true" data-count></span>
+      </p>
+      <div class="hero-logo">
+        <Logo label={site.name} variant="gradient" id="hero-logo" class="hero-logo-svg" />
+      </div>
       <div class="hero-copy">
-        <p class="hero-lede statement">{page.lede}</p>
+        <Lines as="h1" id="hero-title" class="hero-title display" lines={[h1a, h1b]} i={2} />
+        <p class="hero-lede body-lg" data-reveal style="--i: 4">{page.lede}</p>
         {
           page.cta && (
-            <a class="hero-cta" href={page.cta.href}>
-              <span class="link-line">{page.cta.label}</span> <span aria-hidden="true">→</span>
+            <a class="hero-cta" href={toSection(page.cta.href)} data-reveal style="--i: 5">
+              <span class="link-line">{page.cta.label}</span> <span aria-hidden="true">↓</span>
             </a>
           )
         }
       </div>
-      <p class="hero-strap label label-muted">{page.strapline}</p>
+      <p class="hero-strap label label-muted" data-reveal style="--i: 6">{page.strapline}</p>
     </div>
   </section>
 
@@ -62,111 +58,120 @@ const workNav = site.nav.find((n) => n.href === '/work');
       {
         site.ticker.map((word, i) => (
           <span class={`tw tw-${i + 1}`}>
-            <span class="tw-no label" aria-hidden="true">{pad(i + 1)}</span>
-            {word}{' '}
+            <span class="tw-in" data-reveal style={`--i: ${i}`}>
+              <span class="tw-no label" aria-hidden="true">{pad(i + 1)}</span>
+              {word}{' '}
+            </span>
           </span>
         ))
       }
     </p>
   </div>
 
-  <section class="sec wrap" aria-labelledby="services-title">
-    <SectionHead id="services-title" title={servicesPage.headline} count={services.length} kicker={servicesPage.lede} />
-    <ServiceIndex items={services} />
+  <!-- 01 — About -->
+  <section id="about" class="sec wrap" aria-labelledby="about-title">
+    <SectionHead id="about-title" title={about.headline} kicker={about.eyebrow} number={1} />
+    <div class="grid12">
+      <p class="about-lede statement" data-reveal>{about.lede}</p>
+    </div>
     {
-      page.cta && (
-        <p class="sec-more">
-          <a class="label" href={page.cta.href}>
-            <span class="link-line">{page.cta.label}</span> <span aria-hidden="true">→</span>
-          </a>
-        </p>
+      chapters.map((c, i) => (
+        <div class="chap grid12">
+          <span class="chap-rule" data-reveal="rule" aria-hidden="true" />
+          <p class="chap-no label" aria-hidden="true" data-reveal>
+            {pad(1)}.{i + 1}
+          </p>
+          <Lines as="h3" class="chap-title display d-sm" lines={splitHeadline(c.heading)} />
+          <div class="chap-body" data-reveal style="--i: 2">
+            {paragraphs(c.body).map((p) => (
+              <p>{p}</p>
+            ))}
+          </div>
+        </div>
+      ))
+    }
+    {
+      quote && (
+        <figure class="pull grid12" aria-hidden="true">
+          <blockquote class="pull-q display">
+            <p>
+              <span class="pull-fill">“{quote}”</span>
+            </p>
+          </blockquote>
+          <figcaption class="pull-cap label label-muted">— {site.name}</figcaption>
+        </figure>
       )
     }
   </section>
 
-  <section class="sec wrap" aria-labelledby="work-title">
-    <SectionHead id="work-title" title={workPage.headline} count={work.length} kicker={workPage.lede} />
-    <WorkIndex items={work} />
-    <div class="sec-foot">
-      {workPage.footnote && <p class="label label-muted">{workPage.footnote}</p>}
-      {
-        workNav && (
-          <a class="label" href={workNav.href}>
-            <span class="link-line">{workNav.label}</span> <span aria-hidden="true">→</span>
-          </a>
-        )
-      }
+  <!-- 02 — Services -->
+  <section id="services" class="sec wrap" aria-labelledby="services-title">
+    <SectionHead id="services-title" title={servicesPage.headline} count={services.length} kicker={servicesPage.lede} number={2} />
+    <ServiceAccordion items={services} />
+  </section>
+
+  <!-- 03 — Selected work -->
+  <section id="work" class="sec wrap" aria-labelledby="work-title">
+    <SectionHead id="work-title" title={workPage.headline} count={work.length} kicker={workPage.lede} number={3} />
+    <WorkAccordion items={work} />
+    {workPage.footnote && <p class="sec-foot label label-muted">{workPage.footnote}</p>}
+  </section>
+
+  <!-- 04 — Contact -->
+  <section id="contact" class="sec wrap" aria-labelledby="contact-title">
+    <SectionHead id="contact-title" title={contact.headline} kicker={contact.lede} number={4} />
+    <div class="grid12 enquire">
+      <div class="aside" data-reveal>
+        <h3 class="display d-sm aside-title">{contact.intro_heading}</h3>
+        <p class="aside-intro">{contact.intro}</p>
+        <div class="aside-mail">
+          <p class="label label-muted">{contact.email_label}</p>
+          <a class="mail" href={`mailto:${site.email}`}>{site.email}</a>
+          <p class="label label-muted">{site.location}</p>
+        </div>
+      </div>
+      <div class="form-col" data-reveal style="--i: 2">
+        <ContactForm />
+      </div>
     </div>
   </section>
 </BaseLayout>
 
 <style>
+  /* ---------- Hero ---------- */
   .hero {
-    padding-top: clamp(1.5rem, 4vw, 3.5rem);
+    padding-top: clamp(1.25rem, 3vw, 2.5rem);
+    scroll-margin-top: 5rem;
   }
   .hero-grid {
     row-gap: 1.5rem;
-    align-items: start;
+    align-items: end;
   }
   .hero-eyebrow {
     grid-column: 1 / -1;
-  }
-  .hero-title {
-    grid-column: 1 / -1;
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
     margin: 0;
   }
-  .hero-title span {
-    display: block;
-  }
-
-  /* Plate 00 — the wordmark, catalogued like a photograph. */
-  .plate0 {
-    grid-column: 1 / -1;
-    margin: 0.75rem 0 0;
-  }
-  .plate0-ground {
-    position: relative;
-    display: grid;
-    place-items: center;
-    aspect-ratio: 4 / 3.1;
-    background: var(--wdm-ink);
-    color: rgb(253 252 248 / 0.09);
-  }
-  .plate0-ground :global(.plate0-logo) {
-    width: 62%;
-    height: auto;
-    overflow: visible;
-  }
-  .tick {
-    position: absolute;
-    width: 0.75rem;
-    height: 0.75rem;
-    border-color: rgb(253 252 248 / 0.45);
-    border-style: solid;
-    border-width: 0;
-  }
-  .tl { top: 0.9rem; left: 0.9rem; border-top-width: 1px; border-left-width: 1px; }
-  .tr { top: 0.9rem; right: 0.9rem; border-top-width: 1px; border-right-width: 1px; }
-  .bl { bottom: 0.9rem; left: 0.9rem; border-bottom-width: 1px; border-left-width: 1px; }
-  .br { bottom: 0.9rem; right: 0.9rem; border-bottom-width: 1px; border-right-width: 1px; }
-
-  .plate0-cap {
-    display: flex;
-    gap: 0.75rem;
-    margin-top: 0.6rem;
-  }
-  .plate0-name {
-    flex: 1;
-  }
-  .plate0-count {
+  .hero-count {
     display: none;
   }
-  :global(html.counting) .plate0-count {
+  :global(html.counting) .hero-count {
     display: inline;
   }
-
+  .hero-logo {
+    grid-column: 1 / -1;
+  }
+  .hero-logo :global(.hero-logo-svg) {
+    display: block;
+    width: 100%;
+    height: auto;
+    overflow: visible;
+    color: rgb(19 6 26 / 0.06); /* faint base the gradient "loads" over */
+  }
   /* One-time intro: the gradient fills the wordmark from the bottom up. */
-  :global(html.intro .plate0-logo .logo-fill) {
+  :global(html.intro .hero-logo-svg .logo-fill) {
     animation: logo-load 1.1s cubic-bezier(0.33, 1, 0.68, 1) both;
   }
   @keyframes logo-load {
@@ -177,17 +182,19 @@ const workNav = site.nav.find((n) => n.href === '/work');
       clip-path: inset(0 0 0 0);
     }
   }
-
   .hero-copy {
     grid-column: 1 / -1;
     display: grid;
     gap: 1.25rem;
     justify-items: start;
-    margin-top: 0.5rem;
+  }
+  .hero-title {
+    margin: 0;
+    font-size: clamp(2.6rem, 11vw, 3.5rem);
   }
   .hero-lede {
     margin: 0;
-    max-width: 22ch;
+    max-width: 32ch;
   }
   .hero-cta {
     font-size: 1.0625rem;
@@ -199,45 +206,53 @@ const workNav = site.nav.find((n) => n.href === '/work');
     transition: transform 0.4s var(--ease-out);
   }
   .hero-cta:hover span[aria-hidden] {
-    transform: translateX(0.3rem);
+    transform: translateY(0.25rem);
   }
   .hero-strap {
     grid-column: 1 / -1;
-    margin-top: 0.5rem;
+    margin: 0.5rem 0 0;
     padding-top: 0.75rem;
     border-top: 1px solid var(--rule);
   }
 
-  @media (min-width: 768px) {
+  @media (min-width: 900px) {
     .hero-grid {
       row-gap: 2rem;
     }
-    .plate0 {
-      grid-column: 6 / -1;
-      grid-row: 3 / span 2;
-      margin-top: 1rem;
-    }
-    .plate0-ground {
-      aspect-ratio: 16 / 10;
-    }
-    .plate0-ground :global(.plate0-logo) {
-      width: 54%;
+    .hero-logo {
+      grid-column: 1 / span 7;
     }
     .hero-copy {
-      grid-column: 1 / span 4;
-      grid-row: 3;
-      margin-top: 1rem;
+      grid-column: 9 / -1;
+      padding-bottom: 0.4rem;
     }
-    .hero-strap {
-      grid-column: 1 / span 4;
-      grid-row: 4;
-      align-self: end;
+    .hero-title {
+      font-size: clamp(2.75rem, 4.3vw, 5rem);
     }
   }
 
-  /* Ticker — a staircase statement, not a marquee. */
+  /* As the hero leaves, the wordmark lifts and recedes. */
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .hero-logo {
+        animation: hero-out linear both;
+        animation-timeline: view();
+        animation-range: exit 0% exit 100%;
+        transform-origin: 0 100%;
+      }
+      @keyframes hero-out {
+        to {
+          transform: translateY(-12%) scale(0.92);
+          opacity: 0.2;
+        }
+      }
+    }
+  }
+
+  /* ---------- Ticker: a staircase that drifts into line ---------- */
   .tick-sec {
     padding-block: clamp(2rem, 6vw, 6rem) clamp(4rem, 9vw, 8rem);
+    overflow-x: clip;
   }
   .ticker {
     margin: 0;
@@ -248,6 +263,9 @@ const workNav = site.nav.find((n) => n.href === '/work');
     display: block;
     width: max-content;
     max-width: 100%;
+  }
+  .tw-in {
+    display: inline-block;
   }
   .tw-no {
     display: inline-block;
@@ -261,34 +279,196 @@ const workNav = site.nav.find((n) => n.href === '/work');
   .tw-2 { margin-left: 12%; }
   .tw-3 { margin-left: 30%; }
   .tw-4 { margin-left: 8%; }
-
   @media (min-width: 768px) {
     .tw-2 { margin-left: 25%; }
     .tw-3 { margin-left: 50%; }
     .tw-4 { margin-left: 33.333%; }
   }
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .tw {
+        animation: tw-drift linear both;
+        animation-timeline: view();
+        animation-range: entry 0% cover 55%;
+      }
+      .tw-1 { --from: -14vw; }
+      .tw-2 { --from: 18vw; }
+      .tw-3 { --from: -22vw; }
+      .tw-4 { --from: 12vw; }
+      @keyframes tw-drift {
+        from {
+          translate: var(--from, 0) 0;
+        }
+        to {
+          translate: 0 0;
+        }
+      }
+    }
+  }
 
+  /* ---------- Sections ---------- */
   .sec {
     padding-block: clamp(3rem, 7vw, 6rem);
+    scroll-margin-top: 4rem;
   }
-  .sec-more,
   .sec-foot {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    gap: 1rem 2rem;
-    margin-top: 1.25rem;
-  }
-  .sec-more {
-    justify-content: flex-end;
-  }
-  .sec-more a,
-  .sec-foot a {
-    padding-block: 0.3rem;
-  }
-  .sec-foot p {
-    margin: 0;
+    margin: 1.25rem 0 0;
     max-width: 52ch;
+  }
+
+  /* About */
+  .about-lede {
+    grid-column: 1 / -1;
+    margin: 0;
+    max-width: 24ch;
+  }
+  .chap {
+    position: relative;
+    row-gap: 1rem;
+    align-items: start;
+    margin-top: clamp(3.5rem, 8vw, 7rem);
+    padding-top: 1rem;
+  }
+  .chap-rule {
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 1px;
+    background: var(--rule);
+  }
+  .chap-no {
+    grid-column: 1 / -1;
+    margin: 0;
+  }
+  .chap-title {
+    grid-column: 1 / -1;
+    margin: 0.5rem 0 0;
+  }
+  .chap-body {
+    grid-column: 1 / -1;
+    max-width: 68ch;
+  }
+  .chap-body p {
+    margin: 0 0 1.1em;
+    font-size: clamp(1.125rem, 1.45vw, 1.375rem);
+    line-height: 1.5;
+    letter-spacing: -0.006em;
+  }
+  .pull {
+    margin: clamp(5rem, 11vw, 10rem) 0 clamp(1rem, 3vw, 2rem);
+    row-gap: 1.25rem;
+  }
+  .pull-q {
+    grid-column: 1 / -1;
+    margin: 0;
+  }
+  .pull-q p {
+    margin: 0;
+    font-size: clamp(2rem, 4.6vw, 4.75rem);
+    line-height: 0.98;
+    letter-spacing: -0.03em;
+    text-indent: -0.4em;
+  }
+  .pull-cap {
+    grid-column: 1 / -1;
+  }
+  /* The quote "reads itself": each line fills from grey to ink as it scrolls through. */
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .pull-fill {
+        color: transparent;
+        background: linear-gradient(90deg, var(--ink) 50%, var(--muted) 50%) 100% 0 / 200% 100% no-repeat;
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-box-decoration-break: clone;
+        box-decoration-break: clone;
+        animation: pull-fill linear both;
+        animation-timeline: view();
+        animation-range: entry 30% cover 55%;
+      }
+      @keyframes pull-fill {
+        to {
+          background-position: 0 0;
+        }
+      }
+    }
+  }
+
+  /* Contact */
+  .enquire {
+    row-gap: 3rem;
+  }
+  .aside {
+    grid-column: 1 / -1;
+    display: grid;
+    gap: 1.25rem;
+    align-content: start;
+  }
+  .aside-title {
+    margin: 0;
+  }
+  .aside-intro {
+    margin: 0;
+    max-width: 36ch;
+    font-size: clamp(1.0625rem, 1.3vw, 1.25rem);
+  }
+  .aside-mail {
+    display: grid;
+    gap: 0.4rem;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--rule);
+  }
+  .aside-mail p {
+    margin: 0;
+  }
+  .mail {
+    justify-self: start;
+    font-size: clamp(1.125rem, 1.6vw, 1.5rem);
+    font-weight: 500;
+    letter-spacing: -0.015em;
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.2em;
+    overflow-wrap: anywhere;
+  }
+  .mail:hover {
+    text-decoration-thickness: 2px;
+  }
+  .form-col {
+    grid-column: 1 / -1;
+  }
+
+  @media (min-width: 768px) {
+    .about-lede {
+      grid-column: 2 / span 10;
+    }
+    .chap-no {
+      grid-column: 1 / span 1;
+      margin-top: 0.4rem;
+    }
+    .chap-title {
+      grid-column: 2 / span 4;
+      margin: 0;
+    }
+    .chap-body {
+      grid-column: 6 / -1;
+      margin-top: 0.35rem;
+    }
+    .pull-q,
+    .pull-cap {
+      grid-column: 2 / span 10;
+    }
+  }
+  @media (min-width: 900px) {
+    .aside {
+      grid-column: 1 / span 4;
+      position: sticky;
+      top: 6rem;
+    }
+    .form-col {
+      grid-column: 6 / -1;
+      padding-top: 0.75rem;
+    }
   }
 </style>
 

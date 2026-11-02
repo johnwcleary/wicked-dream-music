@@ -60,6 +60,39 @@ const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url).href;
       <slot />
     </main>
     <Footer />
+    <script>
+      // Scroll reveals: mark [data-reveal] elements as they enter the viewport.
+      const items = document.querySelectorAll<HTMLElement>('[data-reveal]');
+      if (matchMedia('(prefers-reduced-motion: reduce)').matches || !('IntersectionObserver' in window)) {
+        items.forEach((el) => el.classList.add('is-in'));
+      } else {
+        const io = new IntersectionObserver(
+          (entries) => {
+            for (const e of entries) {
+              if (!e.isIntersecting) continue;
+              e.target.classList.add('is-in');
+              io.unobserve(e.target);
+            }
+          },
+          { rootMargin: '0px 0px -8% 0px', threshold: 0.12 },
+        );
+        items.forEach((el) => io.observe(el));
+      }
+
+      // Deep links into the accordions (#services-…, #work-…) open their item first.
+      const openFor = (hash: string) => {
+        if (hash.length < 2) return;
+        const target = document.getElementById(decodeURIComponent(hash.slice(1)));
+        const details = target?.closest('details');
+        if (details && !details.open) details.open = true;
+      };
+      document.addEventListener('click', (e) => {
+        const a = (e.target as Element).closest<HTMLAnchorElement>('a[href*="#"]');
+        if (a && a.pathname === location.pathname) openFor(a.hash);
+      });
+      addEventListener('hashchange', () => openFor(location.hash));
+      openFor(location.hash);
+    </script>
   </body>
 </html>
 

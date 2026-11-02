@@ -1,0 +1,141 @@
+---
+/**
+ * Click-to-play YouTube embed. Until pressed it is just a local poster
+ * image and a link, so nothing loads from YouTube (no cookies, no third-party
+ * weight). With JS, pressing it swaps in a youtube-nocookie iframe; without
+ * JS the link opens the video on YouTube.
+ */
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+import { getSite } from '../lib/content';
+
+interface Props {
+  id: string;
+  title: string;
+  poster?: ImageMetadata;
+}
+const { id, title, poster } = Astro.props;
+const site = await getSite();
+const watch = `https://www.youtube.com/watch?v=${id}`;
+---
+
+<div class="video" data-video={id} data-title={title}>
+  <a class="video-play" href={watch} aria-label={`${site.ui.play_video}: ${title}`}>
+    {
+      poster && (
+        <Image
+          src={poster}
+          alt=""
+          widths={[480, 800, 1200, 1600].filter((w) => w <= poster.width)}
+          width={Math.min(1600, poster.width)}
+          quality={60}
+          sizes="(min-width: 900px) 58vw, 92vw"
+          loading="lazy"
+          decoding="async"
+          class="bw"
+        />
+      )
+    }
+    <span class="video-ui" aria-hidden="true">
+      <span class="video-btn"><span class="video-tri"></span></span>
+      <span class="video-meta label">
+        <span>{site.ui.play_video}</span>
+        <span class="video-title">{title}</span>
+      </span>
+    </span>
+  </a>
+</div>
+
+<style>
+  .video {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    background: var(--ink);
+    overflow: hidden;
+  }
+  .video-play {
+    position: absolute;
+    inset: 0;
+    display: block;
+    color: var(--paper);
+  }
+  .video-play :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.72;
+    transition:
+      opacity 0.5s var(--ease-out),
+      scale 0.9s var(--ease-out);
+  }
+  .video-play:hover :global(img),
+  .video-play:focus-visible :global(img) {
+    opacity: 0.55;
+    scale: 1.03;
+  }
+  .video-play:focus-visible {
+    outline: 2px solid var(--ink);
+    outline-offset: 3px;
+  }
+  .video-ui {
+    position: absolute;
+    inset: auto 0 0 0;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: clamp(0.9rem, 2vw, 1.5rem);
+    background: linear-gradient(transparent, rgb(19 6 26 / 0.75));
+  }
+  .video-btn {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: clamp(3rem, 5vw, 4rem);
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: var(--wdm-gradient);
+    transition: scale 0.5s var(--ease-out);
+  }
+  .video-play:hover .video-btn {
+    scale: 1.08;
+  }
+  .video-tri {
+    width: 0;
+    height: 0;
+    margin-left: 0.2rem;
+    border-style: solid;
+    border-width: 0.55rem 0 0.55rem 0.9rem;
+    border-color: transparent transparent transparent var(--ink);
+  }
+  .video-meta {
+    display: grid;
+    gap: 0.2rem;
+  }
+  .video-title {
+    color: rgb(253 252 248 / 0.8);
+  }
+  .video :global(iframe) {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+  }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-video]').forEach((box) => {
+    const link = box.querySelector<HTMLAnchorElement>('.video-play');
+    link?.addEventListener('click', (e) => {
+      e.preventDefault();
+      const frame = document.createElement('iframe');
+      frame.src = `https://www.youtube-nocookie.com/embed/${box.dataset.video}?autoplay=1&rel=0&modestbranding=1`;
+      frame.title = box.dataset.title ?? '';
+      frame.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
+      frame.allowFullscreen = true;
+      frame.referrerPolicy = 'strict-origin-when-cross-origin';
+      box.replaceChildren(frame);
+      frame.focus();
+    });
+  });
+</script>

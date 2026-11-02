@@ -1,14 +1,13 @@
 ---
-import { getSite, initials, isCurrent, pad } from '../lib/content';
+import { getSite, initials, pad, sectionId, toSection } from '../lib/content';
 
 const site = await getSite();
-const path = Astro.url.pathname;
 const mark = initials(site.name);
 ---
 
 <header class="site-header">
   <div class="bar wrap">
-    <a href="/" class="mark" aria-label={site.name}>
+    <a href="/#top" class="mark" aria-label={site.name}>
       <span aria-hidden="true">{mark}<span class="mark-c">©</span></span>
     </a>
     <p class="loc label">{site.location}</p>
@@ -22,7 +21,7 @@ const mark = initials(site.name);
           {
             site.nav.map((item, i) => (
               <li>
-                <a href={item.href} aria-current={isCurrent(item.href, path) ? 'page' : undefined}>
+                <a href={toSection(item.href)} data-section={sectionId(item.href)}>
                   <span class="menu-num label" aria-hidden="true">{pad(i + 1)}</span>
                   <span class="menu-text">{item.label}</span>
                 </a>
@@ -41,8 +40,25 @@ const mark = initials(site.name);
 
 <style>
   .site-header {
-    position: relative;
+    position: sticky;
+    top: 0;
     z-index: 50;
+  }
+  /* Frosted ground on a pseudo-element: a backdrop-filter on the header itself
+     would trap the fixed mobile menu inside it. */
+  .site-header::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: rgb(253 252 248 / 0.97);
+    backdrop-filter: saturate(1.4) blur(10px);
+    -webkit-backdrop-filter: saturate(1.4) blur(10px);
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.4s;
+  }
+  :global(html.scrolled) .site-header::before {
+    border-bottom-color: var(--rule);
   }
   .bar {
     display: flex;
@@ -117,11 +133,16 @@ const mark = initials(site.name);
   .menu-num {
     display: none;
   }
-  .menu-list a[aria-current='page']::before {
+  .menu-list a::before {
     content: '';
     width: 0.4rem;
     height: 0.4rem;
     background: var(--ink);
+    transform: scale(0);
+    transition: transform 0.35s var(--ease-out);
+  }
+  .menu-list a[aria-current]::before {
+    transform: none;
   }
   .menu-meta {
     display: none;
@@ -195,10 +216,10 @@ const mark = initials(site.name);
       min-width: 1.75rem;
       color: var(--muted);
     }
-    .menu.is-open .menu-list a[aria-current='page'] .menu-num {
+    .menu.is-open .menu-list a[aria-current] .menu-num {
       color: var(--ink);
     }
-    .menu.is-open .menu-list a[aria-current='page'] .menu-text {
+    .menu.is-open .menu-list a[aria-current] .menu-text {
       text-decoration: underline;
       text-decoration-thickness: 2px;
       text-underline-offset: 0.12em;
@@ -257,9 +278,44 @@ const mark = initials(site.name);
       }
     });
 
+    // Picking a section closes the menu; the browser then scrolls to it.
+    links().forEach((a) =>
+      a.addEventListener('click', () => {
+        if (isOpen()) setOpen(false, false);
+      }),
+    );
+
     // Close if the viewport grows past the mobile breakpoint.
     matchMedia('(min-width: 768px)').addEventListener('change', (e) => {
       if (e.matches && isOpen()) setOpen(false, false);
     });
   }
+
+  // Mark the nav item for the section in view (one-page site).
+  const navLinks = Array.from(document.querySelectorAll<HTMLAnchorElement>('#site-menu a[data-section]'));
+  const sections = navLinks
+    .map((a) => document.getElementById(a.dataset.section ?? ''))
+    .filter((el): el is HTMLElement => !!el);
+  if (sections.length) {
+    const setCurrent = (id: string) =>
+      navLinks.forEach((a) => {
+        if (a.dataset.section === id) a.setAttribute('aria-current', 'true');
+        else a.removeAttribute('aria-current');
+      });
+    const seen = new Map<string, boolean>();
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => seen.set(e.target.id, e.isIntersecting));
+        const current = sections.find((el) => seen.get(el.id));
+        if (current) setCurrent(current.id);
+      },
+      { rootMargin: '-45% 0px -50% 0px' },
+    );
+    sections.forEach((el) => io.observe(el));
+  }
+
+  // Hairline under the sticky header once the page has scrolled.
+  const onScroll = () => document.documentElement.classList.toggle('scrolled', scrollY > 8);
+  addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
 </script>

@@ -56,3 +56,16 @@ export const initials = (name: string) =>
 
 /** Fragment id for a collection entry, used for cross-page anchors. */
 export const anchor = (id: string) => id.replace(/[^a-z0-9-]/gi, '-').toLowerCase();
+
+/**
+ * One-page site: each nav route maps to a section on home.
+ * "/" → "/#top", "/services" → "/#services". Other hrefs pass through.
+ */
+export const toSection = (href: string) => {
+  if (href === '/') return '/#top';
+  const m = href.match(/^\/([a-z0-9-]+)\/?$/i);
+  return m ? `/#${m[1]}` : href;
+};
+
+/** Section id for a nav route ("/work" → "work", "/" → "top"). */
+export const sectionId = (href: string) => toSection(href).replace(/^\/#/, '');

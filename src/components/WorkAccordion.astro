@@ -1,0 +1,94 @@
+---
+/**
+ * Selected work as an editorial index. Each row opens (native <details>,
+ * one at a time) to its plate: the photograph, or a click-to-play video
+ * when the entry has one.
+ */
+import { Image } from 'astro:assets';
+import VideoEmbed from './VideoEmbed.astro';
+import { anchor, pad, type Work } from '../lib/content';
+
+interface Props {
+  items: Work[];
+}
+const { items } = Astro.props;
+---
+
+<div class="acc-list">
+  {
+    items.map((w, i) => {
+      const img = w.data.image;
+      const fit = img ? [480, 800, 1200, 1600].filter((n) => n <= img.width) : [];
+      return (
+        <details class="acc wk" name="work" id={`work-${anchor(w.id)}`} data-reveal style={`--i: ${i}`}>
+          <summary class="acc-sum grid12">
+            <span class="acc-num label" aria-hidden="true">{pad(w.data.order)}</span>
+            <h3 class="acc-title display d-sm">{w.data.title}</h3>
+            <span class="wk-cat label label-muted">{w.data.category}</span>
+            <span class="acc-icon" aria-hidden="true" />
+          </summary>
+          <div class="acc-body grid12">
+            <p class="wk-sum statement">{w.data.summary}</p>
+            <div class="wk-media">
+              {w.data.video ? (
+                <VideoEmbed id={w.data.video.youtube_id} title={w.data.video.title} poster={img} />
+              ) : (
+                img && (
+                  <figure class="wk-fig" style={`max-width: min(100%, ${img.width}px)`}>
+                    <Image
+                      src={img}
+                      alt={w.data.image_alt ?? ''}
+                      widths={fit.length ? fit : [img.width]}
+                      width={Math.max(...(fit.length ? fit : [img.width]))}
+                      quality={60}
+                      sizes="(min-width: 900px) 58vw, 92vw"
+                      loading="lazy"
+                      decoding="async"
+                      class="bw"
+                    />
+                  </figure>
+                )
+              )}
+            </div>
+          </div>
+        </details>
+      );
+    })
+  }
+</div>
+
+<style>
+  .wk-cat {
+    grid-column: 3 / span 8;
+    grid-row: 2;
+  }
+  .wk-sum {
+    grid-column: 3 / -1;
+    margin: 0 0 1.5rem;
+    max-width: 22ch;
+    font-size: clamp(1.375rem, 2.2vw, 2.125rem);
+  }
+  .wk-media {
+    grid-column: 1 / -1;
+  }
+  .wk-fig {
+    margin: 0;
+  }
+  .wk-fig :global(img) {
+    width: 100%;
+  }
+
+  @media (min-width: 900px) {
+    .wk-cat {
+      grid-column: 9 / span 3;
+      grid-row: 1;
+      text-align: right;
+    }
+    .wk-sum {
+      grid-column: 2 / span 4;
+    }
+    .wk-media {
+      grid-column: 6 / -1;
+    }
+  }
+</style>

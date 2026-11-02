@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { routes } from '../scripts/routes.ts';
+import { redirects, routes } from '../scripts/routes.ts';
 
 for (const route of routes) {
   test(`${route.path} renders with one <h1>`, async ({ page }) => {
@@ -9,6 +9,15 @@ for (const route of routes) {
     await expect(page.locator('main#main')).toHaveCount(1);
     await expect(page.locator('header')).toHaveCount(1);
     await expect(page.locator('footer')).toHaveCount(1);
+  });
+}
+
+for (const r of redirects) {
+  test(`${r.from} lands on its section`, async ({ page }) => {
+    await page.goto(r.from);
+    await page.waitForURL((u) => u.pathname === '/' && u.hash === r.to.slice(1));
+    const id = r.to.split('#')[1]!;
+    await expect(page.locator(`#${id}`)).toHaveCount(1);
   });
 }
 
@@ -31,7 +40,7 @@ test('no external font or CDN stylesheets', async ({ page }) => {
 });
 
 test('A&R renders correctly', async ({ page }) => {
-  await page.goto('/services');
+  await page.goto('/');
   await expect(page.locator('body')).not.toContainText('A&R;');
   await expect(page.getByText('A&R Consulting').first()).toBeVisible();
 });
