@@ -1,1 +1,19 @@
 @import "tailwindcss";
+
+/* Brand tokens, sampled from the supplied logo PNGs. Directions may override. */
+:root {
+  --wdm-ink: #13061a;      /* gradient logo ground */
+  --wdm-lavender: #d4b2fd; /* gradient top */
+  --wdm-pink: #fec0d0;     /* gradient bottom */
+  --wdm-paper: #fdfcf8;    /* flat logo letterforms */
+  --wdm-black: #111111;
+  --wdm-gradient: linear-gradient(180deg, var(--wdm-lavender), var(--wdm-pink));
+}
+
+@theme {
+  --color-ink: var(--wdm-ink);
+  --color-lavender: var(--wdm-lavender);
+  --color-pink: var(--wdm-pink);
+  --color-paper: var(--wdm-paper);
+  --color-black: var(--wdm-black);
+}

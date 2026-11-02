@@ -1,0 +1,13 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getPage } from '../lib/content';
+
+const page = await getPage('not-found');
+---
+
+<BaseLayout title={page.title} description={page.lede}>
+  <p class="text-sm uppercase">{page.eyebrow}</p>
+  <h1 class="text-4xl font-bold">{page.headline}</h1>
+  <p>{page.lede}</p>
+  {page.cta && <a class="underline" href={page.cta.href}>{page.cta.label}</a>}
+</BaseLayout>

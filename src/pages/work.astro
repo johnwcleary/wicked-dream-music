@@ -1,0 +1,17 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import WorkCard from '../components/WorkCard.astro';
+import { getPage, getWork } from '../lib/content';
+
+const page = await getPage('work');
+const work = await getWork();
+---
+
+<BaseLayout title={page.title} description={page.lede}>
+  <h1 class="text-4xl font-bold">{page.headline}</h1>
+  <p>{page.lede}</p>
+  <div class="grid gap-4 py-8 md:grid-cols-2">
+    {work.map((w, i) => <WorkCard item={w} eager={i < 2} />)}
+  </div>
+  <p class="text-sm">{page.footnote}</p>
+</BaseLayout>

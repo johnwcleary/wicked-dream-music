@@ -1,0 +1,81 @@
+import { defineCollection } from 'astro:content';
+import { glob } from 'astro/loaders';
+import { z } from 'astro/zod';
+
+const link = z.object({ label: z.string(), href: z.string() });
+
+const site = defineCollection({
+  loader: glob({ pattern: '*.json', base: './src/content/site' }),
+  schema: z.object({
+    name: z.string(),
+    tagline: z.string(),
+    description: z.string(),
+    location: z.string(),
+    email: z.email(),
+    nav: z.array(link),
+    ticker: z.array(z.string()),
+    social: z.array(link),
+    ui: z.object({
+      skip_link: z.string(),
+      menu_open: z.string(),
+      menu_close: z.string(),
+      nav_label: z.string(),
+      footer_nav_label: z.string(),
+      rights: z.string(),
+    }),
+  }),
+});
+
+const formField = z.object({
+  name: z.string(),
+  label: z.string(),
+  type: z.enum(['text', 'email', 'tel', 'select', 'textarea']),
+  required: z.boolean().default(false),
+  options: z.array(z.string()).optional(),
+});
+
+// One schema for every page; each page fills the fields its template uses.
+const pages = defineCollection({
+  loader: glob({ pattern: '*.md', base: './src/content/pages' }),
+  schema: z.object({
+    title: z.string(),
+    headline: z.string(),
+    lede: z.string(),
+    eyebrow: z.string().optional(),
+    cta: link.optional(),
+    strapline: z.string().optional(),
+    sections: z.array(z.object({ heading: z.string(), body: z.string() })).optional(),
+    footnote: z.string().optional(),
+    intro_heading: z.string().optional(),
+    intro: z.string().optional(),
+    form_fields: z.array(formField).optional(),
+    submit_label: z.string().optional(),
+    email_label: z.string().optional(),
+  }),
+});
+
+const services = defineCollection({
+  loader: glob({ pattern: '*.md', base: './src/content/services' }),
+  schema: z.object({
+    order: z.number().int(),
+    category: z.string(),
+    title: z.string(),
+    summary: z.string(),
+    bullets: z.array(z.string()),
+  }),
+});
+
+const work = defineCollection({
+  loader: glob({ pattern: '*.md', base: './src/content/work' }),
+  schema: ({ image }) =>
+    z.object({
+      order: z.number().int(),
+      category: z.string(),
+      title: z.string(),
+      summary: z.string(),
+      image: image().optional(),
+      image_alt: z.string().optional(),
+    }),
+});
+
+export const collections = { site, pages, services, work };

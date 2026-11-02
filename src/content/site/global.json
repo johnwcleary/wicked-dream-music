@@ -1,0 +1,24 @@
+{
+  "name": "Wicked Dream Music",
+  "tagline": "Independent music creative company / New York",
+  "description": "Wicked Dream Music is a New York–based independent music creative company working across artist development, A&R consulting, songwriting, and music production.",
+  "location": "New York City / Working worldwide",
+  "email": "hello@wickeddreammusic.com",
+  "nav": [
+    { "label": "Home", "href": "/" },
+    { "label": "About", "href": "/about" },
+    { "label": "Services", "href": "/services" },
+    { "label": "Selected Work", "href": "/work" },
+    { "label": "Contact", "href": "/contact" }
+  ],
+  "ticker": ["Artists.", "Ideas.", "Sound.", "Culture."],
+  "social": [],
+  "ui": {
+    "skip_link": "Skip to content",
+    "menu_open": "Menu",
+    "menu_close": "Close",
+    "nav_label": "Main",
+    "footer_nav_label": "Footer",
+    "rights": "All rights reserved."
+  }
+}

@@ -1,0 +1,53 @@
+---
+import '../styles/global.css';
+import { getImage } from 'astro:assets';
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+import { getSite } from '../lib/content';
+import ogSource from '../assets/brand/logo-gradient.png';
+
+interface Props {
+  title: string;
+  description?: string;
+}
+const site = await getSite();
+const { title, description = site.description } = Astro.props;
+const fullTitle = title === 'Home' ? `${site.name} — ${site.tagline}` : `${title} — ${site.name}`;
+const og = await getImage({ src: ogSource, width: 1200, format: 'jpg' });
+const ogUrl = new URL(og.src, Astro.site ?? Astro.url).href;
+const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url).href;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={site.name} />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogUrl} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="generator" content={Astro.generator} />
+  </head>
+  <body class="bg-white text-black">
+    <a href="#main" class="sr-only focus:not-sr-only focus:absolute focus:left-2 focus:top-2 focus:bg-white focus:p-2">
+      {site.ui.skip_link}
+    </a>
+    <header>
+      <Nav />
+    </header>
+    <main id="main" tabindex="-1" class="p-4">
+      <slot />
+    </main>
+    <footer>
+      <Footer />
+    </footer>
+  </body>
+</html>

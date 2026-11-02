@@ -1,16 +1,28 @@
 ---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ServiceCard from '../components/ServiceCard.astro';
+import WorkCard from '../components/WorkCard.astro';
+import { getPage, getServices, getSite, getWork } from '../lib/content';
+
+const site = await getSite();
+const page = await getPage('home');
+const services = await getServices();
+const work = await getWork();
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<BaseLayout title={page.title} description={page.lede}>
+  <section class="grid gap-4 py-8">
+    <p class="text-sm uppercase">{page.eyebrow}</p>
+    <h1 class="text-4xl font-bold">{page.headline}</h1>
+    <p>{page.lede}</p>
+    {page.cta && <a class="justify-self-start border px-4 py-2" href={page.cta.href}>{page.cta.label}</a>}
+    <p class="font-bold uppercase">{site.ticker.join(' ')}</p>
+    <p>{page.strapline}</p>
+  </section>
+  <section class="grid gap-4 py-8 md:grid-cols-2" aria-label={site.nav[2]?.label}>
+    {services.map((s) => <ServiceCard service={s} />)}
+  </section>
+  <section class="grid gap-4 py-8 md:grid-cols-2" aria-label={site.nav[3]?.label}>
+    {work.map((w) => <WorkCard item={w} />)}
+  </section>
+</BaseLayout>
