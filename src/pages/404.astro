@@ -1,13 +1,89 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { getPage } from '../lib/content';
+import Logo from '../components/Logo.astro';
+import Arrow from '../components/Arrow.astro';
+import { getPage, splitHeadline } from '../lib/content';
 
 const page = await getPage('not-found');
+const [line1, line2] = splitHeadline(page.headline);
 ---
 
 <BaseLayout title={page.title} description={page.lede}>
-  <p class="text-sm uppercase">{page.eyebrow}</p>
-  <h1 class="text-4xl font-bold">{page.headline}</h1>
-  <p>{page.lede}</p>
-  {page.cta && <a class="underline" href={page.cta.href}>{page.cta.label}</a>}
+  <section class="lost wrap">
+    <div class="lost-mark" aria-hidden="true">
+      <Logo class="lost-logo" />
+    </div>
+    <div class="lost-copy">
+      <p class="lost-code">{page.eyebrow}</p>
+      <h1 class="lost-title dream-text">
+        <span>{line1}</span>
+        <span>{line2}</span>
+      </h1>
+      <p class="lost-lede">{page.lede}</p>
+      {
+        page.cta && (
+          <a class="pill-link" href={page.cta.href}>
+            {page.cta.label}
+            <Arrow />
+          </a>
+        )
+      }
+    </div>
+  </section>
 </BaseLayout>
+
+<style>
+  .lost {
+    position: relative;
+    isolation: isolate;
+    display: grid;
+    align-items: center;
+    min-height: calc(100svh - 7rem);
+    padding-block: clamp(3rem, 8vw, 6rem);
+  }
+  /* A ghost of the wordmark, drifting out of focus behind the message. */
+  .lost-mark {
+    position: absolute;
+    z-index: -1;
+    right: -6vw;
+    top: 50%;
+    width: min(80vw, 62rem);
+    transform: translateY(-50%);
+    opacity: 0.09;
+    animation: lost-float 14s ease-in-out infinite alternate;
+  }
+  .lost-mark :global(.lost-logo) {
+    width: 100%;
+  }
+  @keyframes lost-float {
+    to {
+      transform: translateY(-46%) rotate(-2deg);
+    }
+  }
+  .lost-copy {
+    display: grid;
+    gap: 1.75rem;
+    justify-items: start;
+  }
+  .lost-code {
+    font-family: var(--font-display);
+    font-size: 0.8125rem;
+    font-weight: 500;
+    padding: 0.4rem 0.8rem;
+    border-radius: 999px;
+    border: 1px solid var(--wdm-line-strong);
+  }
+  .lost-title {
+    font-size: clamp(2.6rem, 9vw, 8.5rem);
+    letter-spacing: -0.05em;
+    line-height: 1;
+    padding-bottom: 0.08em;
+  }
+  .lost-title > span + span {
+    padding-left: clamp(0rem, 8vw, 8rem);
+  }
+  .lost-lede {
+    font-size: clamp(1.125rem, 1.8vw, 1.4rem);
+    max-width: 30ch;
+  }
+</style>

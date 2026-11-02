@@ -1,26 +1,305 @@
 ---
 import Logo from './Logo.astro';
-import { getSite, isCurrent } from '../lib/content';
+import { getSite, isCurrent, pad } from '../lib/content';
 
+interface Props {
+  /** Home hides the small mark: the hero wordmark is the brand there. */
+  showBrand?: boolean;
+}
+const { showBrand = true } = Astro.props;
 const site = await getSite();
 const path = Astro.url.pathname;
 ---
 
-<div class="flex flex-wrap items-center justify-between gap-4 p-4">
-  <a href="/" class="block w-24" aria-label={site.name}>
-    <Logo class="h-auto w-full" label={site.name} />
-  </a>
-  <nav aria-label={site.ui.nav_label}>
-    <ul class="flex flex-wrap gap-4">
-      {
-        site.nav.map((item) => (
-          <li>
-            <a href={item.href} aria-current={isCurrent(item.href, path) ? 'page' : undefined} class="underline">
-              {item.label}
-            </a>
-          </li>
-        ))
-      }
-    </ul>
+<div class="bar wrap">
+  {
+    showBrand && (
+      <a href="/" class="brand" aria-label={site.name}>
+        <Logo class="brand-logo" />
+      </a>
+    )
+  }
+  <nav aria-label={site.ui.nav_label} class="nav" data-nav>
+    <button
+      type="button"
+      class="menu-toggle"
+      aria-expanded="false"
+      aria-controls="site-menu"
+      data-open-label={site.ui.menu_open}
+      data-close-label={site.ui.menu_close}
+      data-menu-toggle
+    >
+      <span class="menu-toggle-label" data-menu-label>{site.ui.menu_open}</span>
+      <span class="menu-toggle-icon" aria-hidden="true"><span></span><span></span></span>
+    </button>
+    <div class="menu" id="site-menu" data-menu>
+      <ul class="menu-list">
+        {
+          site.nav.map((item, i) => (
+            <li>
+              <a href={item.href} aria-current={isCurrent(item.href, path) ? 'page' : undefined}>
+                <span class="menu-num" aria-hidden="true">{pad(i + 1)}</span>
+                <span class="menu-label">{item.label}</span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+      <p class="menu-meta" aria-hidden="true">{site.location}</p>
+    </div>
   </nav>
 </div>
+
+<script>
+  const nav = document.querySelector<HTMLElement>('[data-nav]');
+  const toggle = nav?.querySelector<HTMLButtonElement>('[data-menu-toggle]');
+  const menu = nav?.querySelector<HTMLElement>('[data-menu]');
+  const label = nav?.querySelector<HTMLElement>('[data-menu-label]');
+  const mobile = window.matchMedia('(max-width: 899.98px)');
+
+  if (nav && toggle && menu && label) {
+    const links = () => Array.from(menu.querySelectorAll<HTMLAnchorElement>('a'));
+
+    const setOpen = (open: boolean, returnFocus = true) => {
+      toggle.setAttribute('aria-expanded', String(open));
+      label.textContent = (open ? toggle.dataset.closeLabel : toggle.dataset.openLabel) ?? '';
+      nav.classList.toggle('is-open', open);
+      document.documentElement.classList.toggle('menu-locked', open);
+      if (open) {
+        links()[0]?.focus();
+      } else if (returnFocus) {
+        toggle.focus();
+      }
+    };
+
+    toggle.addEventListener('click', () => setOpen(toggle.getAttribute('aria-expanded') !== 'true'));
+
+    nav.addEventListener('keydown', (e) => {
+      if (!nav.classList.contains('is-open')) return;
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        setOpen(false);
+        return;
+      }
+      if (e.key === 'Tab') {
+        // Keep focus inside the open menu (toggle + links).
+        const items = [toggle, ...links()];
+        const first = items[0];
+        const last = items[items.length - 1];
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
+    });
+
+    mobile.addEventListener('change', (e) => {
+      if (!e.matches && nav.classList.contains('is-open')) setOpen(false, false);
+    });
+  }
+</script>
+
+<style>
+  .bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    padding-block: clamp(1rem, 2.4vw, 1.75rem);
+  }
+  .nav {
+    margin-left: auto;
+  }
+  .brand {
+    display: block;
+    width: clamp(4.25rem, 6vw, 5.25rem);
+    border-radius: 6px;
+    position: relative;
+    z-index: 2;
+  }
+  .brand :global(.brand-logo) {
+    width: 100%;
+  }
+
+  .menu-list {
+    display: flex;
+    gap: clamp(1rem, 2.4vw, 2.25rem);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .menu-list a {
+    position: relative;
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.5rem;
+    padding-block: 0.5rem;
+    color: var(--wdm-paper);
+    text-decoration: none;
+    font-size: 0.9375rem;
+    font-weight: 500;
+    letter-spacing: 0.01em;
+  }
+  .menu-num {
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    color: var(--wdm-mist);
+    font-variant-numeric: tabular-nums;
+  }
+  .menu-label {
+    position: relative;
+  }
+  .menu-label::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -0.3rem;
+    height: 2px;
+    border-radius: 2px;
+    background: var(--wdm-gradient-x);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.5s var(--ease-dream);
+  }
+  .menu-list a:hover .menu-label::after,
+  .menu-list a[aria-current='page'] .menu-label::after {
+    transform: scaleX(1);
+  }
+  .menu-meta {
+    display: none;
+  }
+
+  .menu-toggle {
+    display: none;
+  }
+
+  @media (max-width: 899.98px) {
+    .menu-list a {
+      font-size: 1rem;
+    }
+    /* No JS: links simply wrap under the logo. */
+    .menu-list {
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: 0.25rem 1rem;
+    }
+    .menu-num {
+      display: none;
+    }
+
+    :global(.js) .menu-toggle {
+      position: relative;
+      z-index: 2;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.65rem 0.75rem 0.65rem 1.1rem;
+      border: 1px solid var(--wdm-line-strong);
+      border-radius: 999px;
+      background: rgb(19 6 26 / 0.55);
+      color: var(--wdm-paper);
+      font: inherit;
+      font-size: 0.875rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      cursor: pointer;
+    }
+    .menu-toggle-icon {
+      position: relative;
+      display: block;
+      width: 1.1rem;
+      height: 0.6rem;
+    }
+    .menu-toggle-icon span {
+      position: absolute;
+      left: 0;
+      right: 0;
+      height: 1.5px;
+      border-radius: 2px;
+      background: currentColor;
+      transition: transform 0.4s var(--ease-dream), top 0.4s var(--ease-dream);
+    }
+    .menu-toggle-icon span:first-child {
+      top: 0;
+    }
+    .menu-toggle-icon span:last-child {
+      top: calc(100% - 1.5px);
+    }
+    .is-open .menu-toggle-icon span:first-child {
+      top: calc(50% - 0.75px);
+      transform: rotate(45deg);
+    }
+    .is-open .menu-toggle-icon span:last-child {
+      top: calc(50% - 0.75px);
+      transform: rotate(-45deg);
+    }
+
+    :global(.js) .menu {
+      position: fixed;
+      inset: 0;
+      z-index: 1;
+      display: none;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 7rem var(--gutter) 2.5rem;
+      background:
+        radial-gradient(120% 70% at 100% 0%, rgb(212 178 253 / 0.2), transparent 60%),
+        radial-gradient(90% 60% at 0% 100%, rgb(254 192 208 / 0.14), transparent 60%),
+        var(--wdm-ink);
+      overflow-y: auto;
+    }
+    :global(.js) .is-open .menu {
+      display: flex;
+      animation: menu-in 0.5s var(--ease-dream);
+    }
+    :global(.js) .menu-list {
+      flex-direction: column;
+      gap: 0;
+      justify-content: flex-start;
+    }
+    :global(.js) .menu-list li {
+      border-top: 1px solid var(--wdm-line);
+    }
+    :global(.js) .menu-list a {
+      display: flex;
+      width: 100%;
+      gap: 1rem;
+      padding-block: 1rem;
+      font-family: var(--font-display);
+      font-size: clamp(1.6rem, 7.4vw, 2.6rem);
+      font-weight: 450;
+      letter-spacing: -0.02em;
+    }
+    :global(.js) .menu-num {
+      display: inline;
+      font-family: var(--font-body);
+    }
+    :global(.js) .menu-meta {
+      display: block;
+      margin-top: 2rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--wdm-mist);
+    }
+  }
+
+  @keyframes menu-in {
+    from {
+      opacity: 0;
+    }
+  }
+
+  :global(html.menu-locked) {
+    overflow: hidden;
+  }
+  :global(html.menu-locked body) {
+    overflow: hidden;
+  }
+</style>

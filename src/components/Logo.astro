@@ -1,11 +1,30 @@
 ---
-import LogoSvg from '../assets/brand/logo.svg';
-
 interface Props {
   class?: string;
-  label: string;
+  /** Accessible name. Omit when a parent (e.g. a link) already names it. */
+  label?: string;
+  tone?: 'gradient' | 'paper';
 }
-const { class: className, label } = Astro.props;
+const { class: className, label, tone = 'gradient' } = Astro.props;
+const fill = tone === 'gradient' ? 'url(#wdm-grad)' : 'currentColor';
 ---
 
-<LogoSvg class={className} aria-label={label} role="img" />
+<svg
+  class:list={['logo', className]}
+  viewBox="28 19 2002 1391"
+  role={label ? 'img' : undefined}
+  aria-label={label || undefined}
+  aria-hidden={label ? undefined : 'true'}
+  focusable="false"
+>
+  <use href="#wdm-logo" fill={fill}></use>
+</svg>
+
+<style>
+  .logo {
+    display: block;
+    aspect-ratio: 2002 / 1391;
+    height: auto;
+    overflow: visible;
+  }
+</style>

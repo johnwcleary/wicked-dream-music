@@ -1,37 +1,143 @@
 ---
+import Arrow from './Arrow.astro';
 import { getPage } from '../lib/content';
 
 const page = await getPage('contact');
 const fields = page.form_fields ?? [];
+const autocomplete: Record<string, string> = { name: 'name', email: 'email', company: 'organization' };
 ---
 
 <!--
   Phase 2: wire this form to a Cloudflare Pages Function or a Netlify form.
   It intentionally has no action yet; method and field names are final.
 -->
-<form method="POST" class="grid gap-4">
+<form method="POST" class="form">
   {
     fields.map((f) => (
-      <div class="grid gap-1">
-        <label for={`field-${f.name}`}>{f.label}</label>
+      <div class:list={['field', { 'field--wide': f.type === 'textarea' }]}>
+        <label for={`field-${f.name}`}>
+          {f.label}
+          {f.required && <span class="req" aria-hidden="true">*</span>}
+        </label>
         {f.type === 'textarea' ? (
-          <textarea id={`field-${f.name}`} name={f.name} rows="5" required={f.required} class="border p-2" />
+          <textarea id={`field-${f.name}`} name={f.name} rows="6" required={f.required} />
         ) : f.type === 'select' ? (
-          <select id={`field-${f.name}`} name={f.name} required={f.required} class="border p-2">
-            {(f.options ?? []).map((o) => <option value={o}>{o}</option>)}
-          </select>
+          <div class="select">
+            <select id={`field-${f.name}`} name={f.name} required={f.required}>
+              {(f.options ?? []).map((o) => (
+                <option value={o}>{o}</option>
+              ))}
+            </select>
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+          </div>
         ) : (
           <input
             id={`field-${f.name}`}
             name={f.name}
             type={f.type}
             required={f.required}
-            autocomplete={f.type === 'email' ? 'email' : f.name === 'name' ? 'name' : f.name === 'company' ? 'organization' : undefined}
-            class="border p-2"
+            autocomplete={autocomplete[f.name] ?? (f.type === 'email' ? 'email' : undefined)}
           />
         )}
       </div>
     ))
   }
-  <button type="submit" class="justify-self-start border px-4 py-2">{page.submit_label}</button>
+  <div class="field field--wide form-actions">
+    <button type="submit" class="pill-link submit">
+      {page.submit_label}
+      <Arrow />
+    </button>
+  </div>
 </form>
+
+<style>
+  .form {
+    display: grid;
+    gap: 1.5rem 1.25rem;
+  }
+  .field {
+    display: grid;
+    gap: 0.6rem;
+  }
+  label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    color: var(--wdm-paper);
+  }
+  .req {
+    margin-left: 0.25rem;
+    color: var(--wdm-pink);
+  }
+  input,
+  textarea,
+  select {
+    width: 100%;
+    font: inherit;
+    font-size: 1rem;
+    color: var(--wdm-paper);
+    background: rgb(19 6 26 / 0.65);
+    border: 1px solid var(--wdm-line-strong);
+    border-radius: 0.9rem;
+    padding: 0.9rem 1rem;
+    transition: border-color 0.3s var(--ease-dream), background-color 0.3s var(--ease-dream);
+  }
+  textarea {
+    resize: vertical;
+    min-height: 9rem;
+  }
+  input:hover,
+  textarea:hover,
+  select:hover {
+    border-color: rgb(253 252 248 / 0.45);
+  }
+  input:focus-visible,
+  textarea:focus-visible,
+  select:focus-visible {
+    border-color: var(--wdm-lavender);
+    background: rgb(19 6 26 / 0.85);
+    outline-offset: 2px;
+  }
+  .select {
+    position: relative;
+  }
+  select {
+    appearance: none;
+    padding-right: 3rem;
+    cursor: pointer;
+  }
+  select option {
+    background: var(--wdm-ink);
+    color: var(--wdm-paper);
+  }
+  .select svg {
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    width: 1.1rem;
+    height: 1.1rem;
+    transform: translateY(-50%);
+    pointer-events: none;
+    color: var(--wdm-mist);
+  }
+  .form-actions {
+    padding-top: 0.5rem;
+  }
+  .submit {
+    justify-self: start;
+    border: 0;
+    font: inherit;
+    font-weight: 650;
+    cursor: pointer;
+  }
+  @media (min-width: 640px) {
+    .form {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .field--wide {
+      grid-column: 1 / -1;
+    }
+  }
+</style>

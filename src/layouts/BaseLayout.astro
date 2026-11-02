@@ -3,19 +3,30 @@ import '../styles/global.css';
 import { getImage } from 'astro:assets';
 import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
+import LogoSprite from '../components/LogoSprite.astro';
 import { getSite } from '../lib/content';
 import ogSource from '../assets/brand/logo-gradient.png';
+import unbounded from '@fontsource-variable/unbounded/files/unbounded-latin-wght-normal.woff2?url';
+import figtree from '@fontsource-variable/figtree/files/figtree-latin-wght-normal.woff2?url';
 
 interface Props {
   title: string;
   description?: string;
+  /** Home: the header floats over the full-bleed hero photo. */
+  overlayHeader?: boolean;
 }
 const site = await getSite();
-const { title, description = site.description } = Astro.props;
+const { title, description = site.description, overlayHeader = false } = Astro.props;
 const fullTitle = title === 'Home' ? `${site.name} — ${site.tagline}` : `${title} — ${site.name}`;
 const og = await getImage({ src: ogSource, width: 1200, format: 'jpg' });
 const ogUrl = new URL(og.src, Astro.site ?? Astro.url).href;
 const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url).href;
+
+// Latin subset only, variable weight axis.
+const fontFaces = `
+@font-face{font-family:'Unbounded Variable';font-style:normal;font-display:swap;font-weight:200 900;src:url(${unbounded}) format('woff2-variations');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;}
+@font-face{font-family:'Figtree Variable';font-style:normal;font-display:swap;font-weight:300 900;src:url(${figtree}) format('woff2-variations');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;}
+`;
 ---
 
 <!doctype html>
@@ -23,10 +34,14 @@ const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url).href;
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script is:inline>document.documentElement.classList.add('js');</script>
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
+    <meta name="theme-color" content="#13061a" />
     <link rel="canonical" href={canonical} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="preload" href={unbounded} as="font" type="font/woff2" crossorigin />
+    <style is:inline set:html={fontFaces}></style>
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content={site.name} />
     <meta property="og:title" content={fullTitle} />
@@ -36,18 +51,76 @@ const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url).href;
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="generator" content={Astro.generator} />
   </head>
-  <body class="bg-white text-black">
-    <a href="#main" class="sr-only focus:not-sr-only focus:absolute focus:left-2 focus:top-2 focus:bg-white focus:p-2">
-      {site.ui.skip_link}
-    </a>
-    <header>
-      <Nav />
-    </header>
-    <main id="main" tabindex="-1" class="p-4">
-      <slot />
-    </main>
-    <footer>
-      <Footer />
-    </footer>
+  <body>
+    <a href="#main" class="skip-link">{site.ui.skip_link}</a>
+    <LogoSprite />
+    <div class="glows" aria-hidden="true">
+      <div class="glow glow--a"></div>
+      <div class="glow glow--b"></div>
+      <div class="glow glow--c"></div>
+      <div class="glow glow--d"></div>
+    </div>
+    <div class="site">
+      <header class:list={['site-header', { 'site-header--overlay': overlayHeader }]}>
+        <Nav showBrand={!overlayHeader} />
+      </header>
+      <main id="main" tabindex="-1">
+        <slot />
+      </main>
+      <footer>
+        <Footer />
+      </footer>
+    </div>
+    <script>
+      // Section reveals: blur-to-sharp once, as each section enters the viewport.
+      const targets = document.querySelectorAll<HTMLElement>('[data-reveal]');
+      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (reduce || !('IntersectionObserver' in window)) {
+        targets.forEach((el) => el.classList.add('is-in'));
+      } else {
+        const io = new IntersectionObserver(
+          (entries) => {
+            for (const entry of entries) {
+              if (entry.isIntersecting) {
+                entry.target.classList.add('is-in');
+                io.unobserve(entry.target);
+              }
+            }
+          },
+          { rootMargin: '0px 0px -8% 0px', threshold: 0.08 },
+        );
+        targets.forEach((el) => io.observe(el));
+      }
+    </script>
   </body>
 </html>
+
+<style>
+  .skip-link {
+    position: absolute;
+    left: 1rem;
+    top: 1rem;
+    z-index: 100;
+    padding: 0.75rem 1.1rem;
+    border-radius: 999px;
+    background: var(--wdm-paper);
+    color: var(--wdm-ink);
+    font-weight: 650;
+    text-decoration: none;
+    transform: translateY(-200%);
+  }
+  .skip-link:focus,
+  .skip-link:focus-visible {
+    transform: none;
+    outline: 2px solid var(--wdm-lavender);
+    outline-offset: 3px;
+  }
+  .site-header {
+    position: relative;
+    z-index: 20;
+  }
+  .site-header--overlay {
+    position: absolute;
+    inset: 0 0 auto 0;
+  }
+</style>

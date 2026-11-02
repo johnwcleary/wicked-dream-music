@@ -1,6 +1,6 @@
 @import "tailwindcss";
 
-/* Brand tokens, sampled from the supplied logo PNGs. Directions may override. */
+/* Brand tokens, sampled from the supplied logo PNGs. */
 :root {
   --wdm-ink: #13061a;      /* gradient logo ground */
   --wdm-lavender: #d4b2fd; /* gradient top */
@@ -8,6 +8,23 @@
   --wdm-paper: #fdfcf8;    /* flat logo letterforms */
   --wdm-black: #111111;
   --wdm-gradient: linear-gradient(180deg, var(--wdm-lavender), var(--wdm-pink));
+
+  /* Direction: dream */
+  --wdm-ink-2: #1c0b26;              /* raised ground */
+  --wdm-ink-3: #261332;              /* field/panel ground */
+  --wdm-mist: rgb(253 252 248 / 0.74); /* secondary text, AA on ink */
+  --wdm-line: rgb(253 252 248 / 0.14);
+  --wdm-line-strong: rgb(253 252 248 / 0.28);
+  --wdm-gradient-x: linear-gradient(100deg, var(--wdm-lavender), var(--wdm-pink));
+
+  --font-display: 'Unbounded Variable', 'Unbounded Fallback', ui-sans-serif, system-ui, sans-serif;
+  --font-body: 'Figtree Variable', 'Figtree Fallback', ui-sans-serif, system-ui, sans-serif;
+
+  --gutter: clamp(1rem, 4vw, 3.5rem);
+  --max: 90rem;
+  --radius-lg: clamp(1.25rem, 2.4vw, 2rem);
+  --radius-md: 1rem;
+  --ease-dream: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 @theme {
@@ -16,4 +33,240 @@
   --color-pink: var(--wdm-pink);
   --color-paper: var(--wdm-paper);
   --color-black: var(--wdm-black);
+  --color-mist: var(--wdm-mist);
+  --font-display: var(--font-display);
+  --font-body: var(--font-body);
+}
+
+/* Metric-matched fallbacks keep swap-in layout shift small. */
+@font-face {
+  font-family: 'Unbounded Fallback';
+  src: local('Arial'), local('Helvetica');
+  size-adjust: 118%;
+  ascent-override: 84%;
+  descent-override: 21%;
+}
+@font-face {
+  font-family: 'Figtree Fallback';
+  src: local('Arial'), local('Helvetica');
+  size-adjust: 97%;
+  ascent-override: 98%;
+  descent-override: 26%;
+}
+
+@layer base {
+  html {
+    background: var(--wdm-ink);
+    color-scheme: dark;
+    -webkit-text-size-adjust: 100%;
+    scroll-padding-top: 2rem;
+  }
+  body {
+    background: var(--wdm-ink);
+    color: var(--wdm-paper);
+    font-family: var(--font-body);
+    font-size: 1.0625rem;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    overflow-x: clip;
+  }
+  ::selection {
+    background: var(--wdm-lavender);
+    color: var(--wdm-ink);
+  }
+  :focus-visible {
+    outline: 2px solid var(--wdm-lavender);
+    outline-offset: 4px;
+    border-radius: 4px;
+  }
+  main:focus {
+    outline: none;
+  }
+  h1, h2, h3 {
+    font-family: var(--font-display);
+    font-weight: 500;
+    letter-spacing: -0.025em;
+    line-height: 1.05;
+    text-wrap: balance;
+  }
+  p {
+    text-wrap: pretty;
+  }
+}
+
+/* ---------- Shared pieces ---------- */
+
+.wrap {
+  width: 100%;
+  max-width: var(--max);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+.eyebrow {
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--wdm-mist);
+}
+
+/* Gradient text: hero headlines only. */
+.dream-text {
+  background: var(--wdm-gradient);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+.dream-text > span {
+  display: block;
+}
+
+.link-arrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  color: var(--wdm-paper);
+  text-decoration: none;
+  padding-block: 0.4rem;
+  border-bottom: 1px solid var(--wdm-line-strong);
+  transition: border-color 0.4s var(--ease-dream), gap 0.4s var(--ease-dream);
+}
+.link-arrow svg {
+  width: 1.1em;
+  height: 1.1em;
+  flex: none;
+  transition: transform 0.4s var(--ease-dream);
+}
+.link-arrow:hover {
+  border-color: var(--wdm-lavender);
+}
+.link-arrow:hover svg {
+  transform: translateX(4px);
+}
+
+.pill-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.95rem 1.4rem 0.95rem 1.6rem;
+  border-radius: 999px;
+  background: var(--wdm-paper);
+  color: var(--wdm-ink);
+  font-weight: 650;
+  text-decoration: none;
+  transition: background-color 0.4s var(--ease-dream), box-shadow 0.4s var(--ease-dream);
+}
+.pill-link svg {
+  width: 1.1em;
+  height: 1.1em;
+  transition: transform 0.4s var(--ease-dream);
+}
+.pill-link:hover {
+  background: var(--wdm-lavender);
+  box-shadow: 0 0 0 6px rgb(212 178 253 / 0.18);
+}
+.pill-link:hover svg {
+  transform: translateX(4px);
+}
+
+/* ---------- Atmosphere: drifting glows (transform-only, no filters) ---------- */
+
+/* Spread down the whole document (not fixed) so every scroll depth has its own
+   slow light, and full-page captures have no viewport seam. */
+body {
+  position: relative;
+}
+.glows {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+.glow {
+  position: absolute;
+  width: 90vmax;
+  height: 90vmax;
+  border-radius: 50%;
+  will-change: transform;
+}
+.glow--a {
+  top: -30vmax;
+  left: -35vmax;
+  background: radial-gradient(closest-side, rgb(212 178 253 / 0.16), rgb(212 178 253 / 0.05) 55%, transparent);
+  animation: drift-a 38s ease-in-out infinite alternate;
+}
+.glow--b {
+  top: 28%;
+  right: -45vmax;
+  background: radial-gradient(closest-side, rgb(254 192 208 / 0.11), rgb(254 192 208 / 0.035) 55%, transparent);
+  animation: drift-b 46s ease-in-out infinite alternate;
+}
+.glow--c {
+  top: 55%;
+  left: -40vmax;
+  background: radial-gradient(closest-side, rgb(196 156 248 / 0.12), rgb(196 156 248 / 0.035) 55%, transparent);
+  animation: drift-c 54s ease-in-out infinite alternate;
+}
+.glow--d {
+  bottom: -40vmax;
+  right: -30vmax;
+  background: radial-gradient(closest-side, rgb(254 192 208 / 0.1), rgb(212 178 253 / 0.04) 55%, transparent);
+  animation: drift-a 62s ease-in-out infinite alternate-reverse;
+}
+@keyframes drift-a {
+  to { transform: translate3d(22vw, 14vh, 0) scale(1.15); }
+}
+@keyframes drift-b {
+  to { transform: translate3d(-22vw, 18vh, 0) scale(0.9); }
+}
+@keyframes drift-c {
+  to { transform: translate3d(26vw, -12vh, 0) scale(1.2); }
+}
+
+.site {
+  position: relative;
+  z-index: 1;
+  overflow-x: clip;
+}
+
+/* ---------- Reveal: blur-to-sharp, section level only ---------- */
+/* Hidden only once JS has flagged <html class="js">, so no-JS shows everything. */
+.js [data-reveal] {
+  opacity: 0;
+  transform: translate3d(0, 24px, 0);
+  filter: blur(6px);
+  transition:
+    opacity 1.1s var(--ease-dream),
+    transform 1.1s var(--ease-dream),
+    filter 1.1s var(--ease-dream);
+}
+.js [data-reveal].is-in {
+  opacity: 1;
+  transform: none;
+  filter: none;
+}
+
+/* ---------- Reduced motion: everything off ---------- */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+  .js [data-reveal] {
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
 }

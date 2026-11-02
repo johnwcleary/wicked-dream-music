@@ -1,17 +1,114 @@
 ---
+import Logo from './Logo.astro';
 import { getSite } from '../lib/content';
 
 const site = await getSite();
 const year = new Date().getFullYear();
 ---
 
-<div class="border-t p-4 text-sm">
-  <p>{site.name} — {site.location}</p>
-  <p><a class="underline" href={`mailto:${site.email}`}>{site.email}</a></p>
-  <nav aria-label={site.ui.footer_nav_label}>
-    <ul class="flex flex-wrap gap-4">
-      {site.nav.map((item) => <li><a class="underline" href={item.href}>{item.label}</a></li>)}
-    </ul>
-  </nav>
-  <p>© {year} {site.name}. {site.ui.rights}</p>
+<div class="foot wrap">
+  <div class="foot-top">
+    <a href="/" class="foot-brand" aria-label={site.name}>
+      <Logo class="foot-logo" />
+    </a>
+    <div class="foot-contact">
+      <p class="eyebrow">{site.tagline}</p>
+      <a class="foot-email" href={`mailto:${site.email}`}>{site.email}</a>
+      <p class="foot-loc">{site.location}</p>
+    </div>
+  </div>
+  <div class="foot-bottom">
+    <nav aria-label={site.ui.footer_nav_label}>
+      <ul>
+        {site.nav.map((item) => <li><a href={item.href}>{item.label}</a></li>)}
+      </ul>
+    </nav>
+    <p class="foot-rights">© {year} {site.name}. {site.ui.rights}</p>
+  </div>
 </div>
+
+<style>
+  .foot {
+    padding-block: clamp(4rem, 9vw, 7rem) 2rem;
+  }
+  .foot-top {
+    display: grid;
+    gap: 3rem;
+    align-items: end;
+    padding-bottom: clamp(2.5rem, 5vw, 4rem);
+    border-bottom: 1px solid var(--wdm-line);
+  }
+  .foot-brand {
+    display: block;
+    width: min(100%, 26rem);
+    border-radius: 8px;
+  }
+  .foot-brand :global(.foot-logo) {
+    width: 100%;
+  }
+  .foot-contact {
+    display: grid;
+    gap: 1rem;
+    justify-items: start;
+  }
+  .foot-email {
+    font-family: var(--font-display);
+    font-size: clamp(1.15rem, 3.4vw, 2rem);
+    font-weight: 450;
+    letter-spacing: -0.02em;
+    color: var(--wdm-paper);
+    text-decoration: none;
+    border-bottom: 1px solid var(--wdm-line-strong);
+    padding-bottom: 0.3rem;
+    overflow-wrap: anywhere;
+    transition: border-color 0.4s var(--ease-dream);
+  }
+  .foot-email:hover {
+    border-color: var(--wdm-lavender);
+  }
+  .foot-loc {
+    color: var(--wdm-mist);
+    font-size: 0.9375rem;
+  }
+  .foot-bottom {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem 3rem;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 1.75rem;
+  }
+  .foot-bottom ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 1.75rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .foot-bottom a {
+    display: inline-block;
+    padding-block: 0.35rem;
+    color: var(--wdm-paper);
+    text-decoration: none;
+    font-size: 0.9375rem;
+  }
+  .foot-bottom a:hover {
+    text-decoration: underline;
+    text-decoration-color: var(--wdm-lavender);
+    text-underline-offset: 0.3em;
+  }
+  .foot-rights {
+    color: var(--wdm-mist);
+    font-size: 0.8125rem;
+  }
+  @media (min-width: 900px) {
+    .foot-top {
+      grid-template-columns: 1fr auto;
+    }
+    .foot-contact {
+      justify-items: end;
+      text-align: right;
+    }
+  }
+</style>

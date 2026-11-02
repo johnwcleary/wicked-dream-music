@@ -1,20 +1,196 @@
 ---
+import { Image } from 'astro:assets';
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { getPage, paragraphs } from '../lib/content';
+import PageHero from '../components/PageHero.astro';
+import Ticker from '../components/Ticker.astro';
+import CtaBand from '../components/CtaBand.astro';
+import Arrow from '../components/Arrow.astro';
+import { getPage, getSite, getWork, pad, paragraphs } from '../lib/content';
 
+const site = await getSite();
 const page = await getPage('about');
+const work = await getWork();
+const navIndex = site.nav.findIndex((n) => n.href === '/about');
+const workNav = site.nav.find((n) => n.href === '/work');
+const credit = work[0];
+// A wide atmospheric still between the two chapters (photo + alt from the work collection).
+const still = work.find((w) => w.id === 'original-music-projects') ?? work[work.length - 1];
 ---
 
 <BaseLayout title={page.title} description={page.lede}>
-  <h1 class="text-4xl font-bold">{page.headline}</h1>
-  <p>{page.lede}</p>
-  <p class="text-sm uppercase">{page.eyebrow}</p>
+  <PageHero headline={page.headline} lede={page.lede} eyebrow={page.eyebrow} index={pad(navIndex + 1)} />
+
   {
-    page.sections?.map((s) => (
-      <section class="py-4">
-        <h2 class="text-2xl font-bold">{s.heading}</h2>
-        {paragraphs(s.body).map((p) => <p class="mt-2">{p}</p>)}
-      </section>
+    page.sections?.map((s, i) => (
+      <>
+        <section class="chapter wrap" data-reveal>
+          <div class="chapter-head">
+            <span class="chapter-num" aria-hidden="true">{pad(i + 1)}</span>
+            <h2 class="chapter-title">{s.heading}</h2>
+          </div>
+          <div class="chapter-body">
+            {paragraphs(s.body).map((p, j) => (
+              <p class:list={{ 'chapter-lead': j === 0 }}>{p}</p>
+            ))}
+          </div>
+        </section>
+        {i === 0 && still?.data.image && (
+          <div class="still wrap" data-reveal>
+            <div class="still-frame">
+              <Image
+                src={still.data.image}
+                alt={still.data.image_alt ?? ''}
+                width={1920}
+                widths={[640, 960, 1280, 1920]}
+                sizes="(min-width: 1440px) 1360px, calc(100vw - 2rem)"
+                loading="lazy"
+                decoding="async"
+                class="still-img"
+              />
+            </div>
+          </div>
+        )}
+      </>
     ))
   }
+
+  <Ticker />
+
+  {
+    credit && (
+      <section class="credit wrap" data-reveal>
+        <div class="credit-meta">
+          <span class="chapter-num" aria-hidden="true">{pad(credit.data.order)}</span>
+          <p class="eyebrow">{credit.data.category}</p>
+        </div>
+        <h2 class="credit-title">{credit.data.title}</h2>
+        <div class="credit-foot">
+          <p class="credit-summary">{credit.data.summary}</p>
+          {workNav && (
+            <a class="link-arrow" href={`${workNav.href}#${credit.id}`}>
+              {workNav.label}
+              <Arrow />
+            </a>
+          )}
+        </div>
+      </section>
+    )
+  }
+
+  <CtaBand />
 </BaseLayout>
+
+<style>
+  .chapter {
+    display: grid;
+    gap: clamp(1.5rem, 3vw, 2.5rem);
+    padding-block: clamp(3.5rem, 8vw, 7rem);
+    border-top: 1px solid var(--wdm-line);
+  }
+  .chapter-head {
+    display: grid;
+    gap: 1.5rem;
+    align-content: start;
+    justify-items: start;
+  }
+  .chapter-num {
+    font-family: var(--font-display);
+    font-size: 0.75rem;
+    font-weight: 500;
+    padding: 0.35rem 0.7rem;
+    border-radius: 999px;
+    border: 1px solid var(--wdm-line-strong);
+  }
+  .chapter-title {
+    font-size: clamp(2rem, 4.6vw, 4.25rem);
+    letter-spacing: -0.045em;
+    line-height: 1;
+    max-width: 12ch;
+  }
+  .chapter-body {
+    display: grid;
+    gap: 1.25rem;
+    max-width: 40rem;
+  }
+  .chapter-body p {
+    color: var(--wdm-mist);
+    font-size: 1.0625rem;
+  }
+  .chapter-body .chapter-lead {
+    color: var(--wdm-paper);
+    font-size: clamp(1.2rem, 1.9vw, 1.6rem);
+    line-height: 1.45;
+  }
+  @media (min-width: 900px) {
+    .chapter {
+      grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+      column-gap: clamp(2rem, 5vw, 5rem);
+    }
+    .chapter-body {
+      padding-top: 3.25rem;
+    }
+  }
+
+  .still {
+    padding-block: clamp(1rem, 3vw, 2rem) clamp(3rem, 7vw, 6rem);
+  }
+  .still-frame {
+    position: relative;
+    overflow: hidden;
+    border-radius: calc(var(--radius-lg) * 1.4);
+    border: 1px solid var(--wdm-line);
+    aspect-ratio: 4 / 5;
+  }
+  .still-frame::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(80% 80% at 80% 10%, rgb(212 178 253 / 0.18), transparent 60%),
+      linear-gradient(180deg, transparent 50%, rgb(19 6 26 / 0.6));
+    pointer-events: none;
+  }
+  .still-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  @media (min-width: 640px) {
+    .still-frame {
+      aspect-ratio: 21 / 9;
+    }
+  }
+
+  .credit {
+    display: grid;
+    gap: clamp(1.5rem, 3vw, 2.5rem);
+    padding-block: clamp(5rem, 10vw, 9rem) clamp(3rem, 6vw, 5rem);
+  }
+  .credit-meta {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+  }
+  .credit-title {
+    font-size: clamp(2.1rem, 6.4vw, 6rem);
+    letter-spacing: -0.05em;
+    line-height: 1;
+    max-width: 18ch;
+  }
+  .credit-foot {
+    display: grid;
+    gap: 1.75rem;
+    justify-items: start;
+  }
+  .credit-summary {
+    font-size: clamp(1.125rem, 1.7vw, 1.4rem);
+    line-height: 1.5;
+    max-width: 34ch;
+  }
+  @media (min-width: 900px) {
+    .credit-foot {
+      grid-template-columns: 1fr auto;
+      align-items: end;
+    }
+  }
+</style>

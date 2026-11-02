@@ -1,16 +1,86 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from '../components/PageHero.astro';
 import ServiceCard from '../components/ServiceCard.astro';
-import { getPage, getServices } from '../lib/content';
+import CtaBand from '../components/CtaBand.astro';
+import { getPage, getServices, getSite, pad } from '../lib/content';
 
+const site = await getSite();
 const page = await getPage('services');
 const services = await getServices();
+const navIndex = site.nav.findIndex((n) => n.href === '/services');
+const label = site.nav[navIndex]?.label;
 ---
 
 <BaseLayout title={page.title} description={page.lede}>
-  <h1 class="text-4xl font-bold">{page.headline}</h1>
-  <p>{page.lede}</p>
-  <div class="grid gap-4 py-8 md:grid-cols-2">
-    {services.map((s) => <ServiceCard service={s} />)}
+  <PageHero headline={page.headline} lede={page.lede} index={pad(navIndex + 1)}>
+    <nav class="jump" aria-label={label}>
+      <ul>
+        {
+          services.map((s) => (
+            <li>
+              <a href={`#${s.id}`}>
+                <span aria-hidden="true">{pad(s.data.order)}</span>
+                {s.data.title}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+  </PageHero>
+
+  <div class="panels wrap">
+    {
+      services.map((s) => (
+        <div class="panel-slot" data-reveal>
+          <ServiceCard service={s} headingLevel="h2" variant="panel" />
+        </div>
+      ))
+    }
   </div>
+
+  <CtaBand />
 </BaseLayout>
+
+<style>
+  .jump ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .jump a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.6rem 1rem;
+    border-radius: 999px;
+    border: 1px solid var(--wdm-line-strong);
+    color: var(--wdm-paper);
+    text-decoration: none;
+    font-size: 0.9375rem;
+    font-weight: 500;
+    background: rgb(19 6 26 / 0.4);
+    transition: border-color 0.4s var(--ease-dream), background-color 0.4s var(--ease-dream);
+  }
+  .jump a span {
+    font-family: var(--font-display);
+    font-size: 0.6875rem;
+    color: var(--wdm-mist);
+  }
+  .jump a:hover {
+    border-color: var(--wdm-lavender);
+    background: rgb(212 178 253 / 0.08);
+  }
+  .panels {
+    display: grid;
+    gap: clamp(1rem, 2.4vw, 2rem);
+    padding-bottom: clamp(3rem, 7vw, 6rem);
+  }
+  .panel-slot :global(.svc) {
+    scroll-margin-top: 2rem;
+  }
+</style>

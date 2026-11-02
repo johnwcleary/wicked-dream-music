@@ -1,0 +1,225 @@
+---
+import WorkCard from './WorkCard.astro';
+import Arrow from './Arrow.astro';
+import { getPage, getSite, getWork } from '../lib/content';
+
+const site = await getSite();
+const page = await getPage('work');
+const work = await getWork();
+const workNav = site.nav.find((n) => n.href === '/work');
+---
+
+<section class="strip-section" data-reveal>
+  <div class="wrap strip-head">
+    <div class="strip-head-text">
+      <p class="eyebrow">{workNav?.label}</p>
+      <h2 id="work-heading" class="strip-title">{page.headline}</h2>
+    </div>
+    <p class="strip-lede">{page.lede}</p>
+  </div>
+
+  <div class="strip-timeline">
+    <div class="strip" role="region" aria-labelledby="work-heading" tabindex="0" data-strip>
+      <ul class="strip-list">
+        {
+          work.map((w) => (
+            <li class="strip-item">
+              <WorkCard item={w} href={`/work#${w.id}`} />
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+    <div class="wrap strip-foot">
+      <div class="strip-progress" aria-hidden="true"><span></span></div>
+      <p class="strip-note">{page.footnote}</p>
+      {
+        workNav && (
+          <a class="link-arrow" href={workNav.href}>
+            {workNav.label}
+            <Arrow />
+          </a>
+        )
+      }
+    </div>
+  </div>
+</section>
+
+<script>
+  for (const strip of document.querySelectorAll<HTMLElement>('[data-strip]')) {
+    const items = () => Array.from(strip.querySelectorAll<HTMLElement>('.strip-item'));
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+    // Only a tab stop while it actually scrolls (desktop); a plain stack on mobile.
+    const sync = () => {
+      if (strip.scrollWidth > strip.clientWidth + 4) strip.setAttribute('tabindex', '0');
+      else strip.removeAttribute('tabindex');
+    };
+    sync();
+    new ResizeObserver(sync).observe(strip);
+
+    // Arrow keys step card by card (native arrow scrolling fights scroll-snap).
+    strip.addEventListener('keydown', (e) => {
+      if (e.target !== strip) return;
+      const dir = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
+      if (!dir) return;
+      e.preventDefault();
+      const step = items()[1] ? items()[1].offsetLeft - items()[0].offsetLeft : strip.clientWidth * 0.8;
+      strip.scrollBy({ left: dir * step, behavior: reduce.matches ? 'auto' : 'smooth' });
+    });
+  }
+</script>
+
+<style>
+  .strip-section {
+    padding-block: clamp(5rem, 11vw, 10rem);
+  }
+  .strip-head {
+    display: grid;
+    gap: 1.5rem;
+    margin-bottom: clamp(2.5rem, 5vw, 4.5rem);
+  }
+  .strip-head-text {
+    display: grid;
+    gap: 1.25rem;
+  }
+  .strip-title {
+    font-size: clamp(2.5rem, 7vw, 6.5rem);
+    letter-spacing: -0.05em;
+    line-height: 0.95;
+  }
+  .strip-lede {
+    color: var(--wdm-mist);
+    font-size: clamp(1.0625rem, 1.5vw, 1.25rem);
+    max-width: 36ch;
+  }
+  @media (min-width: 900px) {
+    .strip-head {
+      grid-template-columns: 1fr auto;
+      align-items: end;
+    }
+  }
+
+  .strip-timeline {
+    timeline-scope: --work-strip;
+  }
+  .strip {
+    --edge: max(var(--gutter), calc((100vw - var(--max)) / 2 + var(--gutter)));
+    border-radius: var(--radius-lg);
+  }
+  .strip-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  /* Mobile: a considered vertical stack. */
+  .strip {
+    padding-inline: var(--gutter);
+  }
+  .strip-list {
+    display: grid;
+    gap: 3.5rem;
+  }
+  .strip-list :global(.wk-media) {
+    aspect-ratio: 5 / 4;
+  }
+  /* Staggered stills on phones: alternate frames step in from either side. */
+  @media (max-width: 767.98px) {
+    .strip-item:nth-child(odd) {
+      padding-right: 12%;
+    }
+    .strip-item:nth-child(even) {
+      padding-left: 12%;
+    }
+    .strip-item:nth-child(odd) :global(.wk-media) {
+      aspect-ratio: 4 / 5;
+    }
+  }
+
+  /* Desktop: horizontal, snapping, full-bleed to the right edge. */
+  @media (min-width: 768px) {
+    .strip {
+      overflow-x: auto;
+      overscroll-behavior-x: contain;
+      scroll-snap-type: x mandatory;
+      scroll-padding-inline: var(--edge);
+      padding-inline: var(--edge);
+      padding-block: 0.5rem 1.5rem;
+      scrollbar-width: none;
+      scroll-timeline: --work-strip x;
+    }
+    .strip::-webkit-scrollbar {
+      display: none;
+    }
+    .strip:focus-visible {
+      outline-offset: -2px;
+    }
+    .strip-list {
+      display: flex;
+      gap: clamp(1.25rem, 2.6vw, 2.5rem);
+      width: max-content;
+    }
+    .strip-item {
+      width: min(36rem, 40vw);
+      scroll-snap-align: start;
+    }
+    .strip-item:nth-child(even) {
+      padding-top: clamp(2rem, 5vw, 5rem);
+    }
+    .strip-list :global(.wk-media) {
+      aspect-ratio: 4 / 5;
+    }
+  }
+
+  .strip-foot {
+    display: grid;
+    gap: 1.5rem;
+    margin-top: clamp(2.5rem, 4vw, 3.5rem);
+    align-items: center;
+  }
+  .strip-progress {
+    display: none;
+    height: 2px;
+    border-radius: 2px;
+    background: var(--wdm-line);
+    overflow: hidden;
+  }
+  .strip-progress span {
+    display: block;
+    height: 100%;
+    background: var(--wdm-gradient-x);
+    transform-origin: left;
+    transform: scaleX(0.25);
+  }
+  .strip-note {
+    color: var(--wdm-mist);
+    font-size: 0.875rem;
+  }
+  .strip-foot .link-arrow {
+    justify-self: start;
+  }
+  @media (min-width: 768px) {
+    .strip-foot {
+      grid-template-columns: minmax(8rem, 1fr) auto auto;
+      gap: 2.5rem;
+    }
+    .strip-progress {
+      display: block;
+    }
+    @supports (animation-timeline: scroll()) {
+      .strip-progress span {
+        animation: strip-progress linear both;
+        animation-timeline: --work-strip;
+      }
+    }
+  }
+  @keyframes strip-progress {
+    from {
+      transform: scaleX(0.25);
+    }
+    to {
+      transform: scaleX(1);
+    }
+  }
+</style>

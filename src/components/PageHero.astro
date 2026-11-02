@@ -1,0 +1,108 @@
+---
+import { splitHeadline } from '../lib/content';
+
+interface Props {
+  headline: string;
+  lede: string;
+  eyebrow?: string;
+  /** Optional ordinal shown as a quiet scene marker, e.g. "02". */
+  index?: string;
+}
+const { headline, lede, eyebrow, index } = Astro.props;
+const [line1, line2] = splitHeadline(headline);
+---
+
+<section class="page-hero wrap">
+  <div class="page-hero-orb" aria-hidden="true"></div>
+  <div class="page-hero-meta">
+    {index && <span class="page-hero-index" aria-hidden="true">{index}</span>}
+    {eyebrow && <p class="eyebrow">{eyebrow}</p>}
+  </div>
+  <h1 class="page-hero-title dream-text">
+    <span>{line1}</span>
+    {line2 && <span>{line2}</span>}
+  </h1>
+  <div class="page-hero-foot">
+    <span class="page-hero-rule" aria-hidden="true"></span>
+    <p class="page-hero-lede">{lede}</p>
+  </div>
+  <slot />
+</section>
+
+<style>
+  .page-hero {
+    position: relative;
+    display: grid;
+    gap: clamp(1.75rem, 3.5vw, 3rem);
+    padding-top: clamp(3.5rem, 11vw, 9rem);
+    padding-bottom: clamp(4rem, 10vw, 8rem);
+  }
+  .page-hero-orb {
+    position: absolute;
+    z-index: -1;
+    top: -6rem;
+    right: -10vw;
+    width: min(70vw, 52rem);
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background:
+      radial-gradient(closest-side at 40% 40%, rgb(212 178 253 / 0.22), transparent 70%),
+      radial-gradient(closest-side at 65% 70%, rgb(254 192 208 / 0.14), transparent 70%);
+    pointer-events: none;
+  }
+  .page-hero-meta {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    min-height: 1rem;
+  }
+  .page-hero-index {
+    font-family: var(--font-display);
+    font-size: 0.75rem;
+    font-weight: 500;
+    padding: 0.35rem 0.7rem;
+    border: 1px solid var(--wdm-line-strong);
+    border-radius: 999px;
+    color: var(--wdm-paper);
+  }
+  .page-hero-title {
+    font-size: clamp(2.35rem, 8.2vw, 7.75rem);
+    font-weight: 500;
+    line-height: 1;
+    letter-spacing: -0.045em;
+    padding-bottom: 0.08em;
+    max-width: 14ch;
+  }
+  .page-hero-title > span + span {
+    padding-left: clamp(0rem, 6vw, 7rem);
+  }
+  .page-hero-foot {
+    display: grid;
+    gap: 1.5rem;
+    align-items: start;
+  }
+  .page-hero-rule {
+    display: block;
+    width: 4.5rem;
+    height: 2px;
+    border-radius: 2px;
+    margin-top: 0.85rem;
+    background: var(--wdm-gradient-x);
+  }
+  .page-hero-lede {
+    font-size: clamp(1.125rem, 1.9vw, 1.5rem);
+    line-height: 1.5;
+    max-width: 34ch;
+    color: var(--wdm-paper);
+  }
+  @media (min-width: 900px) {
+    .page-hero-foot {
+      grid-template-columns: 1fr minmax(0, 36rem);
+      gap: 3rem;
+    }
+    .page-hero-rule {
+      justify-self: end;
+      width: 8rem;
+    }
+  }
+</style>

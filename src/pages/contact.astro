@@ -1,20 +1,95 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from '../components/PageHero.astro';
 import ContactForm from '../components/ContactForm.astro';
-import { getPage, getSite } from '../lib/content';
+import { getPage, getSite, pad } from '../lib/content';
 
 const site = await getSite();
 const page = await getPage('contact');
+const navIndex = site.nav.findIndex((n) => n.href === '/contact');
 ---
 
 <BaseLayout title={page.title} description={page.lede}>
-  <h1 class="text-4xl font-bold">{page.headline}</h1>
-  <p>{page.lede}</p>
-  <section class="py-8">
-    <h2 class="text-2xl font-bold">{page.intro_heading}</h2>
-    <p>{page.intro}</p>
-    <div class="mt-4"><ContactForm /></div>
-    <p class="mt-4">{page.email_label} <a class="underline" href={`mailto:${site.email}`}>{site.email}</a></p>
-    <p class="mt-4 text-sm uppercase">{site.location}</p>
+  <PageHero headline={page.headline} lede={page.lede} eyebrow={site.location} index={pad(navIndex + 1)} />
+
+  <section class="contact wrap" data-reveal>
+    <div class="contact-aside">
+      <h2 class="contact-title">{page.intro_heading}</h2>
+      <p class="contact-intro">{page.intro}</p>
+      <div class="contact-email">
+        <p class="eyebrow">{page.email_label}</p>
+        <a href={`mailto:${site.email}`}>{site.email}</a>
+      </div>
+    </div>
+    <div class="contact-panel">
+      <ContactForm />
+    </div>
   </section>
 </BaseLayout>
+
+<style>
+  .contact {
+    display: grid;
+    gap: clamp(2.5rem, 5vw, 4rem);
+    padding-bottom: clamp(3rem, 7vw, 6rem);
+  }
+  .contact-aside {
+    display: grid;
+    gap: 1.25rem;
+    align-content: start;
+  }
+  .contact-title {
+    font-size: clamp(1.9rem, 3.6vw, 3rem);
+    letter-spacing: -0.045em;
+  }
+  .contact-intro {
+    color: var(--wdm-mist);
+    font-size: clamp(1.0625rem, 1.4vw, 1.2rem);
+    max-width: 32ch;
+  }
+  .contact-email {
+    display: grid;
+    gap: 0.75rem;
+    justify-items: start;
+    margin-top: 1.5rem;
+    padding-top: 1.75rem;
+    border-top: 1px solid var(--wdm-line);
+  }
+  .contact-email a {
+    font-family: var(--font-display);
+    font-size: clamp(1.05rem, 2vw, 1.5rem);
+    font-weight: 450;
+    letter-spacing: -0.02em;
+    color: var(--wdm-paper);
+    text-decoration: none;
+    padding-bottom: 0.3rem;
+    border-bottom: 1px solid var(--wdm-line-strong);
+    overflow-wrap: anywhere;
+    transition: border-color 0.4s var(--ease-dream);
+  }
+  .contact-email a:hover {
+    border-color: var(--wdm-lavender);
+  }
+  .contact-panel {
+    position: relative;
+    isolation: isolate;
+    padding: clamp(1.25rem, 4vw, 3.25rem);
+    border-radius: calc(var(--radius-lg) * 1.3);
+    border: 1px solid var(--wdm-line);
+    background:
+      radial-gradient(90% 70% at 100% 0%, rgb(212 178 253 / 0.12), transparent 60%),
+      radial-gradient(70% 60% at 0% 100%, rgb(254 192 208 / 0.08), transparent 60%),
+      rgb(28 11 38 / 0.7);
+  }
+  @media (min-width: 1000px) {
+    .contact {
+      grid-template-columns: minmax(0, 4fr) minmax(0, 7fr);
+      column-gap: clamp(3rem, 6vw, 6rem);
+    }
+    .contact-aside {
+      position: sticky;
+      top: 3rem;
+      align-self: start;
+    }
+  }
+</style>

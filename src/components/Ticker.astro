@@ -1,0 +1,76 @@
+---
+import { getSite } from '../lib/content';
+
+const site = await getSite();
+const words = site.ticker;
+// The first run is the readable text; the copies exist only to make the loop seamless.
+const copies = [0, 1, 2];
+---
+
+<div class="ticker">
+  <div class="ticker-track">
+    {
+      copies.map((c) => (
+        <ul class="ticker-run" aria-hidden={c === 0 ? undefined : 'true'}>
+          {words.map((w, i) => (
+            <li class:list={['ticker-word', { 'ticker-word--soft': i % 2 === 1 }]}>
+              {w}
+              <span class="ticker-dot" aria-hidden="true" />
+            </li>
+          ))}
+        </ul>
+      ))
+    }
+  </div>
+</div>
+
+<style>
+  .ticker {
+    position: relative;
+    overflow: hidden;
+    padding-block: clamp(1.5rem, 3vw, 2.5rem);
+    border-block: 1px solid var(--wdm-line);
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
+    mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
+  }
+  .ticker-track {
+    display: flex;
+    width: max-content;
+    animation: ticker 48s linear infinite;
+  }
+  .ticker-run {
+    display: flex;
+    flex: none;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .ticker-word {
+    display: flex;
+    align-items: center;
+    gap: clamp(1.5rem, 4vw, 3.5rem);
+    padding-right: clamp(1.5rem, 4vw, 3.5rem);
+    font-family: var(--font-display);
+    font-size: clamp(2.25rem, 7vw, 6rem);
+    font-weight: 300;
+    letter-spacing: -0.04em;
+    line-height: 1.1;
+    white-space: nowrap;
+    color: var(--wdm-paper);
+  }
+  .ticker-word--soft {
+    font-weight: 600;
+  }
+  .ticker-dot {
+    display: block;
+    width: 0.22em;
+    height: 0.22em;
+    border-radius: 50%;
+    background: var(--wdm-gradient);
+  }
+  @keyframes ticker {
+    to {
+      transform: translate3d(calc(-100% / 3), 0, 0);
+    }
+  }
+</style>

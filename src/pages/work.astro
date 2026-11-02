@@ -1,17 +1,158 @@
 ---
+import { Image } from 'astro:assets';
 import BaseLayout from '../layouts/BaseLayout.astro';
-import WorkCard from '../components/WorkCard.astro';
-import { getPage, getWork } from '../lib/content';
+import PageHero from '../components/PageHero.astro';
+import CtaBand from '../components/CtaBand.astro';
+import { getPage, getSite, getWork, pad } from '../lib/content';
 
+const site = await getSite();
 const page = await getPage('work');
 const work = await getWork();
+const navIndex = site.nav.findIndex((n) => n.href === '/work');
 ---
 
 <BaseLayout title={page.title} description={page.lede}>
-  <h1 class="text-4xl font-bold">{page.headline}</h1>
-  <p>{page.lede}</p>
-  <div class="grid gap-4 py-8 md:grid-cols-2">
-    {work.map((w, i) => <WorkCard item={w} eager={i < 2} />)}
+  <PageHero headline={page.headline} lede={page.lede} eyebrow={site.nav[navIndex]?.label} index={pad(navIndex + 1)} />
+
+  <div class="scenes wrap">
+    {
+      work.map((w, i) => (
+        <article
+          class:list={['scene', { 'scene--portrait': w.data.image && w.data.image.height > w.data.image.width }]}
+          id={w.id}
+          data-reveal
+        >
+          {w.data.image && (
+            <div class="scene-media">
+              <Image
+                src={w.data.image}
+                alt={w.data.image_alt ?? ''}
+                width={1600}
+                widths={[480, 720, 960, 1280, 1600]}
+                sizes="(min-width: 900px) 56vw, calc(100vw - 2rem)"
+                loading={i === 0 ? 'eager' : 'lazy'}
+                fetchpriority={i === 0 ? 'high' : undefined}
+                decoding="async"
+                class="scene-img"
+              />
+            </div>
+          )}
+          <div class="scene-text">
+            <div class="scene-meta">
+              <span class="scene-num" aria-hidden="true">{pad(w.data.order)}</span>
+              <p class="eyebrow">{w.data.category}</p>
+            </div>
+            <h2 class="scene-title">{w.data.title}</h2>
+            <p class="scene-summary">{w.data.summary}</p>
+          </div>
+        </article>
+      ))
+    }
+    <p class="footnote">{page.footnote}</p>
   </div>
-  <p class="text-sm">{page.footnote}</p>
+
+  <CtaBand />
 </BaseLayout>
+
+<style>
+  .scenes {
+    display: grid;
+    gap: clamp(4rem, 9vw, 8rem);
+    padding-bottom: clamp(3rem, 7vw, 6rem);
+  }
+  .scene {
+    display: grid;
+    gap: clamp(1.5rem, 3vw, 2.5rem);
+    scroll-margin-top: 2rem;
+  }
+  .scene-media {
+    position: relative;
+    overflow: hidden;
+    border-radius: calc(var(--radius-lg) * 1.3);
+    border: 1px solid var(--wdm-line);
+    background: var(--wdm-ink-2);
+    aspect-ratio: 4 / 3;
+  }
+  .scene-media::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(70% 70% at 90% 0%, rgb(212 178 253 / 0.16), transparent 60%),
+      linear-gradient(180deg, transparent 60%, rgb(19 6 26 / 0.5));
+    pointer-events: none;
+  }
+  .scene-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .scene-text {
+    display: grid;
+    gap: 1.1rem;
+    align-content: center;
+  }
+  .scene-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+  }
+  .scene-num {
+    font-family: var(--font-display);
+    font-size: 0.75rem;
+    font-weight: 500;
+    padding: 0.35rem 0.7rem;
+    border-radius: 999px;
+    border: 1px solid var(--wdm-line-strong);
+  }
+  .scene-title {
+    font-size: clamp(1.9rem, 4.2vw, 3.75rem);
+    letter-spacing: -0.045em;
+    line-height: 1.02;
+    max-width: 14ch;
+  }
+  .scene-summary {
+    color: var(--wdm-mist);
+    font-size: clamp(1.0625rem, 1.4vw, 1.25rem);
+    max-width: 34ch;
+  }
+  .footnote {
+    color: var(--wdm-mist);
+    font-size: 0.875rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--wdm-line);
+  }
+  @media (min-width: 900px) {
+    .scene {
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      column-gap: clamp(1rem, 2vw, 2rem);
+      align-items: center;
+    }
+    .scene-media {
+      grid-column: 1 / span 7;
+      grid-row: 1;
+      aspect-ratio: 5 / 4;
+    }
+    .scene-text {
+      grid-column: 9 / -1;
+      grid-row: 1;
+    }
+    .scene:nth-child(even) .scene-media {
+      grid-column: 6 / -1;
+    }
+    .scene:nth-child(even) .scene-text {
+      grid-column: 1 / span 4;
+    }
+    /* The portrait still gets a portrait frame. */
+    .scene.scene--portrait .scene-media {
+      grid-column: 2 / span 5;
+      aspect-ratio: 4 / 5;
+    }
+    .scene.scene--portrait .scene-text {
+      grid-column: 8 / -1;
+    }
+    .scene--portrait .scene-title {
+      font-size: clamp(2.2rem, 4.6vw, 4.5rem);
+    }
+  }
+</style>

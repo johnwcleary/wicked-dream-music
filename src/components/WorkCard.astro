@@ -6,28 +6,121 @@ import { pad } from '../lib/content';
 interface Props {
   item: Work;
   headingLevel?: 'h2' | 'h3';
-  eager?: boolean;
+  href?: string;
 }
-const { item, headingLevel = 'h2', eager = false } = Astro.props;
+const { item, headingLevel = 'h3', href } = Astro.props;
 const { order, category, title, summary, image, image_alt } = item.data;
 const Heading = headingLevel;
 ---
 
-<article class="border p-4">
+<article class="wk">
   {
     image && (
-      <Image
-        src={image}
-        alt={image_alt ?? ''}
-        width={Math.min(1200, image.width)}
-        widths={[400, 800, 1200].filter((w) => w <= image.width)}
-        sizes="(min-width: 768px) 50vw, 100vw"
-        loading={eager ? 'eager' : 'lazy'}
-        class="h-auto w-full"
-      />
+      <div class="wk-media">
+        <Image
+          src={image}
+          alt={image_alt ?? ''}
+          width={1120}
+          widths={[360, 560, 800, 1120]}
+          sizes="(min-width: 768px) 36rem, calc(100vw - 2rem)"
+          loading="lazy"
+          decoding="async"
+          class="wk-img"
+        />
+      </div>
     )
   }
-  <p class="text-sm uppercase">{pad(order)} / {category}</p>
-  <Heading class="text-xl font-bold">{title}</Heading>
-  <p>{summary}</p>
+  <div class="wk-text">
+    <div class="wk-meta">
+      <span class="wk-num" aria-hidden="true">{pad(order)}</span>
+      <p class="eyebrow">{category}</p>
+    </div>
+    <Heading class="wk-title">
+      {href ? <a href={href} class="wk-link">{title}</a> : title}
+    </Heading>
+    <p class="wk-summary">{summary}</p>
+  </div>
 </article>
+
+<style>
+  .wk {
+    position: relative;
+    display: grid;
+    gap: 1.5rem;
+    align-content: start;
+  }
+  .wk-media {
+    position: relative;
+    overflow: hidden;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--wdm-line);
+    background: var(--wdm-ink-2);
+    aspect-ratio: 4 / 5;
+  }
+  .wk-media::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, transparent 55%, rgb(19 6 26 / 0.55));
+    pointer-events: none;
+  }
+  .wk-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transform: scale(1.02);
+    transition: transform 1.4s var(--ease-dream);
+  }
+  .wk:hover .wk-img,
+  .wk:focus-within .wk-img {
+    transform: scale(1.07);
+  }
+  .wk-text {
+    display: grid;
+    gap: 0.85rem;
+    padding-inline: 0.25rem;
+  }
+  .wk-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+  }
+  .wk-num {
+    font-family: var(--font-display);
+    font-size: 0.75rem;
+    font-weight: 500;
+    padding: 0.3rem 0.65rem;
+    border-radius: 999px;
+    border: 1px solid var(--wdm-line-strong);
+  }
+  .wk-title {
+    font-size: clamp(1.35rem, 2.1vw, 1.85rem);
+    font-weight: 500;
+    letter-spacing: -0.03em;
+    line-height: 1.15;
+  }
+  .wk-link {
+    color: inherit;
+    text-decoration: none;
+    border-radius: 6px;
+    background-image: var(--wdm-gradient-x);
+    background-size: 0% 2px;
+    background-repeat: no-repeat;
+    background-position: 0 100%;
+    transition: background-size 0.6s var(--ease-dream);
+  }
+  .wk-link::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: var(--radius-lg);
+  }
+  .wk:hover .wk-link,
+  .wk-link:focus-visible {
+    background-size: 100% 2px;
+  }
+  .wk-summary {
+    color: var(--wdm-mist);
+    max-width: 40ch;
+  }
+</style>

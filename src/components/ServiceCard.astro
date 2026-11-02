@@ -1,21 +1,218 @@
 ---
 import type { Service } from '../lib/content';
 import { pad } from '../lib/content';
+import Arrow from './Arrow.astro';
 
 interface Props {
   service: Service;
   headingLevel?: 'h2' | 'h3';
+  /** Card title links to this href (home); without it the card is a static panel. */
+  href?: string;
+  /** Large panel layout used on the Services page. */
+  variant?: 'card' | 'panel';
 }
-const { service, headingLevel = 'h2' } = Astro.props;
+const { service, headingLevel = 'h2', href, variant = 'card' } = Astro.props;
 const { order, category, title, summary, bullets } = service.data;
 const Heading = headingLevel;
 ---
 
-<article class="border p-4">
-  <p class="text-sm uppercase">{pad(order)} / {category}</p>
-  <Heading class="text-xl font-bold">{title}</Heading>
-  <p>{summary}</p>
-  <ul class="list-disc pl-5">
+<article class:list={['svc', `svc--${variant}`]} id={variant === 'panel' ? service.id : undefined}>
+  <div class="svc-head">
+    <span class="svc-num" aria-hidden="true">{pad(order)}</span>
+    <p class="eyebrow">{category}</p>
+  </div>
+  <div class="svc-body">
+    <Heading class="svc-title">
+      {
+        href ? (
+          <a href={href} class="svc-link">
+            {title}
+          </a>
+        ) : (
+          title
+        )
+      }
+    </Heading>
+    <p class="svc-summary">{summary}</p>
+  </div>
+  <ul class="svc-list">
     {bullets.map((b) => <li>{b}</li>)}
   </ul>
+  {href && <Arrow class="svc-arrow" />}
 </article>
+
+<style>
+  .svc {
+    position: relative;
+    isolation: isolate;
+    display: grid;
+    align-content: start;
+    gap: 1.75rem;
+    padding: clamp(1.5rem, 3vw, 2.75rem);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--wdm-line);
+    background:
+      radial-gradient(120% 90% at 0% 0%, rgb(212 178 253 / 0.07), transparent 55%),
+      rgb(28 11 38 / 0.6);
+    transition: background-color 0.6s var(--ease-dream), border-color 0.6s var(--ease-dream);
+  }
+  /* Gradient edge-light: a 1px gradient ring that fades in on hover / focus-within. */
+  .svc::before {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    z-index: -1;
+    padding: 1px;
+    border-radius: inherit;
+    background: linear-gradient(160deg, var(--wdm-lavender), rgb(212 178 253 / 0.1) 40%, rgb(254 192 208 / 0.1) 60%, var(--wdm-pink));
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask:
+      linear-gradient(#000 0 0) content-box exclude,
+      linear-gradient(#000 0 0);
+    opacity: 0;
+    transition: opacity 0.6s var(--ease-dream);
+  }
+  /* Soft inner light that rises with the edge. */
+  .svc::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    background: radial-gradient(80% 60% at 100% 0%, rgb(254 192 208 / 0.1), transparent 70%);
+    opacity: 0;
+    transition: opacity 0.6s var(--ease-dream);
+  }
+  .svc:hover,
+  .svc:focus-within {
+    border-color: transparent;
+  }
+  .svc:hover::before,
+  .svc:focus-within::before,
+  .svc:hover::after,
+  .svc:focus-within::after {
+    opacity: 1;
+  }
+
+  .svc-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+  .svc-num {
+    font-family: var(--font-display);
+    font-size: 0.8125rem;
+    font-weight: 500;
+    padding: 0.4rem 0.75rem;
+    border-radius: 999px;
+    border: 1px solid var(--wdm-line-strong);
+    font-variant-numeric: tabular-nums;
+  }
+  .svc-head .eyebrow {
+    order: 2;
+  }
+  .svc-body {
+    display: grid;
+    gap: 1rem;
+  }
+  .svc-title {
+    font-size: clamp(1.6rem, 3vw, 2.5rem);
+    font-weight: 500;
+    letter-spacing: -0.035em;
+  }
+  .svc-link {
+    color: inherit;
+    text-decoration: none;
+    border-radius: 6px;
+  }
+  /* Stretch the link over the whole card. */
+  .svc-link::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: var(--radius-lg);
+  }
+  .svc-summary {
+    color: var(--wdm-mist);
+    font-size: 1.0625rem;
+    max-width: 38ch;
+  }
+  .svc-list {
+    display: grid;
+    gap: 0;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    font-size: 0.9375rem;
+  }
+  .svc-list li {
+    display: flex;
+    gap: 0.85rem;
+    align-items: baseline;
+    padding-block: 0.7rem;
+    border-top: 1px solid var(--wdm-line);
+  }
+  .svc-list li::before {
+    content: '';
+    flex: none;
+    width: 0.4rem;
+    height: 0.4rem;
+    border-radius: 50%;
+    background: var(--wdm-gradient);
+    transform: translateY(-0.1em);
+  }
+  .svc :global(.svc-arrow) {
+    position: absolute;
+    right: clamp(1.5rem, 3vw, 2.75rem);
+    bottom: clamp(1.5rem, 3vw, 2.75rem);
+    width: 1.5rem;
+    height: 1.5rem;
+    color: var(--wdm-lavender);
+    opacity: 0;
+    transform: translateX(-8px);
+    transition: opacity 0.5s var(--ease-dream), transform 0.5s var(--ease-dream);
+  }
+  .svc:hover :global(.svc-arrow),
+  .svc:focus-within :global(.svc-arrow) {
+    opacity: 1;
+    transform: none;
+  }
+  .svc--card .svc-list {
+    padding-right: 2.25rem;
+  }
+
+  /* Services page: big cinematic panel */
+  .svc--panel {
+    gap: 2rem;
+    padding: clamp(1.75rem, 4.5vw, 4.5rem);
+  }
+  .svc--panel .svc-title {
+    font-size: clamp(2rem, 5.4vw, 4.75rem);
+    letter-spacing: -0.045em;
+  }
+  .svc--panel .svc-summary {
+    font-size: clamp(1.0625rem, 1.5vw, 1.3rem);
+    color: var(--wdm-paper);
+  }
+  .svc--panel .svc-list {
+    font-size: 1rem;
+  }
+  @media (min-width: 900px) {
+    .svc--panel {
+      grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+      grid-template-rows: auto 1fr;
+      column-gap: clamp(2rem, 6vw, 6rem);
+      row-gap: 3rem;
+    }
+    .svc--panel .svc-head {
+      grid-column: 1 / -1;
+    }
+    .svc--panel .svc-list {
+      align-self: end;
+    }
+  }
+</style>
