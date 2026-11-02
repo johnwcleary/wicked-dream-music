@@ -60,13 +60,13 @@ Photos are grayscale and high contrast, multiplied over the gradient, with the b
 
 **Page order.**
 1. **Hero.** A full-screen video loop under a transparent header, with the solid lavender wordmark, headline, intro and a lavender "See what we do" button. The footer row lists the services and the video title.
-2. **Words and photos.** "Artists. Ideas. Sound. Culture." set huge, with the four work photos inline between the words. Each photo opens its work entry.
+2. **Words and photos.** "Artists. Ideas. Sound. Culture." set huge, with the four work photos inline. Each word keeps its photo beside it: two pairs per line on desktop, one per line on phones. Each photo opens its work entry.
 3. **Services** (`#services`). Numbered rows that expand to show their bullets.
-4. **About** (`#about`). An ink band with the two chapters side by side, then the pull quote as full-height lavender-to-pink highlighter blocks.
+4. **About** (`#about`). An ink band. Each chapter is a row with the title on the left and the body on the right; there is one chapter for now, to be expanded. The pull quote below is set in lavender-to-pink gradient type.
 5. **Selected work** (`#work`). Expandable rows: the Miley portrait, the click-to-play YouTube video for International A&R, and the photos.
 6. **Contact** (`#contact`). A lavender band with the headline, intro and one giant `mailto:` link. **The form was removed at John's request.** Phase 2 needs no form backend for this direction.
 
-**Gradient.** Used on the hovered photos, the video play button and the quote highlight. The wordmark is solid lavender, and lavender also fills the contact band and the main button.
+**Gradient.** Used on the hovered photos, the video play button and the pull quote's type. The wordmark is solid lavender, and lavender also fills the contact band and the main button.
 
 **Video hero.**
 - The loop starts after the page has loaded, pauses off-screen, and never autoplays for visitors with reduced motion turned on.
@@ -78,7 +78,6 @@ Photos are grayscale and high contrast, multiplied over the gradient, with the b
 **Motion** (all off under reduced motion):
 - Masked line reveals.
 - Photos unmask and drift with parallax.
-- The quote highlight draws in.
 - The video pushes in and darkens, and the wordmark lifts away as you leave the hero.
 
 **Push further.** Short loops cut from the Imin film for the work rows. A nav order that matches the page order (Services now comes before About). Real metadata per work entry.
