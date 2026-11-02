@@ -84,7 +84,7 @@ const watch = `https://www.youtube.com/watch?v=${id}`;
     align-items: center;
     gap: 1rem;
     padding: clamp(0.9rem, 2vw, 1.5rem);
-    background: linear-gradient(transparent, rgb(19 6 26 / 0.75));
+    background: linear-gradient(transparent, color-mix(in srgb, var(--ink) 75%, transparent));
   }
   .video-btn {
     flex: none;
@@ -112,7 +112,7 @@ const watch = `https://www.youtube.com/watch?v=${id}`;
     gap: 0.2rem;
   }
   .video-title {
-    color: rgb(253 252 248 / 0.8);
+    color: color-mix(in srgb, var(--paper) 80%, transparent);
   }
   .video :global(iframe) {
     position: absolute;

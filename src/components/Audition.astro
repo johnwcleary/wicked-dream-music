@@ -1,0 +1,210 @@
+---
+/**
+ * Design-audition switcher: flip palettes and type pairings live.
+ * Hidden unless the URL has ?audition (it then stays on for the session).
+ * ?palette=…&type=… applies a combination without showing the panel, so a
+ * specific look can be sent to the client. Internal tool: its labels are not
+ * site copy, and it should be removed once a direction is chosen.
+ */
+import { palettes, typesets } from '../lib/audition';
+---
+
+<div class="aud" data-audition hidden>
+  <button type="button" class="aud-toggle" aria-expanded="false" aria-controls="aud-panel">Audition</button>
+  <div id="aud-panel" class="aud-panel" hidden>
+    <fieldset>
+      <legend>Palette</legend>
+      {
+        palettes.map((p) => (
+          <label class="aud-opt">
+            <input type="radio" name="aud-palette" value={p.id} />
+            <span class="aud-sw" aria-hidden="true">
+              {p.swatch.map((c) => (
+                <i style={`background:${c}`} />
+              ))}
+            </span>
+            <span>{p.label}</span>
+          </label>
+        ))
+      }
+    </fieldset>
+    <fieldset>
+      <legend>Type</legend>
+      {
+        typesets.map((t) => (
+          <label class="aud-opt">
+            <input type="radio" name="aud-type" value={t.id} />
+            <span class="aud-type" style={`font-family:'${t.family}'`}>Aa</span>
+            <span>
+              {t.label}
+              <small>{t.note}</small>
+            </span>
+          </label>
+        ))
+      }
+    </fieldset>
+    <button type="button" class="aud-copy" data-aud-copy>Copy link to this look</button>
+  </div>
+</div>
+
+<style>
+  .aud {
+    position: fixed;
+    right: 1rem;
+    bottom: 1rem;
+    z-index: 80;
+    font-family: ui-monospace, Menlo, monospace;
+    font-size: 12px;
+    line-height: 1.3;
+    color: #f7f7f5;
+  }
+  .aud[hidden],
+  .aud-panel[hidden] {
+    display: none;
+  }
+  .aud-toggle,
+  .aud-copy {
+    font: inherit;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: inherit;
+    background: #111;
+    border: 1px solid rgb(255 255 255 / 0.25);
+    border-radius: 999px;
+    padding: 0.6rem 0.9rem;
+    cursor: pointer;
+  }
+  .aud-toggle {
+    position: relative;
+    float: right;
+    box-shadow: 0 6px 24px rgb(0 0 0 / 0.3);
+  }
+  .aud-panel {
+    clear: both;
+    position: absolute;
+    right: 0;
+    bottom: 3.25rem;
+    width: min(20rem, calc(100vw - 2rem));
+    max-height: min(36rem, calc(100svh - 6rem));
+    overflow-y: auto;
+    padding: 0.75rem;
+    background: #111;
+    border: 1px solid rgb(255 255 255 / 0.18);
+    border-radius: 14px;
+    box-shadow: 0 16px 48px rgb(0 0 0 / 0.4);
+  }
+  fieldset {
+    margin: 0 0 0.75rem;
+    padding: 0;
+    border: 0;
+  }
+  legend {
+    margin-bottom: 0.4rem;
+    color: rgb(255 255 255 / 0.65);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .aud-opt {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.4rem 0.45rem;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+  .aud-opt:hover {
+    background: rgb(255 255 255 / 0.07);
+  }
+  .aud-opt:has(input:checked) {
+    background: rgb(255 255 255 / 0.14);
+  }
+  .aud-opt input {
+    accent-color: #d4b2fd;
+    margin: 0;
+  }
+  .aud-sw {
+    display: inline-flex;
+    border-radius: 4px;
+    overflow: hidden;
+    outline: 1px solid rgb(255 255 255 / 0.2);
+  }
+  .aud-sw i {
+    width: 0.7rem;
+    height: 1.1rem;
+  }
+  .aud-type {
+    width: 1.75rem;
+    font-size: 1.15rem;
+    line-height: 1;
+  }
+  small {
+    display: block;
+    color: rgb(255 255 255 / 0.6);
+    font-size: 11px;
+  }
+  .aud-copy {
+    width: 100%;
+  }
+  .aud :focus-visible {
+    outline: 2px solid #d4b2fd;
+    outline-offset: 2px;
+  }
+</style>
+
+<script>
+  const root = document.documentElement;
+  const box = document.querySelector<HTMLElement>('[data-audition]');
+  const panel = document.getElementById('aud-panel');
+  const toggle = box?.querySelector<HTMLButtonElement>('.aud-toggle');
+  const params = new URLSearchParams(location.search);
+  let on = params.has('audition');
+  try {
+    if (on) sessionStorage.setItem('wdm-audition', '1');
+    else on = sessionStorage.getItem('wdm-audition') === '1';
+  } catch {}
+
+  if (box && panel && toggle && on) {
+    box.hidden = false;
+    const pick = (name: string, value: string) => {
+      const input = box.querySelector<HTMLInputElement>(`input[name="${name}"][value="${value}"]`);
+      if (input) input.checked = true;
+    };
+    pick('aud-palette', root.dataset.palette ?? 'brand');
+    pick('aud-type', root.dataset.type ?? 'instrument');
+
+    const lookUrl = (withPanel: boolean) => {
+      const u = new URL(location.href);
+      u.search = '';
+      u.hash = '';
+      if (withPanel) u.searchParams.set('audition', '');
+      u.searchParams.set('palette', root.dataset.palette ?? 'brand');
+      u.searchParams.set('type', root.dataset.type ?? 'instrument');
+      return u.toString().replace('audition=&', 'audition&');
+    };
+    box.addEventListener('change', (e) => {
+      const input = e.target as HTMLInputElement;
+      if (input.name === 'aud-palette') root.dataset.palette = input.value;
+      if (input.name === 'aud-type') root.dataset.type = input.value;
+      try {
+        localStorage.setItem('wdm-look', JSON.stringify({ palette: root.dataset.palette, type: root.dataset.type }));
+      } catch {}
+      history.replaceState(null, '', lookUrl(true) + location.hash);
+    });
+    toggle.addEventListener('click', () => {
+      const open = panel.hidden;
+      panel.hidden = !open;
+      toggle.setAttribute('aria-expanded', String(open));
+    });
+    const copy = box.querySelector<HTMLButtonElement>('[data-aud-copy]');
+    copy?.addEventListener('click', async () => {
+      const label = copy.textContent;
+      try {
+        await navigator.clipboard.writeText(lookUrl(false));
+        copy.textContent = 'Copied';
+      } catch {
+        copy.textContent = lookUrl(false);
+      }
+      setTimeout(() => (copy.textContent = label), 1600);
+    });
+  }
+</script>

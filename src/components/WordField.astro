@@ -77,7 +77,9 @@ const crops = [
   }
   @media (min-width: 768px) {
     .wf-line {
-      font-size: 8.1cqi; /* sized to the column, so two pairs per line at any desktop width */
+      /* Sized to the column so two pairs fit per line at any desktop width;
+         wider typefaces set a smaller --wf-size (audition.css). */
+      font-size: var(--wf-size, 8.1cqi);
     }
   }
   /* A word and its plate travel together: they never break across lines. */

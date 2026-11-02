@@ -52,7 +52,7 @@ const mark = initials(site.name);
     position: absolute;
     inset: 0;
     z-index: -1;
-    background: rgb(253 252 248 / 0.97);
+    background: color-mix(in srgb, var(--paper) 97%, transparent);
     backdrop-filter: saturate(1.4) blur(10px);
     -webkit-backdrop-filter: saturate(1.4) blur(10px);
     border-bottom: 1px solid transparent;
@@ -77,10 +77,10 @@ const mark = initials(site.name);
     background: transparent;
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
-    border-bottom-color: rgb(253 252 248 / 0.16);
+    border-bottom-color: color-mix(in srgb, var(--paper) 16%, transparent);
   }
   :global(html.on-hero:not(.menu-open)) .loc {
-    color: rgb(253 252 248 / 0.62);
+    color: color-mix(in srgb, var(--paper) 62%, transparent);
   }
   :global(html.on-hero:not(.menu-open)) .site-header :focus-visible {
     outline-color: var(--paper);
@@ -94,7 +94,8 @@ const mark = initials(site.name);
   .mark {
     font-size: 1.375rem;
     font-weight: 620;
-    font-stretch: 85%;
+    font-family: var(--font-display);
+    font-stretch: var(--display-stretch);
     letter-spacing: -0.04em;
     line-height: 1;
     padding-block: 0.4rem;
@@ -229,9 +230,10 @@ const mark = initials(site.name);
       width: 100%;
       padding-block: 0.7rem 0.6rem;
       font-size: clamp(2.25rem, 11vw, 3.25rem);
-      font-weight: 540;
-      font-stretch: 88%;
-      letter-spacing: -0.035em;
+      font-family: var(--font-display);
+      font-weight: var(--display-weight);
+      font-stretch: var(--display-stretch);
+      letter-spacing: var(--display-tracking);
       line-height: 1;
     }
     .menu.is-open .menu-list a::before {

@@ -15,12 +15,19 @@
   --ink: var(--wdm-ink);
   --paper: var(--wdm-paper);
   --muted: #66626b;               /* 5.8:1 on paper — AA for all sizes */
-  --rule: rgb(19 6 26 / 0.16);    /* hairlines */
-  --rule-strong: rgb(19 6 26 / 0.85);
+  --accent: var(--wdm-lavender);
+  --rule: color-mix(in srgb, var(--ink) 16%, transparent);    /* hairlines */
+  --rule-strong: color-mix(in srgb, var(--ink) 85%, transparent);
   --plate: #ece9e1;               /* empty image ground */
 
   --font-sans: "Instrument Sans Variable", "Helvetica Neue", Helvetica, Arial, sans-serif;
   --font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  /* Display settings travel as a set, so a type pairing can swap them together (audition.css). */
+  --font-display: var(--font-sans);
+  --display-weight: 540;
+  --display-stretch: 88%;
+  --display-tracking: -0.035em;
+  --display-leading: 0.88;
 
   --header-h: 4.25rem;
   --gutter: clamp(1rem, 2.2vw, 2rem);
@@ -34,7 +41,7 @@
   --color-pink: var(--wdm-pink);
   --color-paper: var(--wdm-paper);
   --color-black: var(--wdm-black);
-  --color-muted: #66626b;
+  --color-muted: var(--muted);
   --font-sans: "Instrument Sans Variable", "Helvetica Neue", Helvetica, Arial, sans-serif;
   --font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
 }
@@ -108,10 +115,11 @@
 
   /* Display type: large, condensed a touch, tight leading. */
   .display {
-    font-weight: 540;
-    font-stretch: 88%;
-    letter-spacing: -0.035em;
-    line-height: 0.88;
+    font-family: var(--font-display);
+    font-weight: var(--display-weight);
+    font-stretch: var(--display-stretch);
+    letter-spacing: var(--display-tracking);
+    line-height: var(--display-leading);
   }
   .d-xl {
     font-size: clamp(3.4rem, 9.4vw, 10rem);
