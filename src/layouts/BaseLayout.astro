@@ -1,14 +1,11 @@
 ---
 import '../styles/global.css';
-import '../styles/audition.css';
-import Audition from '../components/Audition.astro';
-import { paletteIds, typeIds } from '../lib/audition';
 import { getImage } from 'astro:assets';
 import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
 import { getSite } from '../lib/content';
 import ogSource from '../assets/brand/logo-gradient.png';
-import displayFont from '@fontsource-variable/instrument-sans/files/instrument-sans-latin-standard-normal.woff2?url';
+import displayFont from '@fontsource-variable/archivo/files/archivo-latin-wdth-normal.woff2?url';
 
 interface Props {
   title: string;
@@ -34,7 +31,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url).href;
     <link rel="canonical" href={canonical} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="preload" href={displayFont} as="font" type="font/woff2" crossorigin />
-    <meta name="theme-color" content="#fdfcf8" />
+    <meta name="theme-color" content="#f7f7f5" />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content={site.name} />
     <meta property="og:title" content={fullTitle} />
@@ -43,18 +40,9 @@ const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url).href;
     <meta property="og:image" content={ogUrl} />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="generator" content={Astro.generator} />
-    <script is:inline define:vars={{ intro, paletteIds, typeIds }}>
+    <script is:inline define:vars={{ intro }}>
       var h = document.documentElement;
       h.classList.add('js');
-      // Audition look: ?palette=&type= wins, else the last look picked in the switcher.
-      try {
-        var q = new URLSearchParams(location.search);
-        var saved = q.has('audition') || sessionStorage.getItem('wdm-audition') === '1' ? JSON.parse(localStorage.getItem('wdm-look') || '{}') : {};
-        var pal = q.get('palette') || saved.palette;
-        var typ = q.get('type') || saved.type;
-        if (paletteIds.indexOf(pal) > -1) h.dataset.palette = pal;
-        if (typeIds.indexOf(typ) > -1) h.dataset.type = typ;
-      } catch (e) {}
       if (intro) {
         h.classList.add('on-hero');
         try {
@@ -73,7 +61,6 @@ const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url).href;
       <slot />
     </main>
     <Footer />
-    <Audition />
     <script>
       // Scroll reveals: mark [data-reveal] elements as they enter the viewport.
       const items = document.querySelectorAll<HTMLElement>('[data-reveal]');

@@ -230,7 +230,7 @@ const quote = firstParas[firstParas.length - 1];
     display: block;
     width: 100%;
     height: auto;
-    color: var(--wdm-lavender);
+    color: var(--accent);
     filter: drop-shadow(0 6px 30px color-mix(in srgb, var(--ink) 45%, transparent));
   }
   /* One-time intro: the wordmark rises into view from the bottom up. */
@@ -267,7 +267,7 @@ const quote = firstParas[firstParas.length - 1];
     margin-top: 0.25rem;
     padding: 0.85rem 1.35rem;
     border-radius: 999px;
-    background: var(--wdm-lavender);
+    background: var(--accent);
     color: var(--ink);
     font-size: 1rem;
     font-weight: 560;
@@ -277,7 +277,7 @@ const quote = firstParas[firstParas.length - 1];
       transform 0.4s var(--ease-out);
   }
   .hero-cta:hover {
-    background: var(--wdm-pink);
+    background: var(--accent-2);
   }
   .hero-cta span[aria-hidden] {
     display: inline-block;
@@ -392,7 +392,7 @@ const quote = firstParas[firstParas.length - 1];
   }
   .band-ink .band-label,
   .chap-no {
-    color: var(--wdm-lavender);
+    color: var(--accent);
   }
   .chaps {
     row-gap: clamp(3rem, 7vw, 5rem);
@@ -438,16 +438,16 @@ const quote = firstParas[firstParas.length - 1];
   }
   .pull-cap {
     margin-top: 1.5rem;
-    color: var(--wdm-lavender);
+    color: var(--accent);
   }
   /* The quote is set in the brand gradient (lavender to pink across each line). */
   .pull-fill {
-    color: var(--wdm-lavender);
+    color: var(--accent);
   }
   @supports ((-webkit-background-clip: text) or (background-clip: text)) {
     .pull-fill {
       color: transparent;
-      background-image: linear-gradient(90deg, var(--wdm-lavender), var(--wdm-pink));
+      background-image: linear-gradient(90deg, var(--accent), var(--accent-2));
       -webkit-background-clip: text;
       background-clip: text;
       -webkit-box-decoration-break: clone;
@@ -458,7 +458,7 @@ const quote = firstParas[firstParas.length - 1];
   /* Contact — lavender band, one giant email link. */
   .band-lav {
     --ink-soft: color-mix(in srgb, var(--ink) 78%, transparent); /* ~6:1 on lavender */
-    background: var(--wdm-lavender);
+    background: var(--accent);
     color: var(--ink);
   }
   .cta {

@@ -22,8 +22,8 @@ const { label, class: className, variant = 'ink', id = 'wdm-logo' } = Astro.prop
       <>
         <defs>
           <linearGradient id={`${id}-g`} x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0" style="stop-color: var(--wdm-lavender)" />
-            <stop offset="1" style="stop-color: var(--wdm-pink)" />
+            <stop offset="0" style="stop-color: var(--accent)" />
+            <stop offset="1" style="stop-color: var(--accent-2)" />
           </linearGradient>
           <path id={`${id}-p`} d={d} fill-rule="evenodd" />
         </defs>

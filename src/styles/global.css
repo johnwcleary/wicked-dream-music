@@ -1,5 +1,5 @@
-@import "@fontsource-variable/instrument-sans/standard.css";
-@import "@fontsource/ibm-plex-mono/latin-400.css";
+@import "@fontsource-variable/archivo/wdth.css";
+@import "@fontsource-variable/jetbrains-mono/index.css";
 @import "tailwindcss";
 
 /* Brand tokens, sampled from the supplied logo PNGs. */
@@ -11,23 +11,27 @@
   --wdm-black: #111111;
   --wdm-gradient: linear-gradient(180deg, var(--wdm-lavender), var(--wdm-pink));
 
-  /* design/archive — light ground, near-black type, one precious gradient. */
-  --ink: var(--wdm-ink);
-  --paper: var(--wdm-paper);
-  --muted: #66626b;               /* 5.8:1 on paper — AA for all sizes */
-  --accent: var(--wdm-lavender);
+  /* design/archive — "chrome": near-black, off-white and silver (chosen from the
+     palette audition). Contrast: ink/paper 17.9, accent/ink 14.8, muted/paper 6.0. */
+  --ink: #0f0f10;
+  --paper: #f7f7f5;
+  --muted: #5e5e62;
+  --accent: #e4e2dc;              /* silver: wordmark, buttons, contact band */
+  --accent-2: #a9a9b3;            /* pewter: second stop of the accent gradient */
+  --accent-gradient: linear-gradient(180deg, var(--accent), var(--accent-2));
   --rule: color-mix(in srgb, var(--ink) 16%, transparent);    /* hairlines */
   --rule-strong: color-mix(in srgb, var(--ink) 85%, transparent);
-  --plate: #ece9e1;               /* empty image ground */
+  --plate: #e7e7e3;               /* empty image ground */
 
-  --font-sans: "Instrument Sans Variable", "Helvetica Neue", Helvetica, Arial, sans-serif;
-  --font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
-  /* Display settings travel as a set, so a type pairing can swap them together (audition.css). */
-  --font-display: var(--font-sans);
-  --display-weight: 540;
-  --display-stretch: 88%;
-  --display-tracking: -0.035em;
-  --display-leading: 0.88;
+  /* Type: Archivo (variable width, run condensed and heavy for display, echoing the
+     wordmark) with JetBrains Mono for labels. Chosen from the type audition. */
+  --font-sans: "Archivo Variable", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --font-mono: "JetBrains Mono Variable", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  --font-display: "Archivo Variable", "Arial Narrow", sans-serif;
+  --display-weight: 780;
+  --display-stretch: 70%;
+  --display-tracking: -0.015em;
+  --display-leading: 0.86;
 
   --header-h: 4.25rem;
   --gutter: clamp(1rem, 2.2vw, 2rem);
@@ -36,14 +40,12 @@
 }
 
 @theme {
-  --color-ink: var(--wdm-ink);
-  --color-lavender: var(--wdm-lavender);
-  --color-pink: var(--wdm-pink);
-  --color-paper: var(--wdm-paper);
-  --color-black: var(--wdm-black);
+  --color-ink: var(--ink);
+  --color-paper: var(--paper);
+  --color-accent: var(--accent);
   --color-muted: var(--muted);
-  --font-sans: "Instrument Sans Variable", "Helvetica Neue", Helvetica, Arial, sans-serif;
-  --font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  --font-sans: "Archivo Variable", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --font-mono: "JetBrains Mono Variable", ui-monospace, "SFMono-Regular", Menlo, monospace;
 }
 
 @layer base {
@@ -65,7 +67,7 @@
     overflow-x: clip;
   }
   ::selection {
-    background: var(--wdm-lavender);
+    background: var(--accent);
     color: var(--ink);
   }
   a {

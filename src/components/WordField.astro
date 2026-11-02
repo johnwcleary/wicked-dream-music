@@ -77,9 +77,9 @@ const crops = [
   }
   @media (min-width: 768px) {
     .wf-line {
-      /* Sized to the column so two pairs fit per line at any desktop width;
-         wider typefaces set a smaller --wf-size (audition.css). */
-      font-size: var(--wf-size, 8.1cqi);
+      /* Sized to the column so two pairs fit per line at any desktop width
+         (measured for Archivo at 70% width; re-measure if the face changes). */
+      font-size: 8.6cqi;
     }
   }
   /* A word and its plate travel together: they never break across lines. */
@@ -117,7 +117,7 @@ const crops = [
     content: '';
     position: absolute;
     inset: 0;
-    background: var(--wdm-gradient);
+    background: var(--accent-gradient);
     mix-blend-mode: multiply;
     opacity: 0;
     transition: opacity 0.6s var(--ease-out);
