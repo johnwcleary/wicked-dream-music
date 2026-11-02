@@ -13,7 +13,7 @@ import { currentBranch, startPreview } from './preview.ts';
 
 const categories = ['performance', 'accessibility', 'best-practices', 'seo'] as const;
 const branch = currentBranch();
-const server = await startPreview(4397, !process.argv.includes('--no-build'));
+const server = await startPreview(!process.argv.includes('--no-build'));
 const chrome = await chromeLauncher.launch({
   chromePath: chromium.executablePath(),
   chromeFlags: ['--headless=new', '--no-sandbox'],

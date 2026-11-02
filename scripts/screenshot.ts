@@ -13,7 +13,7 @@ const branch = currentBranch();
 const outDir = `screenshots/${branch}`;
 mkdirSync(outDir, { recursive: true });
 
-const server = await startPreview(4399, !process.argv.includes('--no-build'));
+const server = await startPreview(!process.argv.includes('--no-build'));
 const browser = await chromium.launch();
 try {
   for (const vp of viewports) {
