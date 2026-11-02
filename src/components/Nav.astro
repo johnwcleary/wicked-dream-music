@@ -8,7 +8,7 @@ const path = Astro.url.pathname;
 
 <div class="flex flex-wrap items-center justify-between gap-4 p-4">
   <a href="/" class="block w-24" aria-label={site.name}>
-    <Logo class="h-auto w-full" />
+    <Logo class="h-auto w-full" label={site.name} />
   </a>
   <nav aria-label={site.ui.nav_label}>
     <ul class="flex flex-wrap gap-4">
