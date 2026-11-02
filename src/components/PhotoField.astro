@@ -35,6 +35,8 @@ const slots = [
                   src={img}
                   alt={w.data.image_alt ?? ''}
                   widths={[320, 480, 640, 960, 1280]}
+                  width={1280}
+                  quality={60}
                   sizes={slot.sizes}
                   loading="lazy"
                   decoding="async"
@@ -44,9 +46,7 @@ const slots = [
             <figcaption class="plate-cap label">
               <span class="plate-no">[{pad(w.data.order)}]</span>
               <span class="plate-title">{w.data.title}</span>
-              <span class="plate-dim label-muted" aria-hidden="true">
-                {img.width}×{img.height}
-              </span>
+              <span class="plate-dim label-muted" aria-hidden="true">{w.data.category}</span>
             </figcaption>
           </figure>
         );

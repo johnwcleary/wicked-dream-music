@@ -6,7 +6,6 @@ import SectionHead from '../components/SectionHead.astro';
 import ServiceIndex from '../components/ServiceIndex.astro';
 import WorkIndex from '../components/WorkIndex.astro';
 import { getPage, getServices, getSite, getWork, pad, splitHeadline } from '../lib/content';
-import { logoSize } from '../lib/brand';
 
 const site = await getSite();
 const page = await getPage('home');
@@ -38,7 +37,6 @@ const workNav = site.nav.find((n) => n.href === '/work');
         <figcaption class="plate0-cap label">
           <span>[{pad(0)}]</span>
           <span class="plate0-name">{site.name}</span>
-          <span class="plate0-dim label-muted" aria-hidden="true">{logoSize.width}×{logoSize.height}</span>
           <span class="plate0-count" aria-hidden="true" data-count></span>
         </figcaption>
       </figure>
@@ -161,9 +159,6 @@ const workNav = site.nav.find((n) => n.href === '/work');
     flex: 1;
   }
   .plate0-count {
-    display: none;
-  }
-  :global(html.counting) .plate0-dim {
     display: none;
   }
   :global(html.counting) .plate0-count {

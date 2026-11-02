@@ -31,16 +31,15 @@ const work = await getWork();
                       src={img}
                       alt={w.data.image_alt ?? ''}
                       widths={[400, 640, 960, 1280, 1600]}
-                      sizes="(min-width: 900px) 42vw, 100vw"
+                      width={1600}
+                      quality={60}
+                      sizes="(min-width: 900px) 42vw, 86vw"
                       loading={i === 0 ? 'eager' : 'lazy'}
                       fetchpriority={i === 0 ? 'high' : 'auto'}
                       decoding={i === 0 ? 'sync' : 'async'}
                       class="bw"
                     />
                   </div>
-                  <figcaption class="label label-muted" aria-hidden="true">
-                    {img.width}×{img.height}
-                  </figcaption>
                 </figure>
               )}
             </li>
