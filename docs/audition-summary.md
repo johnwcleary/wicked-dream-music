@@ -50,36 +50,66 @@ Photos are grayscale and high contrast, multiplied over the gradient, with the b
 
 ---
 
-## B — `design/archive` · Editorial / portfolio index
+## B — `design/archive` · Editorial / one-page archive
 
-**Pitch.** The company presented as one numbered archive: every image is a catalogued plate with a monospace caption, on a calm paper ground with hairlines and indexes. The gradient appears only where it means something: on the wordmark, and on one hover moment.
+*Revised after the first review: now a single page, with a standalone logo, expandable services and work, more scroll motion, the Miley portrait and an embedded video.*
+
+**Pitch.** The company presented as one numbered archive on a single scroll. The gradient wordmark stands on its own on a calm paper ground, the four photos are catalogued plates, and services and work open in place as numbered indexes. The gradient appears only on the wordmark, on hovered plates and on the video play button.
 
 **Type.** Instrument Sans Variable, using the width axis at ~88% for tight, slightly condensed statements that echo the logo (`@fontsource-variable/instrument-sans`, preloaded) + IBM Plex Mono 400 for labels, numbering and captions (`@fontsource/ibm-plex-mono`).
 
-**Gradient.** Used twice, nowhere else:
-1. The hero wordmark, shown as "Plate [00]": the gradient logo on an ink plate. It fills bottom-up during a once-per-session 00%→100% counter. The counter is skipped under reduced motion and never hides content.
-2. The Selected Work list on home: hovering or keyboard-focusing a row reveals its photo in a floating frame, washed in the gradient.
+**Gradient.**
+1. The hero wordmark, on paper with no frame. It fills bottom-up during a once-per-session 00%→100% counter. The counter is skipped under reduced motion and never hides content.
+2. The photo-field plates: hovering or focusing one washes it in the gradient.
+3. The round play button on the video.
 
-Every other photo is greyscale.
+Every photo is greyscale at rest.
 
-**Highlights.**
-- Varied-aspect photo field (4:5, 3:2, 1:1, 16:10).
-- Ticker set as a static staircase statement.
-- Services as a numbered 01–04 index with sub-numbered bullets (01.1…).
-- About page: text-forward, with a pull quote taken from the body copy.
-- Interior pages end with a large "next page" link.
-- `WDM©` monogram derived from `site.name`.
+**Structure.** One page, in this order:
+1. Hero.
+2. Photo field (the four plates).
+3. Ticker staircase.
+4. About (`#about`).
+5. Services (`#services`).
+6. Work (`#work`).
+7. Contact (`#contact`).
+8. Footer.
 
-**Push further.** Extend the floating-image moment site-wide (scroll-linked plate reveals, the Work page as a full-screen contact sheet), and add real per-work metadata (year, role) once the content model has it.
+How it behaves:
+- The header nav and footer links scroll smoothly to each section.
+- A sticky header marks the section currently in view.
+- `/about`, `/services`, `/work` and `/contact` redirect to their sections (static meta-refresh pages; Phase 2 should replace these with real 301s in the host's redirect config).
+- Services and work are accordions built on native `<details>`, one open at a time, with an animated open where the browser supports it.
+- Clicking a photo-field plate scrolls to its work entry and opens it.
+
+**Media.**
+- Wrecking Ball uses the supplied Miley Cyrus portrait.
+- International A&R plays "ALICE - ALL MY GIRLS (VISUALIZER)" through a click-to-play facade: a local poster and a link until pressed, then a `youtube-nocookie.com` iframe. Nothing is requested from YouTube until someone presses play.
+
+**Motion** (all off under reduced motion):
+- Display lines rise from behind a mask.
+- Hairlines draw across.
+- Plates unmask bottom-up and drift with parallax.
+- Ticker words slide into their staircase.
+- The pull quote fills from grey to ink as it scrolls past.
+- The hero wordmark lifts and recedes as you leave it.
+
+Continuous effects use CSS scroll-driven animations (Chrome, Edge and recent Safari); browsers without them simply show the static layout.
+
+**Push further.** Real archival metadata per work entry (year, role, label). Higher-resolution Miley imagery, so it can take a larger plate. A short motion pass on the mobile menu.
 
 **JS.** Vanilla only:
 - Mobile menu.
-- Floating-image follower: preloads near the viewport; shows inline thumbnails on touch, small screens or without JS.
+- One IntersectionObserver for reveals, and another for the active nav item.
+- Deep-link opener for accordion items.
+- Video facade swap.
 - Once-per-session intro: `sessionStorage` wrapped in try/catch.
 
-| Lighthouse (min) | Perf | A11y | Best Pr. | SEO |
+**Branch-specific tooling.** This branch's `scripts/routes.ts` lists only `/` and `/404`, and the smoke test also checks that each old route lands on its section.
+
+| Lighthouse (min, `/` and `/404`) | Perf | A11y | Best Pr. | SEO |
 |---|---|---|---|---|
-| Mobile | 98 (`/work`; all others 100) | 100 | 100 | 100 |
+| Mobile | 100 | 100 | 100 | 100 |
 | Desktop | 100 | 100 | 100 | 100 |
 
 ---
@@ -167,14 +197,19 @@ The strip's progress bar uses CSS scroll-driven animation, no JS.
    - The site meta description.
    - Alt text for the four photos.
    - UI strings in `site.ui` (skip link, Menu/Close, nav landmark labels, "All rights reserved.").
-6. **Photos are Unsplash placeholders** and must be replaced with licensed or owned imagery before launch. Their pairing with work entries is arbitrary; for example, the purple crowd shot illustrates the Wrecking Ball credit.
-7. **Contact form** has correct `name`s and `method="POST"` but no action. A comment marks the Phase 2 hookup (Cloudflare Pages Function or Netlify form).
-8. **Content the designers wished existed** (not added, to keep content identical across branches; worth deciding before Phase 2):
+6. **Miley Cyrus portrait** (`src/assets/photos/miley-cyrus.png`), supplied by John for the Wrecking Ball entry:
+   - It is a third-party press-style photo. Confirm the licence or permission before launch.
+   - It is only 344×344px, so it is shown no larger than its native size and will look soft on high-density screens. Ask for a larger original.
+   - signal and dream have **not** been rebased onto this content yet, so they still show the purple crowd shot. Rebasing would put the small portrait into their large poster bands.
+7. **YouTube video** on International A&R: "ALICE - ALL MY GIRLS (VISUALIZER)", title taken from YouTube's oEmbed. Confirm it's the right video and that the client has the right to feature it. Only archive renders it.
+8. **Photos are Unsplash placeholders** and must be replaced with licensed or owned imagery before launch. Their pairing with work entries is arbitrary (on signal and dream, the purple crowd shot still illustrates the Wrecking Ball credit).
+9. **Contact form** has correct `name`s and `method="POST"` but no action. A comment marks the Phase 2 hookup (Cloudflare Pages Function or Netlify form).
+10. **Content the designers wished existed** (not added, to keep content identical across branches; worth deciding before Phase 2):
    - Per-work `year`/`role` fields.
    - A short label for home section headings (nav labels are reused).
    - An explicit about-page `pull_quote`.
    - An optional about-page image.
    - Labels for prev/next and "next page" controls.
-9. **Image sizing.** Astro emits the full-size original (2–3.5 MB here) when an `<Image>` has `widths` but no `width`. I fixed this on `main` and on every branch, so the largest shipped photo variant is now ~0.6–1 MB (a 2200px confetti shot, which compresses badly).
-10. **Mobile Performance is 96–98 on `/work`** in every direction. That page leads with large, noisy confetti photos. It's comfortably above the floor, but real photography will change the numbers.
-11. **Constraints not met:** none.
+11. **Image sizing.** Astro emits the full-size original (2–3.5 MB here) when an `<Image>` has `widths` but no `width`. I fixed this on `main` and on every branch, so the largest shipped photo variant is now ~0.6–1 MB (a 2200px confetti shot, which compresses badly).
+12. **Mobile Performance is 96 on `/work`** in signal and dream (archive no longer has a `/work` page). That page leads with large, noisy confetti photos. It's comfortably above the floor, but real photography will change the numbers.
+13. **Constraints not met:** none.
