@@ -29,6 +29,24 @@ const people = about.sections ?? [];
 ---
 
 <BaseLayout title={page.title} intro>
+  <!-- Temporary: picks the font being auditioned, before the page paints. -->
+  <script is:inline>
+    (function () {
+      var saved = null;
+      try {
+        saved = new URLSearchParams(location.search).get('font') || localStorage.getItem('wdm-font-2');
+      } catch (e) {}
+      if (saved) document.documentElement.dataset.font = saved;
+    })();
+  </script>
+  <div class="pick" role="group" aria-label="Font">
+    <button type="button" data-font-pick="">inter tight</button>
+    <button type="button" data-font-pick="syne">syne</button>
+    <button type="button" data-font-pick="bodoni">bodoni moda</button>
+    <button type="button" data-font-pick="darker">darker grotesque</button>
+    <button type="button" data-font-pick="martian">martian mono</button>
+    <button type="button" data-font-pick="shoulders">big shoulders</button>
+  </div>
   <!-- 00 — Hero: all the type is a window onto the footage, which holds still behind
        a beige sheet as the page scrolls, then the closing line holds a screen of its own.
        Without JS or with reduced
@@ -258,7 +276,7 @@ const people = about.sections ?? [];
 <style>
   /* ---------- Hero: the type is a window onto the footage ---------- */
   .hero {
-    --run-size: 15vw;
+    --run-size: calc(var(--k, 1) * 15vw);
     --ease-soft: cubic-bezier(0.16, 1, 0.3, 1);
     position: relative;
     isolation: isolate;
@@ -318,7 +336,7 @@ const people = about.sections ?? [];
   }
   .run,
   .bloom-end {
-    font-weight: 600;
+    font-weight: var(--window-weight, 600);
   }
   .hero-stage {
     display: flex;
@@ -342,7 +360,7 @@ const people = about.sections ?? [];
   }
   .bloom-end {
     margin: 1.5rem 0 0;
-    --line-size: calc((100vw - 2 * var(--gutter)) / 10.4);
+    --line-size: calc(var(--k, 1) * (100vw - 2 * var(--gutter)) / 10.4);
     font-size: var(--line-size);
     line-height: 0.95;
   }
@@ -352,6 +370,8 @@ const people = about.sections ?? [];
   /* Large text for AA (24px or more), since it's also a window onto the footage. */
   .bloom-note {
     display: block;
+    max-width: calc(100vw - 2 * var(--gutter));
+    white-space: normal;
     margin-top: 0.7em;
     font-size: clamp(1.5rem, 3.2vw, 3.25rem);
     font-weight: 600;
@@ -360,7 +380,7 @@ const people = about.sections ?? [];
   }
   @media (min-width: 768px) {
     .hero {
-      --run-size: min(22svh, 9.4vw);
+      --run-size: calc(var(--k, 1) * min(22svh, 9.4vw));
     }
   }
 
@@ -406,7 +426,7 @@ const people = about.sections ?? [];
   }
   .reel-text {
     margin: 0;
-    font-size: min(24svh, 19vw);
+    font-size: calc(var(--k, 1) * min(24svh, 19vw));
     white-space: nowrap;
   }
   .reel-one {
@@ -586,6 +606,39 @@ const people = about.sections ?? [];
     }
   }
 
+  /* Temporary: the font switcher. */
+  .pick {
+    position: fixed;
+    top: calc(var(--header-h) + 0.25rem);
+    right: var(--gutter);
+    z-index: 60;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.15rem;
+    max-width: calc(100vw - 2 * var(--gutter));
+    padding: 0.2rem;
+    border-radius: 1.1rem;
+    background: var(--ink);
+    color: var(--paper);
+    font-size: 0.8125rem;
+  }
+  .pick button {
+    padding: 0.3rem 0.7rem;
+    border: 0;
+    border-radius: 999px;
+    background: none;
+    color: inherit;
+    font: inherit;
+    cursor: pointer;
+  }
+  .pick button[aria-pressed='true'] {
+    background: var(--paper);
+    color: var(--ink);
+  }
+  .pick :focus-visible {
+    outline-color: var(--paper);
+  }
+
   /* ---------- Sections ---------- */
   .sec {
     padding-block: clamp(1.75rem, 3.5vw, 3.25rem);
@@ -723,7 +776,7 @@ const people = about.sections ?? [];
     margin-top: clamp(1.5rem, 4vw, 3rem);
     flex-wrap: wrap;
     max-width: 100%;
-    font-size: clamp(1.5rem, 6vw, 4rem);
+    font-size: calc(var(--k, 1) * clamp(1.5rem, 6vw, 4rem));
     line-height: 1.05;
   }
   .cta-mail-text {
@@ -753,7 +806,7 @@ const people = about.sections ?? [];
       grid-column: 1 / span 6;
     }
     .cta-mail {
-      font-size: clamp(2.25rem, 4vw, 4.75rem);
+      font-size: calc(var(--k, 1) * clamp(2.25rem, 4vw, 4.75rem));
     }
   }
 </style>
@@ -918,6 +971,24 @@ const people = about.sections ?? [];
     document.fonts?.ready.then(refresh);
     refresh();
   }
+
+  // Temporary: the font switcher. Stays where you are on the page, so fonts compare in place.
+  const fontPicks = Array.from(document.querySelectorAll<HTMLButtonElement>('[data-font-pick]'));
+  const showFont = () =>
+    fontPicks.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.fontPick === (document.documentElement.dataset.font ?? ''))));
+  fontPicks.forEach((b) =>
+    b.addEventListener('click', () => {
+      const pick = b.dataset.fontPick ?? '';
+      if (pick) document.documentElement.dataset.font = pick;
+      else delete document.documentElement.dataset.font;
+      try {
+        localStorage.setItem('wdm-font-2', pick);
+      } catch (e) {}
+      showFont();
+      document.fonts?.ready.then(() => dispatchEvent(new Event('resize')));
+    }),
+  );
+  showFont();
 
   // Focus moves inside the playlist's frame, where CSS focus states can't see it, so
   // tabbing in marks the frame from here to give keyboard users a visible ring.

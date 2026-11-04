@@ -12,7 +12,7 @@ const { title, id } = Astro.props;
 <style>
   .sh-title {
     margin: 0 0 clamp(1.25rem, 2.5vw, 2.25rem);
-    font-size: clamp(1.875rem, 3.2vw, 3.25rem);
+    font-size: calc(var(--k, 1) * clamp(1.875rem, 3.2vw, 3.25rem));
     line-height: 1;
     text-align: center;
   }

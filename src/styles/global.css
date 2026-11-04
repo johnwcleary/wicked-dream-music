@@ -1,5 +1,12 @@
 @import "@fontsource-variable/inter-tight/wght.css";
 @import "@fontsource-variable/inter-tight/wght-italic.css";
+/* Temporary: the font audition. */
+@import "@fontsource-variable/syne/wght.css";
+@import "@fontsource-variable/bodoni-moda/wght.css";
+@import "@fontsource-variable/bodoni-moda/wght-italic.css";
+@import "@fontsource-variable/darker-grotesque/wght.css";
+@import "@fontsource-variable/martian-mono/wght.css";
+@import "@fontsource-variable/big-shoulders-display/wght";
 @import "tailwindcss";
 
 /* Brand tokens, sampled from the supplied logo PNGs. */
@@ -32,6 +39,44 @@
   --gutter: clamp(1rem, 2.2vw, 2rem);
   --col-gap: clamp(0.75rem, 1.6vw, 1.5rem);
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Temporary: the font audition, for the display type only. --k scales each font so
+   "artist development" sets to the same width as in Inter Tight, and the layout holds. */
+html[data-font='syne'] {
+  --font-display: "Syne Variable", "Helvetica Neue", Arial, sans-serif;
+  --display-weight: 600;
+  --window-weight: 700;
+  --display-tracking: -0.025em;
+  --k: 0.78;
+}
+html[data-font='bodoni'] {
+  --font-display: "Bodoni Moda Variable", Didot, Georgia, serif;
+  --display-weight: 600;
+  --window-weight: 700;
+  --display-tracking: -0.01em;
+  --k: 0.87;
+}
+html[data-font='darker'] {
+  --font-display: "Darker Grotesque Variable", "Helvetica Neue", Arial, sans-serif;
+  --display-weight: 700;
+  --window-weight: 800;
+  --display-tracking: -0.02em;
+  --k: 1.1;
+}
+html[data-font='martian'] {
+  --font-display: "Martian Mono Variable", ui-monospace, Menlo, monospace;
+  --display-weight: 500;
+  --window-weight: 600;
+  --display-tracking: -0.07em;
+  --k: 0.68;
+}
+html[data-font='shoulders'] {
+  --font-display: "Big Shoulders Display Variable", "Arial Narrow", Arial, sans-serif;
+  --display-weight: 700;
+  --window-weight: 800;
+  --display-tracking: 0em;
+  --k: 1.1;
 }
 
 @theme {
@@ -121,7 +166,7 @@
     font-size: clamp(2.75rem, 6.5vw, 7rem);
   }
   .d-lg {
-    font-size: clamp(2.5rem, 5.5vw, 5.75rem);
+    font-size: calc(var(--k, 1) * clamp(2.5rem, 5.5vw, 5.75rem));
   }
   .d-md {
     font-size: clamp(1.875rem, 3.5vw, 3.5rem);
@@ -137,7 +182,7 @@
       font-size: 12vw;
     }
     .d-lg {
-      font-size: 11vw;
+      font-size: calc(var(--k, 1) * 11vw);
     }
   }
   .statement {

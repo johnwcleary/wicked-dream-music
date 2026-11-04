@@ -92,8 +92,8 @@ const pictures = await Promise.all(
   }
   .svc-title {
     margin: 0;
-    font-size: calc((100vw - 2 * var(--gutter) - 3rem) / 7.9);
-    font-weight: 600;
+    font-size: calc(var(--k, 1) * (100vw - 2 * var(--gutter) - 3rem) / 7.9);
+    font-weight: var(--window-weight, 600);
     line-height: 0.92;
     /* Room for descenders: the still only paints inside this box. */
     padding-block: 0.08em 0.22em;
@@ -172,7 +172,7 @@ const pictures = await Promise.all(
 
   @media (min-width: 768px) {
     .svc-title {
-      font-size: clamp(3rem, 5.8vw, 6.25rem);
+      font-size: calc(var(--k, 1) * clamp(3rem, 5.8vw, 6.25rem));
     }
   }
   @media (min-width: 900px) {
