@@ -59,7 +59,7 @@ Photos are grayscale and high contrast, multiplied over the gradient, with the b
 **Type.** Archivo Variable (`@fontsource-variable/archivo`, preloaded). Display is set at 70% width and weight 780, a heavy condensed cut that echoes the wordmark; body text uses Archivo at normal width. JetBrains Mono Variable handles labels and numbering. Both are OFL.
 
 **Palette: "chrome".** Ink `#0F0F10`, paper `#F7F7F5`, a silver accent `#E4E2DC` and a pewter accent `#A9A9B3`.
-- The wordmark is silver on the dark hero, and the button and contact band are silver.
+- Every section sits on the near-black ground; silver is kept for the email link and the quote.
 - The hero loop is graded black and white to match.
 - Every text pairing passes AA: ink/paper 17.9:1, silver/ink 14.8:1, muted/paper 6.0:1.
 - The brand lavender and pink remain the client's logo colours in `--wdm-*`, but this direction doesn't use them.
@@ -67,7 +67,7 @@ Photos are grayscale and high contrast, multiplied over the gradient, with the b
 Chosen from an in-page audition of 6 palettes × 5 type pairings. The comparison sheets are in `screenshots/design/archive/audition/` (local).
 
 **Page order.**
-1. **Hero.** A full-screen black-and-white video loop under a transparent header, with the silver wordmark, headline, intro and a silver "See what we do" button. The footer row lists the services and the video title.
+1. **Hero.** A pinned scroll sequence over the black-and-white video loop, with the wordmark top left in the header. "Artist development starts with *sound*" is too big for the screen and runs across as you scroll; "sound" opens into songwriting, production, performance and emotion, which close on "brand". Services follow straight after. The words are in `pages/home.md` (`headline`, `hero_expand`). With reduced motion or no JS it is stacked text. The footer row lists the services, the button and the video title.
 2. **Words and photos.** "Artists. Ideas. Sound. Culture." set huge, with the four work photos inline. Each word keeps its photo beside it: two pairs per line on desktop, one per line on phones. Each photo opens its work entry.
 3. **Services** (`#services`). Numbered rows that expand to show their bullets.
 4. **About** (`#about`). An ink band. Each chapter is a row with the title on the left and the body on the right; there is one chapter for now, to be expanded. The pull quote below is set in lavender-to-pink gradient type.
@@ -86,7 +86,7 @@ Chosen from an in-page audition of 6 palettes × 5 type pairings. The comparison
 **Motion** (all off under reduced motion):
 - Masked line reveals.
 - Photos unmask and drift with parallax.
-- The video pushes in and darkens, and the wordmark lifts away as you leave the hero.
+- The video pushes in slowly through the hero sequence.
 
 **Push further.** Short loops cut from the Imin film for the work rows. A nav order that matches the page order (Services now comes before About). Real metadata per work entry.
 
