@@ -24,6 +24,8 @@ const expand = page.hero_expand;
 // The closing line: two lines, with the headline's word and its own last word in italics.
 const closing = expand ? splitHeadline(expand.resolve) : [];
 const stressed = [headLast, expand?.resolve.trim().split(/\s+/).pop()];
+const outroWords = expand?.outro?.trim().split(/\s+/) ?? [];
+const outroLast = outroWords.pop();
 const video = page.hero_video;
 
 const chapters = about.sections ?? [];
@@ -60,43 +62,54 @@ const quote = firstParas[firstParas.length - 1];
               <source src={video.mp4} type="video/mp4" />
             </video>
           </div>
-          <span class="hero-lift" />
         </div>
       )
     }
-    <div class="hero-cut">
-      <div class="hero-stage">
-        <h1 id="hero-title" class="run display">
-          <span class="run-line">{headOne}</span>
-          <span class="run-line">{headRest} <em data-run-last>{headLast}</em></span>
-        </h1>
+    <div class="hero-sheet">
+      <span class="hero-lift" aria-hidden="true"></span>
+      <div class="hero-cut">
+        <div class="hero-stage">
+          <h1 id="hero-title" class="run display">
+            <span class="run-line">{headOne}</span>
+            <span class="run-line">{headRest} <em data-run-last>{headLast}</em></span>
+          </h1>
+        </div>
+        {
+          expand && (
+            <div class="bloom">
+              <ul class="bloom-list display">
+                {expand.words.map((word) => (
+                  <li data-bloom-word>
+                    <em>{word}</em>
+                  </li>
+                ))}
+              </ul>
+              <p class="bloom-end display" data-bloom-end>
+                {closing.map((line) => (
+                  <span class="bloom-end-line">
+                    {line.split(' ').map((w) => (
+                      <>
+                        {stressed.includes(w) ? <em>{w}</em> : w}{' '}
+                      </>
+                    ))}
+                  </span>
+                ))}
+              </p>
+            </div>
+          )
+        }
       </div>
-      {
-        expand && (
-          <div class="bloom">
-            <ul class="bloom-list display">
-              {expand.words.map((word) => (
-                <li data-bloom-word>
-                  <em>{word}</em>
-                </li>
-              ))}
-            </ul>
-            <p class="bloom-end display" data-bloom-end>
-              {closing.map((line) => (
-                <span class="bloom-end-line">
-                  {line.split(' ').map((w) => (
-                    <>
-                      {stressed.includes(w) ? <em>{w}</em> : w}{' '}
-                    </>
-                  ))}
-                </span>
-              ))}
-            </p>
-          </div>
-        )
-      }
     </div>
     {expand && <svg class="links" aria-hidden="true" focusable="false" data-links />}
+    {
+      outroLast && (
+        <div class="hero-outro" data-hero-outro>
+          <p class="hero-outro-text display">
+            {outroWords.join(' ')} <em>{outroLast}</em>
+          </p>
+        </div>
+      )
+    }
     <div class="hero-bar">
         <div class="wrap hero-foot">
           <p class="hero-strap label label-muted">{page.strapline}</p>
@@ -215,8 +228,10 @@ const quote = firstParas[firstParas.length - 1];
      plays. The grade is baked into the footage and poster, so nothing is filtered
      per frame. */
   .hero-media {
-    position: absolute;
-    inset: 0;
+    position: sticky;
+    top: 0;
+    height: 100svh;
+    margin-bottom: -100svh;
     overflow: clip;
   }
   .hero-frame {
@@ -238,8 +253,12 @@ const quote = firstParas[firstParas.length - 1];
   .hero.is-playing .hero-video {
     opacity: 1;
   }
-  /* Lifts the footage's blacks: inside the letters, the darkest frame still gives
-     3.4:1 against the ink sheet. */
+  /* The sheet scrolls over the footage with its own lift underneath: inside the
+     letters the darkest frame still gives 3.4:1 against the ink, and the footage
+     below the sheet's edge is untouched. */
+  .hero-sheet {
+    position: relative;
+  }
   .hero-lift {
     position: absolute;
     inset: 0;
@@ -253,8 +272,12 @@ const quote = firstParas[firstParas.length - 1];
     position: relative;
     background: var(--ink);
     color: #fff;
-    -webkit-text-stroke: 0.022em #fff;
     mix-blend-mode: darken;
+  }
+  .run,
+  .bloom-list,
+  .bloom-end {
+    -webkit-text-stroke: 0.016em #fff;
   }
   .hero-stage {
     display: flex;
@@ -303,6 +326,26 @@ const quote = firstParas[firstParas.length - 1];
     }
   }
 
+  /* Past the sheet: the footage at full screen, with one line over it. The 50% ink
+     keeps it AA over white footage (3.4:1). */
+  .hero-outro {
+    position: relative;
+    display: grid;
+    place-items: center;
+    min-height: 100svh;
+    padding: var(--header-h) var(--gutter) 4rem;
+    background: color-mix(in srgb, var(--ink) 50%, transparent);
+    color: var(--paper);
+    text-align: center;
+  }
+  .hero-outro-text {
+    margin: 0;
+    font-size: min(36svh, 30vw);
+  }
+  .hero-outro-text em {
+    font-style: italic;
+  }
+
   .hero-bar {
     position: relative;
     z-index: 2;
@@ -344,15 +387,19 @@ const quote = firstParas[firstParas.length - 1];
   /* The sequence. The footage stays pinned for the whole hero while the sheet
      scrolls over it: words pop as the lines (drawn by the script below) reach them. */
   @media (prefers-reduced-motion: no-preference) {
-    :global(html.js) .hero-media {
-      position: sticky;
-      top: 0;
-      inset-inline: 0;
-      height: 100svh;
-      margin-bottom: -100svh;
-    }
     :global(html.js) .hero-frame {
       will-change: transform;
+    }
+    :global(html.js) .hero-outro-text {
+      opacity: 0;
+      transform: translateY(0.2em) scale(0.92);
+      transition:
+        opacity 0.6s var(--ease-out),
+        transform 1s var(--ease-out);
+    }
+    :global(html.js) .hero-outro.is-in .hero-outro-text {
+      opacity: 1;
+      transform: none;
     }
     /* Stays on screen for the whole hero: it holds the video's pause control. */
     :global(html.js) .hero-bar {
@@ -659,6 +706,7 @@ const quote = firstParas[firstParas.length - 1];
   const end = document.querySelector<HTMLElement>('[data-bloom-end]');
   const svg = document.querySelector<SVGSVGElement>('[data-links]');
   const rows = Array.from(document.querySelectorAll<HTMLElement>('[data-bloom-word]'));
+  const outro = document.querySelector<HTMLElement>('[data-hero-outro]');
   if (hero && last && end && svg && rows.length && matchMedia('(prefers-reduced-motion: no-preference)').matches) {
     const seg = (v: number, from: number, to: number) => Math.min(1, Math.max(0, (v - from) / (to - from)));
     const NS = 'http://www.w3.org/2000/svg';
@@ -672,6 +720,7 @@ const quote = firstParas[firstParas.length - 1];
     let endTop = 0;
     let heroTop = 0;
     let heroEnd = 0;
+    let outroTop = 0;
 
     const addNode = (x: number, y: number, at: number) => {
       const el = document.createElementNS(NS, 'circle');
@@ -701,6 +750,7 @@ const quote = firstParas[firstParas.length - 1];
       const b = hero.getBoundingClientRect();
       heroTop = b.top + scrollY;
       heroEnd = b.bottom + scrollY - innerHeight;
+      outroTop = outro ? outro.getBoundingClientRect().top + scrollY : 0;
 
       svg.replaceChildren();
       links = [];
@@ -739,6 +789,10 @@ const quote = firstParas[firstParas.length - 1];
       for (const node of nodes) node.el.style.opacity = mark >= node.at ? '1' : '0';
       rows.forEach((row, i) => row.classList.toggle('is-in', mark >= (tops[i] ?? 0)));
       end.classList.toggle('is-in', mark >= endTop);
+      if (outro) {
+        // The line arrives once the sheet has lifted about halfway off the footage.
+        outro.classList.toggle('is-in', y + innerHeight * 0.45 >= outroTop);
+      }
     };
 
     let now = scrollY;
