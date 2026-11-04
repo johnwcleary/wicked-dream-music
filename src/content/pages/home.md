@@ -4,7 +4,7 @@ eyebrow: "Independent music creative company / New York"
 headline: "Artist development starts with sound"
 lede: "We develop artists, write and produce their songs, and help labels and publishers find and grow new talent."
 cta: { label: "See what we do", href: "/services" }
-strapline: "Artist Development / A&R Consulting / Songwriting / Music Production"
+strapline: "Artist Development / A&R Consulting"
 hero_expand:
   words: ["songwriting", "production", "performance", "emotion"]
   resolve: "your sound is your brand"
