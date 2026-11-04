@@ -65,6 +65,14 @@ const pages = defineCollection({
         mobile_webm: z.string().optional(),
       })
       .optional(),
+    // A Spotify playlist embed. The ID is the last part of the playlist's URL.
+    playlist: z
+      .object({
+        spotify_id: z.string(),
+        title: z.string(),
+        link_label: z.string(),
+      })
+      .optional(),
     // A second full-screen loop, after the outro line. Same shape as hero_video.
     hero_film: z
       .object({

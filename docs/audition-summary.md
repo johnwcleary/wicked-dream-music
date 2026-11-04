@@ -68,13 +68,12 @@ Chosen from an in-page audition of 6 palettes × 5 type pairings. The comparison
 
 **Page order.**
 1. **Hero.** Wordmark top left in the header. The footage stays pinned while a dark sheet scrolls over it, with all the type as a window onto it (`mix-blend-mode: darken`). "Artist development starts with *sound*" fits one screen. Lines draw from "sound" to songwriting, production, performance and emotion as each pops, then to "your sound is your brand". Past the sheet, "Our work" sits over the full-screen video, then shrinks to the top as the shade clears so the film can be watched. The IMIN loop scrolls in next, also full screen. The words and films are in `pages/home.md` (`headline`, `hero_expand`, `hero_video`, `hero_film`). With reduced motion or no JS the type is still and stacked, over the posters.
-2. **Services** (`#services`). Artist Development (for artists) and A&R Consulting (for music companies), as numbered rows that start open and can be closed.
-3. **Words and photos.** "Artists. Ideas. Sound. Culture." set huge, with the four work photos inline. Each word keeps its photo beside it: two pairs per line on desktop, one per line on phones. Each photo opens its work entry.
-4. **About** (`#about`). David Kim's name and bio, set large. His bio is in `pages/about.md`.
-5. **Selected work** (`#work`). Expandable rows: the Miley portrait, the click-to-play YouTube video for International A&R, and the photos.
-6. **Contact** (`#contact`). The headline, intro and one giant `mailto:` link. **The form was removed at John's request.** Phase 2 needs no form backend for this direction.
+2. **Services** (`#services`). Artist Development (for artists) and A&R Consulting (for music companies), each heading over a numbered grid of its services.
+3. **About** (`#about`). David Kim's name and bio, set large. His bio is in `pages/about.md`.
+4. **Selected work** (`#work`). One embedded Spotify playlist, set in `pages/work.md` (`playlist`). **The current playlist is a placeholder from John.** The iframe loads lazily as it nears the screen, and Spotify may set cookies once it loads, so check that against the privacy policy.
+5. **Contact** (`#contact`). The headline, intro and one giant `mailto:` link. **The form was removed at John's request.** Phase 2 needs no form backend for this direction.
 
-**Accent.** The silver-to-pewter gradient is used on the hovered photos and the video play button. The email link is solid silver.
+**Accent.** The silver-to-pewter gradient is no longer used on this page. The email link and the "For artists" / "For music companies" labels are solid silver.
 
 **Video hero.**
 - The loop starts after the page has loaded, pauses off-screen, and never autoplays for visitors with reduced motion turned on.
@@ -84,11 +83,10 @@ Chosen from an in-page audition of 6 palettes × 5 type pairings. The comparison
 **Old routes.** `/about`, `/services`, `/work` and `/contact` redirect to their sections (static meta-refresh pages; Phase 2 should replace these with real 301s in the host's redirect config).
 
 **Motion** (all off under reduced motion):
-- Masked line reveals; hero words pop as the drawn lines reach them.
-- Photos unmask and drift with parallax.
+- Masked line reveals; hero words pop as the drawn lines reach them; service cells fade up in turn.
 - The video pushes in slowly through the hero sequence.
 
-**Push further.** A portrait of David Kim beside his bio. Short loops cut from the Imin film for the work rows. Real metadata per work entry.
+**Push further.** A portrait of David Kim beside his bio.
 
 **JS.** Vanilla only:
 - Mobile menu.
