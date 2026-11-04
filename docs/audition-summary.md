@@ -68,11 +68,11 @@ Chosen from an in-page audition of 6 palettes × 5 type pairings. The comparison
 
 **Page order.**
 1. **Hero.** A pinned scroll sequence over the black-and-white video loop, with the wordmark top left in the header. "Artist development starts with *sound*" is too big for the screen and runs across as you scroll; "sound" opens into songwriting, production, performance and emotion, which close on "brand". Services follow straight after. The words are in `pages/home.md` (`headline`, `hero_expand`). With reduced motion or no JS it is stacked text. The footer row lists the services, the button and the video title.
-2. **Words and photos.** "Artists. Ideas. Sound. Culture." set huge, with the four work photos inline. Each word keeps its photo beside it: two pairs per line on desktop, one per line on phones. Each photo opens its work entry.
-3. **Services** (`#services`). Numbered rows that expand to show their bullets.
-4. **About** (`#about`). An ink band. Each chapter is a row with the title on the left and the body on the right; there is one chapter for now, to be expanded. The pull quote below is set in lavender-to-pink gradient type.
+2. **Services** (`#services`). Numbered rows that expand to show their bullets.
+3. **Words and photos.** "Artists. Ideas. Sound. Culture." set huge, with the four work photos inline. Each word keeps its photo beside it: two pairs per line on desktop, one per line on phones. Each photo opens its work entry.
+4. **About** (`#about`). Each chapter is a row with the title on the left and the body on the right; there is one chapter for now, to be expanded. The pull quote below is set in lavender-to-pink gradient type.
 5. **Selected work** (`#work`). Expandable rows: the Miley portrait, the click-to-play YouTube video for International A&R, and the photos.
-6. **Contact** (`#contact`). A silver band with the headline, intro and one giant `mailto:` link. **The form was removed at John's request.** Phase 2 needs no form backend for this direction.
+6. **Contact** (`#contact`). The headline, intro and one giant `mailto:` link. **The form was removed at John's request.** Phase 2 needs no form backend for this direction.
 
 **Accent.** The silver-to-pewter gradient is used on the hovered photos, the video play button and the pull quote's type. The wordmark, the main button and the contact band are solid silver.
 
