@@ -610,6 +610,10 @@ const people = about.sections ?? [];
     border: 0;
     border-radius: 12px;
   }
+  .playlist.is-focused {
+    outline: 2px solid var(--paper);
+    outline-offset: 3px;
+  }
 
   /* The contact band runs straight into the footer. */
   :global(.site-footer) {
@@ -924,5 +928,21 @@ const people = about.sections ?? [];
     addEventListener('resize', refresh);
     document.fonts?.ready.then(refresh);
     refresh();
+  }
+
+  // Focus moves inside the playlist's frame, where CSS focus states can't see it, so
+  // tabbing in marks the frame from here to give keyboard users a visible ring.
+  const playlist = document.querySelector<HTMLIFrameElement>('.playlist');
+  if (playlist) {
+    let tabbing = false;
+    addEventListener('keydown', (e) => (tabbing = e.key === 'Tab'), true);
+    addEventListener('pointerdown', () => (tabbing = false), true);
+    document.addEventListener('focusin', () => playlist.classList.remove('is-focused'));
+    document.addEventListener('focusout', (e) => {
+      if (tabbing && e.relatedTarget === playlist) playlist.classList.add('is-focused');
+    });
+    addEventListener('blur', () => {
+      if (tabbing && document.activeElement === playlist) playlist.classList.add('is-focused');
+    });
   }
 </script>
