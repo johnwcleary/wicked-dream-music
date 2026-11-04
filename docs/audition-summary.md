@@ -58,16 +58,16 @@ Photos are grayscale and high contrast, multiplied over the gradient, with the b
 
 **Type.** One typeface, Inter Tight (`@fontsource-variable/inter-tight`, OFL, preloaded): large type at weight 500–600 with very tight spacing, small type at normal spacing. All text is lowercase through CSS (`text-transform`), so the content files, metadata and screen-reader text keep their normal capitals. Only "sound" and "brand" are italic. The direction takes its restraint from a neutral, lowercase portfolio reference John supplied.
 
-**Palette.** Near-black `#0F0F10` type on white, muted `#5E5E62` for small text (6.4:1).
-- The hero loop and the IMIN loop are in full color; the footage shows through the type on a white sheet (`mix-blend-mode: lighten`), shaded 45% so the brightest frames keep 3.1:1 (large text).
+**Palette.** Near-black `#0F0F10` type on light beige `#F4EEE3` (16.6:1), `#5E5A54` for small text (5.9:1). The wordmark, font and colour are set out in `docs/brand/wdm/`.
+- The hero loop and the IMIN loop are in full color; the footage shows through the type on the beige sheet (`mix-blend-mode: lighten`), shaded 50% so the brightest frames keep 3.1:1 (large text).
 - "our work" and the header over the films sit on dark shades instead (3.4:1 or better).
 - The brand lavender and pink remain the client's logo colours in `--wdm-*`, but this direction doesn't use them.
 
 Chosen from an in-page audition of 6 palettes × 5 type pairings. The comparison sheets are in `screenshots/design/archive/audition/` (local).
 
 **Page order.**
-1. **Hero.** Wordmark top left in the header. The footage stays pinned while a white sheet scrolls over it, with all the type as a window onto it. "artist development starts with *sound*" fits one screen, anchored bottom left. One thin vertical line draws down the left edge as you scroll, past songwriting, production, performance and emotion as each settles in, to "your *sound* is your *brand*", with "let's develop it together" small beneath it. Past the sheet, "our work" sits over the full-screen video, then shrinks to the top as the shade clears so the film can be watched. The IMIN loop scrolls in next, also full screen. The words and films are in `pages/home.md` (`headline`, `hero_expand`, `hero_video`, `hero_film`). With reduced motion or no JS the type is still and stacked, over the posters.
-2. **Services** (`#services`). A centred "our services" title, then artist development (for artists) with a&r consulting (for music companies) under it. Each title is filled with a still from one of the films, drifting as you scroll, and opens on click to a compact grid of its offerings. The customers line closes the section, set in `pages/services.md` (`customers`); John supplied the names, so confirm they can be named.
+1. **Hero.** "wdm." as a text mark top left (the old logo is off the page). The footage stays pinned while a beige sheet scrolls over it, with the type as a window onto it. "artist development starts with *sound*" fits one screen, anchored bottom left. Songwriting, production, performance and emotion sit in a tight stack, pinned briefly while each lights in turn, then "your *sound* is your *brand*" on one line, with "let's develop it together" small beneath it. Past the sheet, "our work" sits over the full-screen video, then shrinks to the top as the shade clears so the film can be watched. The IMIN loop scrolls in next, also full screen. The words and films are in `pages/home.md`. With reduced motion or no JS the type is still and stacked, over the posters.
+2. **Services** (`#services`). A centred "our services" title, then artist development (for artists) with a&r consulting (for music companies) under it. Each title is filled with a still from one of the films, drifting as you scroll, and opens on click to a compact grid of its offerings. "customers include: …" sits small and left-aligned under a&r consulting, set in `pages/services.md` (`customers`); John supplied the names, so confirm they can be named.
 3. **About** (`#about`). A centred "Our *founder*" title, then David Kim's name and bio, set large. Both are in `pages/about.md`.
 4. **Selected works** (`#work`). A large centred title over one embedded Spotify playlist, set in `pages/work.md` (`playlist`). **The current playlist is a placeholder from John.** The iframe loads lazily as it nears the screen, and Spotify may set cookies once it loads, so check that against the privacy policy.
 5. **Contact** (`#contact`). The headline, intro and one giant `mailto:` link. **The form was removed at John's request.** Phase 2 needs no form backend for this direction.
@@ -76,7 +76,7 @@ Chosen from an in-page audition of 6 palettes × 5 type pairings. The comparison
 
 **Video hero.**
 - The loop starts after the page has loaded, pauses off-screen, and never autoplays for visitors with reduced motion turned on.
-- The title in the hero's footer row ("ALICE - ALL MY GIRLS") is also the pause/play button, so the WCAG 2.2.2 pause requirement is met without a visible control.
+- A small "pause video" control in the hero's footer row pauses and plays both loops, which WCAG 2.2.2 requires for video that keeps moving.
 - The poster is the LCP image.
 
 **Old routes.** `/about`, `/services`, `/work` and `/contact` redirect to their sections (static meta-refresh pages; Phase 2 should replace these with real 301s in the host's redirect config).
