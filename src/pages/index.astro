@@ -315,7 +315,7 @@ const people = about.sections ?? [];
   }
   .run {
     margin: 0;
-    font-size: 19.5vw;
+    font-size: 15vw;
   }
   .run-line {
     display: block;
@@ -337,12 +337,12 @@ const people = about.sections ?? [];
     margin: 0;
     padding: 0;
     list-style: none;
-    font-size: clamp(3rem, 8vw, 8rem);
+    font-size: clamp(2.25rem, 5.5vw, 5.5rem);
     line-height: 1.05;
   }
   .bloom-end {
     margin: 1.5rem 0 0;
-    font-size: clamp(3.25rem, 11vw, 12rem);
+    font-size: clamp(2.5rem, 8vw, 8rem);
     line-height: 0.95;
   }
   .bloom-end-line {
@@ -361,7 +361,7 @@ const people = about.sections ?? [];
   }
   @media (min-width: 768px) {
     .run {
-      font-size: min(34svh, 14.8vw);
+      font-size: min(24svh, 10.4vw);
     }
   }
 
@@ -407,7 +407,7 @@ const people = about.sections ?? [];
   }
   .reel-text {
     margin: 0;
-    font-size: min(36svh, 30vw);
+    font-size: min(24svh, 19vw);
     white-space: nowrap;
   }
   .reel-text em {
@@ -508,10 +508,10 @@ const people = about.sections ?? [];
       transform: none;
     }
     :global(html.js) .reel-one {
-      height: 200svh;
+      height: 165svh;
     }
     :global(html.js) .reel-film {
-      height: 190svh;
+      height: 160svh;
     }
     :global(html.js) .reel-stage {
       position: sticky;
@@ -550,9 +550,9 @@ const people = about.sections ?? [];
     }
     :global(html.js) .bloom-list {
       display: grid;
-      grid-auto-rows: 52svh;
+      grid-auto-rows: 36svh;
       gap: 0;
-      font-size: min(30svh, 20vw);
+      font-size: min(20svh, 13vw);
       line-height: 1;
       white-space: nowrap;
     }
@@ -580,9 +580,9 @@ const people = about.sections ?? [];
     :global(html.js) .bloom-end {
       display: grid;
       place-content: center;
-      min-height: 100svh;
+      min-height: 80svh;
       margin: 0;
-      font-size: min(32svh, 18.5vw);
+      font-size: min(21svh, 12.5vw);
       text-align: center;
     }
     :global(html.js) .bloom-end-line {
@@ -619,13 +619,13 @@ const people = about.sections ?? [];
   }
   /* The closing line of Services: who the company has worked for. */
   .customers {
-    margin-top: clamp(2.5rem, 5vw, 4.5rem);
+    margin-top: clamp(2rem, 3.5vw, 3.25rem);
     text-align: center;
   }
   .customers-label {
     margin: 0 0 0.35em;
     color: var(--muted);
-    font-size: clamp(1.375rem, 2vw, 2.125rem);
+    font-size: clamp(1.125rem, 1.4vw, 1.5rem);
     font-style: italic;
     line-height: 1.1;
   }
@@ -633,7 +633,7 @@ const people = about.sections ?? [];
     margin: 0 auto;
     max-width: 22em;
     color: var(--accent);
-    font-size: clamp(2.5rem, 5.2vw, 5.75rem);
+    font-size: clamp(1.75rem, 3.4vw, 3.75rem);
     line-height: 1.04;
     letter-spacing: -0.012em;
     text-wrap: balance;
@@ -641,7 +641,7 @@ const people = about.sections ?? [];
   .playlist {
     display: block;
     width: 100%;
-    height: clamp(30rem, 78svh, 46rem);
+    height: clamp(22rem, 58svh, 34rem);
     border: 0;
     border-radius: 12px;
   }
@@ -678,7 +678,7 @@ const people = about.sections ?? [];
   }
   .bio-body p {
     margin: 0;
-    font-size: clamp(1.75rem, 3.1vw, 3.25rem);
+    font-size: clamp(1.375rem, 2.1vw, 2.25rem);
     line-height: 1.14;
     letter-spacing: -0.01em;
   }
@@ -710,7 +710,7 @@ const people = about.sections ?? [];
     flex-wrap: wrap;
     max-width: 100%;
     color: var(--accent);
-    font-size: clamp(2rem, 8.4vw, 8.5rem);
+    font-size: clamp(1.625rem, 6.6vw, 4rem);
     line-height: 1.05;
   }
   .cta-mail-text {
@@ -743,7 +743,7 @@ const people = about.sections ?? [];
       grid-column: 1 / span 6;
     }
     .cta-mail {
-      font-size: clamp(3rem, 6.4vw, 8rem);
+      font-size: clamp(2.25rem, 4.2vw, 5rem);
     }
   }
 </style>
@@ -891,7 +891,7 @@ const people = about.sections ?? [];
         // The line ends just under the header, small enough to watch the film beneath it.
         const header = document.querySelector<HTMLElement>('.site-header')?.offsetHeight ?? 0;
         titleLift = innerHeight / 2 - (header + 36);
-        titleScale = 32 / parseFloat(getComputedStyle(reelText).fontSize);
+        titleScale = 28 / parseFloat(getComputedStyle(reelText).fontSize);
       }
 
       svg.replaceChildren();
