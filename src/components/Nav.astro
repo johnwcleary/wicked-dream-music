@@ -7,8 +7,8 @@ const site = await getSite();
 <header class="site-header">
   <div class="bar wrap">
     <a href="/#top" class="mark">
-      <span aria-hidden="true">wdm.</span>
-      <span class="sr-only">{site.name}</span>
+      <span class="mark-short">wdm.</span>
+      <span class="mark-name">{site.name}</span>
     </a>
     <button type="button" class="menu-btn label" aria-expanded="false" aria-controls="site-menu" data-open={site.ui.menu_open} data-close={site.ui.menu_close}>
       <span class="menu-btn-text">{site.ui.menu_open}</span>
@@ -79,15 +79,27 @@ const site = await getSite();
     gap: var(--col-gap);
     min-height: var(--header-h);
   }
-  /* Temporary text mark, standing in for the logo. */
+  /* The wordmark: "wdm." with the full name set to exactly its width. */
   .mark {
     display: block;
     padding-block: 0.5rem;
     margin-right: auto;
-    font-size: 1.75rem;
+    font-size: 2.5rem;
+    line-height: 1;
+    white-space: nowrap;
+  }
+  .mark-short {
+    display: block;
     font-weight: 600;
     letter-spacing: -0.04em;
-    line-height: 1;
+    line-height: 0.85;
+  }
+  .mark-name {
+    display: block;
+    margin-top: 0.42em;
+    font-size: 0.2643em;
+    font-weight: 500;
+    letter-spacing: -0.01em;
   }
   .menu-btn {
     display: none;
