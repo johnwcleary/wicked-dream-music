@@ -8,6 +8,7 @@ strapline: "Artist Development / A&R Consulting / Songwriting / Music Production
 hero_expand:
   words: ["songwriting", "production", "performance", "emotion"]
   resolve: "your sound is your brand"
+  outro: "Our work"
 hero_video:
   title: "ALICE - ALL MY GIRLS"
   poster: "../../assets/photos/hero-poster.jpg"

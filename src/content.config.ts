@@ -65,11 +65,13 @@ const pages = defineCollection({
         mobile_webm: z.string().optional(),
       })
       .optional(),
-    // The headline's last word opening into a list, then resolving on one word.
+    // The headline's last word opening into a list, then resolving on a closing
+    // line. The outro is the short line shown over the video after it.
     hero_expand: z
       .object({
         words: z.array(z.string()),
         resolve: z.string(),
+        outro: z.string().optional(),
       })
       .optional(),
   }),
