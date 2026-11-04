@@ -1,7 +1,7 @@
 ---
 /**
- * The four services as a numbered index. Each row opens (native <details>,
- * one at a time) to reveal its sub-numbered bullets.
+ * The services as a numbered index, each labelled with who it's for. Rows start
+ * open (native <details>) and can be closed.
  */
 import { anchor, pad, type Service } from '../lib/content';
 
@@ -16,7 +16,7 @@ const { items } = Astro.props;
     items.map((s, i) => {
       const no = pad(s.data.order);
       return (
-        <details class="acc svc" name="services" id={`services-${anchor(s.id)}`} data-reveal style={`--i: ${i}`}>
+        <details class="acc svc" open id={`services-${anchor(s.id)}`} data-reveal style={`--i: ${i}`}>
           <summary class="acc-sum grid12">
             <span class="acc-num label" aria-hidden="true">{no}</span>
             <h3 class="acc-title display d-sm">{s.data.title}</h3>
@@ -24,7 +24,7 @@ const { items } = Astro.props;
             <span class="acc-icon" aria-hidden="true" />
           </summary>
           <div class="acc-body grid12">
-            <p class="svc-cat label label-muted">{s.data.category}</p>
+            <p class="svc-cat display">{s.data.category}</p>
             <ul class="svc-list">
               {s.data.bullets.map((b, j) => (
                 <li>
@@ -50,7 +50,11 @@ const { items } = Astro.props;
   }
   .svc-cat {
     grid-column: 3 / -1;
-    margin: 0 0 0.75rem;
+    margin: 0 0 1.25rem;
+    color: var(--accent);
+    font-size: clamp(1.75rem, 3vw, 3rem);
+    font-style: italic;
+    line-height: 1;
   }
   .svc-list {
     grid-column: 3 / -1;

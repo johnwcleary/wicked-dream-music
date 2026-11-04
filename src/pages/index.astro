@@ -27,9 +27,9 @@ const stressed = [headLast, expand?.resolve.trim().split(/\s+/).pop()];
 const outroWords = expand?.outro?.trim().split(/\s+/) ?? [];
 const outroLast = outroWords.pop();
 const video = page.hero_video;
+const film = page.hero_film;
 
-// The first About section is the company; any after it are people, set larger.
-const [company, ...people] = about.sections ?? [];
+const people = about.sections ?? [];
 ---
 
 <BaseLayout title={page.title} intro>
@@ -101,10 +101,40 @@ const [company, ...people] = about.sections ?? [];
     {expand && <svg class="links" aria-hidden="true" focusable="false" data-links />}
     {
       outroLast && (
-        <div class="hero-outro" data-hero-outro>
-          <p class="hero-outro-text display">
-            {outroWords.join(' ')} <em>{outroLast}</em>
-          </p>
+        <div class="reel" data-reel>
+          <div class="reel-top">
+            <span class="reel-wash" data-reel-wash />
+            <span class="reel-edge" data-reel-edge />
+            <div class="reel-title" data-reel-title>
+              <p class="reel-text display" data-reel-text>
+                {outroWords.join(' ')} <em>{outroLast}</em>
+              </p>
+            </div>
+          </div>
+          <div class="reel-one" data-reel-one />
+          {film && (
+            <div class="reel-film" data-reel-film data-title={film.title} aria-hidden="true">
+              <div class="reel-stage">
+                <Image
+                  src={film.poster}
+                  alt=""
+                  widths={[640, 960, 1280, 1920].filter((w) => w <= film.poster.width)}
+                  width={Math.min(1920, film.poster.width)}
+                  sizes="100vw"
+                  loading="lazy"
+                  decoding="async"
+                  quality={62}
+                  class="film-poster"
+                />
+                <video class="film-video" muted loop playsinline preload="none" disablepictureinpicture data-film-video>
+                  {film.mobile_webm && <source src={film.mobile_webm} type="video/webm" media="(max-width: 767px)" />}
+                  {film.mobile_mp4 && <source src={film.mobile_mp4} type="video/mp4" media="(max-width: 767px)" />}
+                  {film.webm && <source src={film.webm} type="video/webm" />}
+                  <source src={film.mp4} type="video/mp4" />
+                </video>
+              </div>
+            </div>
+          )}
         </div>
       )
     }
@@ -124,8 +154,8 @@ const [company, ...people] = about.sections ?? [];
                 type="button"
                 class="hero-credit label"
                 data-hero-toggle
-                data-play={`${site.ui.play_video}: ${video.title}`}
-                data-pause={`${site.ui.pause_video}: ${video.title}`}
+                data-play={site.ui.play_video}
+                data-pause={site.ui.pause_video}
                 aria-label={`${site.ui.pause_video}: ${video.title}`}
               >
                 {video.title}
@@ -151,18 +181,6 @@ const [company, ...people] = about.sections ?? [];
       <p id="about-label" class="band-label label" data-reveal>
         <span aria-hidden="true">{pad(2)} —</span> {about.title}
       </p>
-      {
-        company && (
-          <article class="chap" data-reveal>
-            <Lines as="h2" class="chap-title display d-md" lines={splitHeadline(company.heading)} i={1} />
-            <div class="chap-body">
-              {paragraphs(company.body).map((p) => (
-                <p>{p}</p>
-              ))}
-            </div>
-          </article>
-        )
-      }
       {
         people.map((person) => (
           <article class="bio">
@@ -319,31 +337,99 @@ const [company, ...people] = about.sections ?? [];
     }
   }
 
-  /* Past the sheet: the footage at full screen, with one line over it. The 50% ink
-     keeps it AA over white footage (3.4:1). */
-  .hero-outro {
+  /* Past the sheet: one line over the footage at full screen, then the second film.
+     The 50% ink keeps the line AA over white footage (3.4:1). */
+  .reel {
     position: relative;
+  }
+  .reel-top {
+    position: absolute;
+    inset: 0 0 auto;
+    z-index: 3;
     display: grid;
     place-items: center;
-    min-height: 100svh;
-    padding: var(--header-h) var(--gutter) 4rem;
-    background: color-mix(in srgb, var(--ink) 50%, transparent);
+    height: 100svh;
+    overflow: clip;
     color: var(--paper);
     text-align: center;
+    pointer-events: none;
   }
-  .hero-outro-text {
+  .reel-wash,
+  .reel-edge {
+    position: absolute;
+    inset: 0;
+  }
+  .reel-wash {
+    background: color-mix(in srgb, var(--ink) 50%, transparent);
+  }
+  /* Once the line has shrunk: enough shade behind it and the footer row to stay AA. */
+  .reel-edge {
+    opacity: 0;
+    background: linear-gradient(
+      to bottom,
+      color-mix(in srgb, var(--ink) 55%, transparent) 0,
+      color-mix(in srgb, var(--ink) 55%, transparent) 8.5rem,
+      transparent 17rem,
+      transparent calc(100% - 11rem),
+      color-mix(in srgb, var(--ink) 80%, transparent) calc(100% - 3rem)
+    );
+  }
+  .reel-title {
+    position: relative;
+  }
+  .reel-text {
     margin: 0;
     font-size: min(36svh, 30vw);
+    white-space: nowrap;
   }
-  .hero-outro-text em {
+  .reel-text em {
     font-style: italic;
+  }
+  .reel-one {
+    height: 100svh;
+  }
+  .reel-film {
+    position: relative;
+    z-index: 1;
+    background: var(--ink);
+  }
+  .reel-stage {
+    position: relative;
+    height: 100svh;
+    overflow: clip;
+  }
+  .reel-stage :global(.film-poster),
+  .film-video {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .film-video {
+    opacity: 0;
+    transition: opacity 0.8s var(--ease-out);
+  }
+  .reel-film.is-playing .film-video {
+    opacity: 1;
   }
 
   .hero-bar {
     position: relative;
-    z-index: 2;
+    z-index: 4;
     background: var(--ink);
     border-top: 1px solid color-mix(in srgb, var(--paper) 22%, transparent);
+    transition:
+      background-color 0.4s,
+      border-color 0.4s;
+  }
+  /* Over the films the row drops its ground and the services list, leaving the frame clear. */
+  .hero.in-reel .hero-bar {
+    background: transparent;
+    border-top-color: transparent;
+  }
+  .hero.in-reel .hero-strap {
+    visibility: hidden;
   }
   .hero-foot {
     display: flex;
@@ -383,16 +469,34 @@ const [company, ...people] = about.sections ?? [];
     :global(html.js) .hero-frame {
       will-change: transform;
     }
-    :global(html.js) .hero-outro-text {
+    :global(html.js) .reel-top {
+      position: sticky;
+      top: 0;
+      margin-bottom: -100svh;
+    }
+    :global(html.js) .reel-title {
+      will-change: transform;
+    }
+    :global(html.js) .reel-text {
       opacity: 0;
       transform: translateY(0.2em) scale(0.92);
       transition:
         opacity 0.6s var(--ease-out),
         transform 1s var(--ease-out);
     }
-    :global(html.js) .hero-outro.is-in .hero-outro-text {
+    :global(html.js) .reel.is-in .reel-text {
       opacity: 1;
       transform: none;
+    }
+    :global(html.js) .reel-one {
+      height: 200svh;
+    }
+    :global(html.js) .reel-film {
+      height: 190svh;
+    }
+    :global(html.js) .reel-stage {
+      position: sticky;
+      top: 0;
     }
     /* Stays on screen for the whole hero: it holds the video's pause control. */
     :global(html.js) .hero-bar {
@@ -503,39 +607,23 @@ const [company, ...people] = about.sections ?? [];
     margin: 0 0 clamp(2.5rem, 6vw, 5rem);
   }
 
-  /* About — the company in a row (title left, body right), then each person large. */
-  .band-ink {
-    --soft: color-mix(in srgb, var(--paper) 82%, transparent);
-  }
+  /* About — each person large: name left, bio right. */
   .band-ink .band-label {
     color: var(--accent);
   }
-  .chap,
   .bio {
     display: grid;
     grid-template-columns: repeat(12, minmax(0, 1fr));
     column-gap: var(--col-gap);
+    row-gap: 1.5rem;
     padding-top: 1rem;
     border-top: 1px solid var(--rule);
   }
-  .chap > *,
   .bio > * {
     grid-column: 1 / -1;
   }
-  .chap :global(.chap-title) {
-    margin: 0 0 1.5rem;
-  }
-  .chap-body p {
-    margin: 0 0 1em;
-    max-width: 40ch;
-    color: var(--soft);
-    font-size: clamp(1.125rem, 1.4vw, 1.3125rem);
-    line-height: 1.5;
-    letter-spacing: -0.006em;
-  }
-  .bio {
+  .bio + .bio {
     margin-top: clamp(4rem, 9vw, 8rem);
-    row-gap: 1.5rem;
   }
   .bio :global(.bio-name) {
     margin: 0;
@@ -606,12 +694,6 @@ const [company, ...people] = about.sections ?? [];
   }
 
   @media (min-width: 900px) {
-    .chap > :global(.chap-title) {
-      grid-column: 1 / span 5;
-    }
-    .chap > .chap-body {
-      grid-column: 7 / -1;
-    }
     .bio > :global(.bio-name) {
       grid-column: 1 / span 4;
     }
@@ -628,54 +710,97 @@ const [company, ...people] = about.sections ?? [];
 </style>
 
 <script>
-  // Hero loop: starts after the page has loaded (so it never competes with the
-  // poster image), pauses off-screen and never autoplays under reduced motion.
-  // The title credit doubles as the pause/play control (WCAG 2.2.2).
+  // The two loops: they start after the page has loaded (so they never compete with
+  // the poster image), pause off-screen and never autoplay under reduced motion. The
+  // title in the footer row names the film on screen and doubles as the pause/play
+  // control for both (WCAG 2.2.2).
   const hero = document.getElementById('top');
   const video = document.querySelector<HTMLVideoElement>('[data-hero-video]');
   const toggle = document.querySelector<HTMLButtonElement>('[data-hero-toggle]');
   if (hero && video && toggle) {
-    const reduce = matchMedia('(prefers-reduced-motion: reduce)');
-    let wanted = !reduce.matches; // play unless the visitor paused it or prefers reduced motion
-    let visible = true;
+    const filmHost = document.querySelector<HTMLElement>('[data-reel-film]');
+    const filmVideo = document.querySelector<HTMLVideoElement>('[data-film-video]');
+    const firstTitle = toggle.textContent?.trim() ?? '';
+    const clips = [{ video, host: hero, seen: true }];
+    if (filmHost && filmVideo) clips.push({ video: filmVideo, host: filmHost, seen: false });
+
+    let wanted = !matchMedia('(prefers-reduced-motion: reduce)').matches; // play unless paused or reduced motion
+    let started = false;
+    let title = firstTitle;
 
     const render = () => {
-      const playing = !video.paused;
-      toggle.setAttribute('aria-label', (playing ? toggle.dataset.pause : toggle.dataset.play) ?? '');
-      hero.classList.toggle('is-playing', playing);
+      toggle.textContent = title;
+      toggle.setAttribute('aria-label', `${(wanted ? toggle.dataset.pause : toggle.dataset.play) ?? ''}: ${title}`);
     };
     const sync = () => {
-      if (wanted && visible) {
-        video.preload = 'auto';
-        video.play().catch(() => {});
-      } else video.pause();
+      if (!started) return;
+      for (const clip of clips) {
+        if (wanted && clip.seen) {
+          clip.video.preload = 'auto';
+          clip.video.play().catch(() => {});
+        } else clip.video.pause();
+      }
     };
-    video.addEventListener('playing', render);
-    video.addEventListener('pause', render);
+    for (const clip of clips) clip.video.addEventListener('playing', () => clip.host.classList.add('is-playing'));
     toggle.addEventListener('click', () => {
-      wanted = video.paused;
+      wanted = !wanted;
+      render();
       sync();
     });
-    new IntersectionObserver(([e]) => {
-      visible = !!e?.isIntersecting;
+
+    // The first loop is in view until the second film has fully covered it.
+    const cover = [document.querySelector('.hero-sheet'), document.querySelector('[data-reel-one]')].filter((el): el is Element => !!el);
+    const inView = new Set<Element>();
+    const firstWatch = new IntersectionObserver((entries) => {
+      for (const e of entries) {
+        if (e.isIntersecting) inView.add(e.target);
+        else inView.delete(e.target);
+      }
+      clips[0]!.seen = inView.size > 0;
       sync();
-    }).observe(hero);
+    });
+    cover.forEach((el) => firstWatch.observe(el));
+    if (filmHost && clips[1]) {
+      new IntersectionObserver(
+        ([e]) => {
+          clips[1]!.seen = !!e?.isIntersecting;
+          sync();
+        },
+        { rootMargin: '200px 0px' },
+      ).observe(filmHost);
+      new IntersectionObserver(
+        ([e]) => {
+          title = e?.isIntersecting ? (filmHost.dataset.title ?? firstTitle) : firstTitle;
+          render();
+        },
+        { rootMargin: '-50% 0px -50% 0px' },
+      ).observe(filmHost);
+    }
 
     render();
-    const begin = () => ('requestIdleCallback' in window ? requestIdleCallback(sync, { timeout: 1500 }) : setTimeout(sync, 300));
-    if (document.readyState === 'complete') begin();
-    else addEventListener('load', begin, { once: true });
+    const begin = () => {
+      started = true;
+      sync();
+    };
+    const idle = () => ('requestIdleCallback' in window ? requestIdleCallback(begin, { timeout: 1500 }) : setTimeout(begin, 300));
+    if (document.readyState === 'complete') idle();
+    else addEventListener('load', idle, { once: true });
   }
 
   // Hero sequence. As the page scrolls, lines draw from the headline's last word to
   // each word in the list, and from those to the closing line. A line's tip follows a
   // mark 72% of the way down the screen, and each word pops as the mark reaches it.
+  // Past the sheet, the reel's line shrinks away so the films can be watched.
   const last = document.querySelector<HTMLElement>('[data-run-last]');
   const frame = document.querySelector<HTMLElement>('[data-hero-frame]');
   const end = document.querySelector<HTMLElement>('[data-bloom-end]');
   const svg = document.querySelector<SVGSVGElement>('[data-links]');
   const rows = Array.from(document.querySelectorAll<HTMLElement>('[data-bloom-word]'));
-  const outro = document.querySelector<HTMLElement>('[data-hero-outro]');
+  const reel = document.querySelector<HTMLElement>('[data-reel]');
+  const reelTitle = document.querySelector<HTMLElement>('[data-reel-title]');
+  const reelText = document.querySelector<HTMLElement>('[data-reel-text]');
+  const reelWash = document.querySelector<HTMLElement>('[data-reel-wash]');
+  const reelEdge = document.querySelector<HTMLElement>('[data-reel-edge]');
   if (hero && last && end && svg && rows.length && matchMedia('(prefers-reduced-motion: no-preference)').matches) {
     const seg = (v: number, from: number, to: number) => Math.min(1, Math.max(0, (v - from) / (to - from)));
     const NS = 'http://www.w3.org/2000/svg';
@@ -688,8 +813,10 @@ const [company, ...people] = about.sections ?? [];
     let tops: number[] = [];
     let endTop = 0;
     let heroTop = 0;
-    let heroEnd = 0;
-    let outroTop = 0;
+    let reelTop = 0;
+    let reelEnd = 0;
+    let titleLift = 0;
+    let titleScale = 1;
 
     const addNode = (x: number, y: number, at: number) => {
       const el = document.createElementNS(NS, 'circle');
@@ -718,8 +845,15 @@ const [company, ...people] = about.sections ?? [];
     const measure = () => {
       const b = hero.getBoundingClientRect();
       heroTop = b.top + scrollY;
-      heroEnd = b.bottom + scrollY - innerHeight;
-      outroTop = outro ? outro.getBoundingClientRect().top + scrollY : 0;
+      if (reel && reelText) {
+        const r = reel.getBoundingClientRect();
+        reelTop = r.top + scrollY;
+        reelEnd = r.bottom + scrollY;
+        // The line ends just under the header, small enough to watch the film beneath it.
+        const header = document.querySelector<HTMLElement>('.site-header')?.offsetHeight ?? 0;
+        titleLift = innerHeight / 2 - (header + 36);
+        titleScale = 32 / parseFloat(getComputedStyle(reelText).fontSize);
+      }
 
       svg.replaceChildren();
       links = [];
@@ -747,7 +881,18 @@ const [company, ...people] = about.sections ?? [];
     };
 
     const render = (y: number) => {
-      if (frame) frame.style.transform = `scale(${1 + seg(y, heroTop, heroEnd) * 0.16})`;
+      // Over the first screen of the reel the line shrinks to the top and the shade clears.
+      const clear = reel ? seg(y, reelTop, reelTop + innerHeight * 0.7) : 0;
+      const ease = clear * clear * (3 - 2 * clear);
+      if (frame) frame.style.transform = `scale(${1 + seg(y, heroTop, reelTop || heroTop + 1) * 0.16 * (1 - ease)})`;
+      if (reelTitle) reelTitle.style.transform = `translate3d(0, ${-titleLift * ease}px, 0) scale(${1 + (titleScale - 1) * ease})`;
+      if (reelWash) reelWash.style.opacity = String(1 - ease);
+      if (reelEdge) reelEdge.style.opacity = String(ease);
+      if (reel) {
+        // The line arrives once the sheet has lifted about halfway off the footage.
+        reel.classList.toggle('is-in', y + innerHeight * 0.45 >= reelTop);
+        hero.classList.toggle('in-reel', y >= reelTop - innerHeight * 0.1 && y <= reelEnd - innerHeight * 1.02);
+      }
       const mark = y + innerHeight * MARK - heroTop;
       for (const link of links) {
         const shown = Math.round(seg(mark, link.from, link.to) * 1000) / 1000;
@@ -758,10 +903,6 @@ const [company, ...people] = about.sections ?? [];
       for (const node of nodes) node.el.style.opacity = mark >= node.at ? '1' : '0';
       rows.forEach((row, i) => row.classList.toggle('is-in', mark >= (tops[i] ?? 0)));
       end.classList.toggle('is-in', mark >= endTop);
-      if (outro) {
-        // The line arrives once the sheet has lifted about halfway off the footage.
-        outro.classList.toggle('is-in', y + innerHeight * 0.45 >= outroTop);
-      }
     };
 
     let now = scrollY;
