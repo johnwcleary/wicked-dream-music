@@ -5,7 +5,7 @@ import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
 import { getSite } from '../lib/content';
 import ogSource from '../assets/brand/logo-gradient.png';
-import displayFont from '@fontsource/instrument-serif/files/instrument-serif-latin-400-normal.woff2?url';
+import displayFont from '@fontsource-variable/inter-tight/files/inter-tight-latin-wght-normal.woff2?url';
 
 interface Props {
   title: string;
@@ -84,9 +84,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url).href;
     padding: 0.6rem 0.9rem;
     background: var(--paper);
     color: var(--ink);
-    font-family: var(--font-mono);
     font-size: 0.8125rem;
-    text-transform: uppercase;
     transform: translateY(-200%);
   }
   .skip:focus,

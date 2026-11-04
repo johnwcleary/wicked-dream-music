@@ -111,7 +111,7 @@ const site = await getSite();
   .menu-list {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.25rem 1.5rem;
+    gap: 0.25rem;
     list-style: none;
     margin: 0;
     padding: 0;
@@ -119,27 +119,20 @@ const site = await getSite();
   .menu-list a {
     display: inline-flex;
     align-items: center;
-    gap: 0.45rem;
-    padding-block: 0.35rem;
+    padding: 0.3rem 0.8rem;
+    border-radius: 999px;
     font-size: 0.875rem;
-    font-weight: 480;
-    letter-spacing: -0.01em;
+    font-weight: 450;
+    transition:
+      background-color 0.3s,
+      color 0.3s;
   }
-  .menu-list a:hover .menu-text {
-    text-decoration: underline;
-    text-decoration-thickness: 1px;
-    text-underline-offset: 0.22em;
+  .menu-list a:hover {
+    background: color-mix(in srgb, var(--paper) 14%, transparent);
   }
-  .menu-list a::before {
-    content: '';
-    width: 0.4rem;
-    height: 0.4rem;
-    background: currentColor;
-    transform: scale(0);
-    transition: transform 0.35s var(--ease-out);
-  }
-  .menu-list a[aria-current]::before {
-    transform: none;
+  .menu-list a[aria-current] {
+    background: var(--paper);
+    color: var(--ink);
   }
   .menu-meta {
     display: none;
@@ -195,8 +188,12 @@ const site = await getSite();
       letter-spacing: var(--display-tracking);
       line-height: 1;
     }
-    .menu.is-open .menu-list a::before {
-      display: none;
+    .menu.is-open .menu-list a,
+    .menu.is-open .menu-list a[aria-current],
+    .menu.is-open .menu-list a:hover {
+      padding-inline: 0;
+      background: none;
+      color: inherit;
     }
     .menu.is-open .menu-list a[aria-current] .menu-text {
       text-decoration: underline;

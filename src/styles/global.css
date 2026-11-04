@@ -1,7 +1,5 @@
-@import "@fontsource/instrument-serif/400.css";
-@import "@fontsource/instrument-serif/400-italic.css";
-@import "@fontsource-variable/archivo/index.css";
-@import "@fontsource-variable/jetbrains-mono/index.css";
+@import "@fontsource-variable/inter-tight/wght.css";
+@import "@fontsource-variable/inter-tight/wght-italic.css";
 @import "tailwindcss";
 
 /* Brand tokens, sampled from the supplied logo PNGs. */
@@ -24,12 +22,12 @@
   --accent-gradient: linear-gradient(180deg, var(--accent), var(--accent-2));
   --plate: #1c1c1e;               /* empty image ground */
 
-  /* Type: Instrument Serif for display, Archivo for body, JetBrains Mono for labels. */
-  --font-sans: "Archivo Variable", "Helvetica Neue", Helvetica, Arial, sans-serif;
-  --font-mono: "JetBrains Mono Variable", ui-monospace, "SFMono-Regular", Menlo, monospace;
-  --font-display: "Instrument Serif", Georgia, "Times New Roman", serif;
-  --display-weight: 400;
-  --display-tracking: -0.015em;
+  /* Type: one tight neo-grotesk, Inter Tight, all lowercase. Large type runs very tight;
+     small type sits at normal spacing. */
+  --font-sans: "Inter Tight Variable", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --font-display: var(--font-sans);
+  --display-weight: 500;
+  --display-tracking: -0.04em;
   --display-leading: 0.92;
 
   --header-h: 5rem;
@@ -43,8 +41,7 @@
   --color-paper: var(--paper);
   --color-accent: var(--accent);
   --color-muted: var(--muted);
-  --font-sans: "Archivo Variable", "Helvetica Neue", Helvetica, Arial, sans-serif;
-  --font-mono: "JetBrains Mono Variable", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  --font-sans: "Inter Tight Variable", "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
 @layer base {
@@ -60,8 +57,9 @@
     color: var(--paper);
     font-family: var(--font-sans);
     font-size: 1rem;
-    line-height: 1.5;
-    font-feature-settings: "ss01", "kern";
+    line-height: 1.4;
+    font-feature-settings: "kern";
+    text-transform: lowercase;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     overflow-x: clip;
@@ -81,6 +79,9 @@
   }
   main:focus {
     outline: none;
+  }
+  button {
+    text-transform: inherit;
   }
   img {
     display: block;
@@ -102,20 +103,16 @@
     column-gap: var(--col-gap);
   }
 
-  /* Small monospace for labels, numbering and captions. */
+  /* Small text for labels and captions. */
   .label {
-    font-family: var(--font-mono);
-    font-size: 0.6875rem;
+    font-size: 0.8125rem;
     line-height: 1.35;
-    letter-spacing: 0.01em;
-    text-transform: uppercase;
-    font-variant-numeric: tabular-nums;
   }
   .label-muted {
     color: var(--muted);
   }
 
-  /* Display type: large serif, tight leading. */
+  /* Display type: large and tight. */
   .display {
     font-family: var(--font-display);
     font-weight: var(--display-weight);
@@ -135,7 +132,7 @@
   .d-sm {
     font-size: clamp(1.5rem, 2.4vw, 2.5rem);
     line-height: 1;
-    letter-spacing: -0.012em;
+    letter-spacing: -0.035em;
   }
   @media (max-width: 767px) {
     .d-xl {

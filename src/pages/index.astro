@@ -20,11 +20,9 @@ const [headOne = '', headTwo = ''] = splitHeadline(page.headline);
 const headLast = headTwo.split(' ').pop() ?? '';
 const headRest = headTwo.slice(0, -headLast.length).trim();
 const expand = page.hero_expand;
-// The closing line: two lines, with the headline's word and its own last word in italics.
+// The closing line: two lines. Only the headline's word and this line's last word take italics.
 const closing = expand ? splitHeadline(expand.resolve) : [];
 const stressed = [headLast, expand?.resolve.trim().split(/\s+/).pop()];
-const outroWords = expand?.outro?.trim().split(/\s+/) ?? [];
-const outroLast = outroWords.pop();
 const video = page.hero_video;
 const film = page.hero_film;
 
@@ -100,14 +98,14 @@ const people = about.sections ?? [];
     </div>
     {expand && <svg class="links" aria-hidden="true" focusable="false" data-links />}
     {
-      outroLast && (
+      expand?.outro && (
         <div class="reel" data-reel>
           <div class="reel-top">
             <span class="reel-wash" data-reel-wash />
             <span class="reel-edge" data-reel-edge />
             <div class="reel-title" data-reel-title>
               <p class="reel-text display" data-reel-text>
-                {outroWords.join(' ')} <em>{outroLast}</em>
+                {expand?.outro}
               </p>
             </div>
           </div>
@@ -192,7 +190,7 @@ const people = about.sections ?? [];
         people.map((person) => (
           <article class="bio">
             <Lines as="h2" class="bio-name display d-lg" lines={splitHeadline(person.heading)} />
-            <div class="bio-body display" data-reveal>
+            <div class="bio-body" data-reveal>
               {paragraphs(person.body).map((p) => (
                 <p>{p}</p>
               ))}
@@ -307,13 +305,13 @@ const people = about.sections ?? [];
   .run,
   .bloom-list,
   .bloom-end {
-    -webkit-text-stroke: 0.016em #fff;
+    font-weight: 600;
   }
   .hero-stage {
     display: flex;
-    align-items: center;
+    align-items: flex-end;
     min-height: 100svh;
-    padding: calc(var(--header-h) + 1rem) var(--gutter) 4rem;
+    padding: calc(var(--header-h) + 1rem) var(--gutter) 4.5rem;
   }
   .run {
     margin: 0;
@@ -354,17 +352,15 @@ const people = about.sections ?? [];
   .bloom-note {
     display: block;
     margin-top: 1em;
-    -webkit-text-stroke: 0;
-    font-family: var(--font-sans);
     font-size: 1.5rem;
     font-weight: 600;
-    letter-spacing: -0.01em;
+    letter-spacing: -0.02em;
     line-height: 1.2;
   }
   @media (min-width: 768px) {
     .hero {
-      --run-size: min(24svh, 10.4vw);
-      --word-size: min(14svh, 9vw);
+      --run-size: min(22svh, 9.4vw);
+      --word-size: min(13svh, 8vw);
     }
   }
 
@@ -412,9 +408,6 @@ const people = about.sections ?? [];
     margin: 0;
     font-size: min(24svh, 19vw);
     white-space: nowrap;
-  }
-  .reel-text em {
-    font-style: italic;
   }
   .reel-one {
     height: 100svh;
@@ -538,9 +531,8 @@ const people = about.sections ?? [];
       }
     }
 
-    /* Starts just under the headline and keeps to its width. */
+    /* Keeps to the headline's width. */
     :global(html.js) .bloom {
-      margin-top: -20svh;
       padding: 0 var(--gutter);
     }
     :global(html.js) .links {
@@ -574,10 +566,10 @@ const people = about.sections ?? [];
       display: inline-block;
       padding-inline: 0.05em;
       opacity: 0;
-      transform: translateY(0.3em) scale(0.8);
+      transform: translateY(0.18em);
       transition:
-        opacity 0.4s var(--ease-out),
-        transform 0.8s cubic-bezier(0.2, 1.45, 0.35, 1);
+        opacity 0.7s var(--ease-out),
+        transform 1.1s var(--ease-out);
     }
     :global(html.js) .bloom-list li.is-in em {
       opacity: 1;
@@ -592,10 +584,10 @@ const people = about.sections ?? [];
     }
     :global(html.js) .bloom-end-line {
       opacity: 0;
-      transform: translateY(0.25em) scale(0.9);
+      transform: translateY(0.14em);
       transition:
-        opacity 0.5s var(--ease-out),
-        transform 0.9s cubic-bezier(0.2, 1.35, 0.35, 1);
+        opacity 0.8s var(--ease-out),
+        transform 1.2s var(--ease-out);
     }
     :global(html.js) .bloom-end-line:nth-child(2) {
       transition-delay: 0.12s;
@@ -630,17 +622,17 @@ const people = about.sections ?? [];
   .customers-label {
     margin: 0 0 0.35em;
     color: var(--muted);
-    font-size: clamp(1.125rem, 1.4vw, 1.5rem);
-    font-style: italic;
-    line-height: 1.1;
+    font-size: clamp(1rem, 1.15vw, 1.125rem);
+    font-weight: 450;
+    letter-spacing: -0.005em;
+    line-height: 1.2;
   }
   .customers-list {
     margin: 0 auto;
     max-width: 22em;
-    color: var(--accent);
-    font-size: clamp(1.75rem, 3.4vw, 3.75rem);
-    line-height: 1.04;
-    letter-spacing: -0.012em;
+    color: var(--paper);
+    font-size: clamp(1.625rem, 3vw, 3.25rem);
+    line-height: 1.02;
     text-wrap: balance;
   }
   .playlist {
@@ -683,9 +675,11 @@ const people = about.sections ?? [];
   }
   .bio-body p {
     margin: 0;
-    font-size: clamp(1.375rem, 2.1vw, 2.25rem);
-    line-height: 1.14;
-    letter-spacing: -0.01em;
+    max-width: 34em;
+    font-size: clamp(1.125rem, 1.6vw, 1.625rem);
+    font-weight: 450;
+    line-height: 1.25;
+    letter-spacing: -0.012em;
   }
 
   /* Contact — one giant email link, in silver. */
@@ -714,20 +708,20 @@ const people = about.sections ?? [];
     margin-top: clamp(1.5rem, 4vw, 3rem);
     flex-wrap: wrap;
     max-width: 100%;
-    color: var(--accent);
-    font-size: clamp(1.625rem, 6.6vw, 4rem);
+    color: var(--paper);
+    font-size: clamp(1.5rem, 6vw, 4rem);
     line-height: 1.05;
   }
   .cta-mail-text {
     background-image: linear-gradient(currentColor, currentColor);
-    background-size: 100% 0.06em;
+    background-size: 0 0.04em;
     background-position: 0 100%;
     background-repeat: no-repeat;
     padding-bottom: 0.06em;
     transition: background-size 0.5s var(--ease-out);
   }
   .cta-mail:hover .cta-mail-text {
-    background-size: 100% 0.12em;
+    background-size: 100% 0.04em;
   }
   .cta-mail-arrow {
     font-size: 0.6em;
@@ -748,7 +742,7 @@ const people = about.sections ?? [];
       grid-column: 1 / span 6;
     }
     .cta-mail {
-      font-size: clamp(2.25rem, 4.2vw, 5rem);
+      font-size: clamp(2.25rem, 4vw, 4.75rem);
     }
   }
 </style>
