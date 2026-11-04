@@ -1,8 +1,7 @@
 ---
 /**
- * The services, one under the other on alternating sides. Each title is a window
- * onto a still from the films, which drifts as the page scrolls, beside a compact
- * grid of its offerings.
+ * The services, one under the other. Each title is a window onto a still from the
+ * films, which drifts as the page scrolls, beside a compact grid of its offerings.
  */
 import type { ImageMetadata } from 'astro';
 import { getImage } from 'astro:assets';
@@ -124,14 +123,6 @@ const pictures = await Promise.all(
     .svc {
       grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
       align-items: center;
-    }
-    /* Alternating sides, like the words in the hero. */
-    .svc:nth-child(even) {
-      grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
-    }
-    .svc:nth-child(even) .svc-head {
-      order: 2;
-      text-align: right;
     }
   }
 </style>
