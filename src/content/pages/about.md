@@ -3,6 +3,7 @@ title: About
 headline: "Creative by nature."
 lede: "We're an independent company that works worldwide, and we think the strongest music comes from artists who know who they are."
 eyebrow: "New York / Worldwide"
+section_title: "Our founder"
 sections:
   - heading: "David Kim"
     body: |

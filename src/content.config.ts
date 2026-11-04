@@ -65,6 +65,15 @@ const pages = defineCollection({
         mobile_webm: z.string().optional(),
       })
       .optional(),
+    // A short title over the page's content when it's shown as a home page section.
+    section_title: z.string().optional(),
+    // Who the company has worked for: a lead-in, then the names as a sentence.
+    customers: z
+      .object({
+        label: z.string(),
+        list: z.string(),
+      })
+      .optional(),
     // A Spotify playlist embed. The ID is the last part of the playlist's URL.
     playlist: z
       .object({
