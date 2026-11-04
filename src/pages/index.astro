@@ -28,10 +28,8 @@ const outroWords = expand?.outro?.trim().split(/\s+/) ?? [];
 const outroLast = outroWords.pop();
 const video = page.hero_video;
 
-const chapters = about.sections ?? [];
-// Pull quote: the credentials line from the first chapter, repeated as a closing statement.
-const firstParas = chapters[0] ? paragraphs(chapters[0].body) : [];
-const quote = firstParas[firstParas.length - 1];
+// The first About section is the company; any after it are people, set larger.
+const [company, ...people] = about.sections ?? [];
 ---
 
 <BaseLayout title={page.title} intro>
@@ -153,34 +151,29 @@ const quote = firstParas[firstParas.length - 1];
       <p id="about-label" class="band-label label" data-reveal>
         <span aria-hidden="true">{pad(2)} —</span> {about.title}
       </p>
-      <div class="chaps grid12">
-        {
-          chapters.map((c, i) => (
-            <article class="chap" data-reveal style={`--i: ${i + 1}`}>
-              <p class="chap-no label" aria-hidden="true">
-                {pad(2)}.{i + 1}
-              </p>
-              <Lines as="h2" class="chap-title display d-md" lines={splitHeadline(c.heading)} i={i + 1} />
-              <div class="chap-body">
-                {paragraphs(c.body).map((p) => (
-                  <p>{p}</p>
-                ))}
-              </div>
-            </article>
-          ))
-        }
-      </div>
       {
-        quote && (
-          <figure class="pull" aria-hidden="true">
-            <blockquote class="pull-q display" data-reveal>
-              <p>
-                <span class="pull-fill">“{quote}”</span>
-              </p>
-            </blockquote>
-            <figcaption class="pull-cap label">— {site.name}</figcaption>
-          </figure>
+        company && (
+          <article class="chap" data-reveal>
+            <Lines as="h2" class="chap-title display d-md" lines={splitHeadline(company.heading)} i={1} />
+            <div class="chap-body">
+              {paragraphs(company.body).map((p) => (
+                <p>{p}</p>
+              ))}
+            </div>
+          </article>
         )
+      }
+      {
+        people.map((person) => (
+          <article class="bio">
+            <Lines as="h2" class="bio-name display d-lg" lines={splitHeadline(person.heading)} />
+            <div class="bio-body display" data-reveal>
+              {paragraphs(person.body).map((p) => (
+                <p>{p}</p>
+              ))}
+            </div>
+          </article>
+        ))
       }
     </div>
   </section>
@@ -510,31 +503,24 @@ const quote = firstParas[firstParas.length - 1];
     margin: 0 0 clamp(2.5rem, 6vw, 5rem);
   }
 
-  /* About — title and body side by side, the quote highlighted. */
+  /* About — the company in a row (title left, body right), then each person large. */
   .band-ink {
     --soft: color-mix(in srgb, var(--paper) 82%, transparent);
   }
-  .band-ink .band-label,
-  .chap-no {
+  .band-ink .band-label {
     color: var(--accent);
   }
-  .chaps {
-    row-gap: clamp(3rem, 7vw, 5rem);
-  }
-  /* Each chapter is a row: title left, body right. */
-  .chap {
-    grid-column: 1 / -1;
+  .chap,
+  .bio {
     display: grid;
     grid-template-columns: repeat(12, minmax(0, 1fr));
     column-gap: var(--col-gap);
     padding-top: 1rem;
     border-top: 1px solid var(--rule);
   }
-  .chap > * {
+  .chap > *,
+  .bio > * {
     grid-column: 1 / -1;
-  }
-  .chap-no {
-    margin: 0 0 1.25rem;
   }
   .chap :global(.chap-title) {
     margin: 0 0 1.5rem;
@@ -547,36 +533,18 @@ const quote = firstParas[firstParas.length - 1];
     line-height: 1.5;
     letter-spacing: -0.006em;
   }
-  .pull {
-    margin: clamp(5rem, 11vw, 9rem) 0 0;
+  .bio {
+    margin-top: clamp(4rem, 9vw, 8rem);
+    row-gap: 1.5rem;
   }
-  .pull-q {
+  .bio :global(.bio-name) {
     margin: 0;
   }
-  .pull-q p {
+  .bio-body p {
     margin: 0;
-    font-size: clamp(2rem, 4.8vw, 5rem);
-    line-height: 1.12;
-    letter-spacing: -0.012em;
-    text-indent: -0.4em;
-  }
-  .pull-cap {
-    margin-top: 1.5rem;
-    color: var(--accent);
-  }
-  /* The quote is set in the accent gradient (silver to pewter across each line). */
-  .pull-fill {
-    color: var(--accent);
-  }
-  @supports ((-webkit-background-clip: text) or (background-clip: text)) {
-    .pull-fill {
-      color: transparent;
-      background-image: linear-gradient(90deg, var(--accent), var(--accent-2));
-      -webkit-background-clip: text;
-      background-clip: text;
-      -webkit-box-decoration-break: clone;
-      box-decoration-break: clone;
-    }
+    font-size: clamp(1.75rem, 3.1vw, 3.25rem);
+    line-height: 1.14;
+    letter-spacing: -0.01em;
   }
 
   /* Contact — one giant email link, in silver. */
@@ -644,10 +612,11 @@ const quote = firstParas[firstParas.length - 1];
     .chap > .chap-body {
       grid-column: 7 / -1;
     }
-    .pull-q,
-    .pull-cap {
-      max-width: 85%;
-      margin-left: auto;
+    .bio > :global(.bio-name) {
+      grid-column: 1 / span 4;
+    }
+    .bio > .bio-body {
+      grid-column: 5 / -1;
     }
     .cta-lede {
       grid-column: 1 / span 6;
