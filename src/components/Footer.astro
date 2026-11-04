@@ -1,5 +1,4 @@
 ---
-import Logo from './Logo.astro';
 import { getSite, toSection } from '../lib/content';
 
 const site = await getSite();
@@ -9,9 +8,6 @@ const year = new Date().getFullYear();
 <footer class="site-footer">
   <div class="wrap">
     <div class="colophon grid12">
-      <a href="/#top" class="colo-logo" aria-label={site.name}>
-        <Logo label={site.name} class="h-auto w-full" />
-      </a>
       <p class="colo-loc label">
         {site.name}<br />
         <span class="label-muted">{site.location}</span>
@@ -43,13 +39,8 @@ const year = new Date().getFullYear();
     align-items: start;
     padding-block: 1.5rem 2rem;
   }
-  .colo-logo {
-    grid-column: 1 / span 4;
-    width: 5.5rem;
-    display: block;
-  }
   .colo-loc {
-    grid-column: 5 / -1;
+    grid-column: 1 / -1;
   }
   .colo-nav {
     grid-column: 1 / span 6;
@@ -75,12 +66,8 @@ const year = new Date().getFullYear();
   }
 
   @media (min-width: 768px) {
-    .colo-logo {
-      grid-column: 1 / span 3;
-      width: 7rem;
-    }
     .colo-loc {
-      grid-column: 4 / span 3;
+      grid-column: 1 / span 6;
     }
     .colo-nav {
       grid-column: 7 / span 3;

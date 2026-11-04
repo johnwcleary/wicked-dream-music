@@ -30,18 +30,8 @@ const people = about.sections ?? [];
 ---
 
 <BaseLayout title={page.title} intro>
-  <!-- Temporary: picks the word animation being auditioned, before the hero paints. -->
-  <script is:inline>
-    (function () {
-      var saved = null;
-      try {
-        saved = new URLSearchParams(location.search).get('anim') || localStorage.getItem('wdm-anim');
-      } catch (e) {}
-      document.documentElement.dataset.anim = saved || 'roll';
-    })();
-  </script>
   <!-- 00 — Hero: all the type is a window onto the footage, which holds still behind
-       a beige sheet as the page scrolls. The words animate in, then the closing line.
+       a beige sheet as the page scrolls. The words light one at a time, then the closing line.
        Without JS or with reduced
        motion the type sits still and stacked, over the poster. -->
   <section id="top" class={`hero${video ? ' has-video' : ''}`} aria-labelledby="hero-title" data-hero>
@@ -122,7 +112,7 @@ const people = about.sections ?? [];
           </div>
           <div class="reel-one" data-reel-one />
           {film && (
-            <div class="reel-film" data-reel-film data-title={film.title} aria-hidden="true">
+            <div class="reel-film" data-reel-film aria-hidden="true">
               <div class="reel-stage">
                 <Image
                   src={film.poster}
@@ -164,9 +154,8 @@ const people = about.sections ?? [];
                 data-hero-toggle
                 data-play={site.ui.play_video}
                 data-pause={site.ui.pause_video}
-                aria-label={`${site.ui.pause_video}: ${video.title}`}
               >
-                {video.title}
+                {site.ui.pause_video}
               </button>
             )
           }
@@ -174,28 +163,15 @@ const people = about.sections ?? [];
     </div>
   </section>
 
-  <!-- Temporary: the word animation audition. -->
-  <div class="pick" role="group" aria-label="Word animation">
-    <button type="button" data-anim-pick="roll">1 roll</button>
-    <button type="button" data-anim-pick="focus">2 focus</button>
-    <button type="button" data-anim-pick="sweep">3 sweep</button>
-    <button type="button" data-anim-pick="wipe">4 wipe</button>
-  </div>
-
   <!-- 01 — Services -->
   <section id="services" class="sec wrap" aria-labelledby="services-title">
-    <SectionHead id="services-title" title={servicesPage.headline} small />
+    <SectionHead id="services-title" title={servicesPage.headline} />
     <ServiceGrid items={services} stills={[video?.poster, film?.poster]} />
     {
       customers && (
-        <div class="customers">
-          <p class="customers-label display" data-reveal>
-            {customers.label}
-          </p>
-          <p class="customers-list display" data-reveal style="--i: 1">
-            {customers.list}
-          </p>
-        </div>
+        <p class="customers" data-reveal>
+          <span class="customers-label">{customers.label}:</span> {customers.list}
+        </p>
       )
     }
   </section>
@@ -204,7 +180,7 @@ const people = about.sections ?? [];
   <!-- 02 — About -->
   <section id="about" class="band band-ink" aria-labelledby="about-title">
     <div class="wrap">
-      <SectionHead id="about-title" title={about.section_title ?? about.title} small />
+      <SectionHead id="about-title" title={about.section_title ?? about.title} />
       {
         people.map((person) => (
           <article class="bio">
@@ -477,7 +453,7 @@ const people = about.sections ?? [];
     text-decoration: underline;
     text-underline-offset: 0.25em;
   }
-  /* The credit doubles as a quiet pause/play control for the loop. */
+  /* A quiet pause/play control for the loops. */
   .hero-credit {
     padding: 0.35rem 0;
     border: 0;
@@ -528,10 +504,23 @@ const people = about.sections ?? [];
       position: sticky;
       top: 0;
     }
-    /* Stays on screen for the whole hero: it holds the video's pause control. */
+    /* Stays on screen for the whole hero (it holds the video's pause control), taking
+       no space of its own, so it leaves with the last film. */
     :global(html.js) .hero-bar {
       position: sticky;
       bottom: 0;
+      height: 0;
+      background: none;
+    }
+    :global(html.js) .hero-foot {
+      position: absolute;
+      inset: auto 0 0;
+      max-width: none;
+      background: var(--paper);
+      transition: background-color 0.4s;
+    }
+    :global(html.js) .hero.in-reel .hero-foot {
+      background: transparent;
     }
     :global(html.js) .run-line {
       animation: run-in 1.2s var(--ease-out) both;
@@ -549,83 +538,23 @@ const people = about.sections ?? [];
     :global(html.js) .bloom {
       padding: 0 var(--gutter);
     }
-    /* Temporary audition of the word animations (html[data-anim]). All are compact:
-       roll and focus pin briefly, sweep and wipe scroll straight past. */
+    /* A tight stack, pinned just long enough for each word to light in turn. */
+    :global(html.js) .words {
+      height: calc(4.2em + 42svh);
+      font-size: min(10svh, 9vw);
+    }
     :global(html.js) .bloom-list {
-      flex-wrap: nowrap;
-      gap: 0;
-      white-space: nowrap;
-    }
-    :global(html.js) .bloom-list li {
-      will-change: transform, opacity;
-    }
-    /* 1 — roll: one line, each word rolling up through a mask. */
-    :global(html.js[data-anim='roll']) .words {
-      height: 125svh;
-    }
-    :global(html.js[data-anim='roll']) .bloom-list {
-      position: sticky;
-      top: calc(50svh - 0.6em);
-      display: block;
-      height: 1.2em;
-      overflow: clip;
-      font-size: min(20svh, 13vw);
-      line-height: 1.2;
-    }
-    :global(html.js[data-anim='roll']) .bloom-list li {
-      position: absolute;
-      inset: 0 auto auto 0;
-    }
-    /* 2 — focus: a tight stack, one word lit at a time. */
-    :global(html.js[data-anim='focus']) .words {
-      height: 125svh;
-    }
-    :global(html.js[data-anim='focus']) .bloom-list {
       position: sticky;
       top: calc(50svh - 2.1em);
       display: grid;
-      font-size: min(10svh, 9vw);
+      flex-wrap: nowrap;
+      gap: 0;
+      font-size: inherit;
       line-height: 1.05;
+      white-space: nowrap;
     }
-    /* 3 — sweep: one line, lit word by word as it scrolls up. */
-    :global(html.js[data-anim='sweep']) .words {
-      padding-block: 12svh;
-    }
-    :global(html.js[data-anim='sweep']) .bloom-list {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0 0.32em;
-      font-size: clamp(2.25rem, 4.6vw, 5rem);
-      line-height: 1.1;
-    }
-    /* 4 — wipe: two by two, each word drawn on from the left. */
-    :global(html.js[data-anim='wipe']) .words {
-      padding-block: 8svh;
-    }
-    :global(html.js[data-anim='wipe']) .bloom-list {
-      display: grid;
-      grid-template-columns: repeat(2, max-content);
-      gap: 0.02em 0.5em;
-      font-size: min(11svh, 8.4vw);
-      line-height: 1.1;
-    }
-    :global(html.js[data-anim='wipe']) .bloom-list span {
-      display: block;
-      padding-right: 0.06em;
-      clip-path: inset(-10% 100% -25% 0);
-      transition: clip-path 1.5s var(--ease-soft);
-    }
-    :global(html.js[data-anim='wipe']) .bloom-list li:nth-child(2) span {
-      transition-delay: 0.18s;
-    }
-    :global(html.js[data-anim='wipe']) .bloom-list li:nth-child(3) span {
-      transition-delay: 0.36s;
-    }
-    :global(html.js[data-anim='wipe']) .bloom-list li:nth-child(4) span {
-      transition-delay: 0.54s;
-    }
-    :global(html.js[data-anim='wipe']) .words.is-in .bloom-list span {
-      clip-path: inset(-10% -5% -25% 0);
+    :global(html.js) .bloom-list li {
+      will-change: opacity;
     }
     :global(html.js) .bloom-end {
       display: grid;
@@ -655,41 +584,6 @@ const people = about.sections ?? [];
     }
   }
 
-  /* Temporary: the audition switcher. */
-  .pick {
-    position: fixed;
-    top: calc(var(--header-h) + 0.25rem);
-    right: var(--gutter);
-    z-index: 60;
-    display: flex;
-    gap: 0.15rem;
-    padding: 0.2rem;
-    border-radius: 999px;
-    background: var(--ink);
-    color: var(--paper);
-    font-size: 0.8125rem;
-  }
-  .pick button {
-    padding: 0.3rem 0.7rem;
-    border: 0;
-    border-radius: 999px;
-    background: none;
-    color: inherit;
-    cursor: pointer;
-  }
-  .pick button[aria-pressed='true'] {
-    background: var(--paper);
-    color: var(--ink);
-  }
-  .pick :focus-visible {
-    outline-color: var(--paper);
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .pick {
-      display: none;
-    }
-  }
-
   /* ---------- Sections ---------- */
   .sec {
     padding-block: clamp(1.75rem, 3.5vw, 3.25rem);
@@ -699,25 +593,21 @@ const people = about.sections ?? [];
     display: inline-block;
     margin-top: 1.25rem;
   }
-  /* The closing line of Services: who the company has worked for. */
-  .customers {
-    margin-top: clamp(2rem, 3.5vw, 3.25rem);
-    text-align: center;
+  /* Lands right after the last film, with room for the header. */
+  #services {
+    padding-top: calc(var(--header-h) + 1.25rem);
+    scroll-margin-top: 0;
   }
-  .customers-label {
-    margin: 0 0 0.35em;
-    color: var(--muted);
+  /* Who the company has worked for, directly under the last service. */
+  .customers {
+    margin: 0.5rem 0 0;
     font-size: clamp(1rem, 1.15vw, 1.125rem);
     font-weight: 450;
     letter-spacing: -0.005em;
-    line-height: 1.2;
+    line-height: 1.3;
   }
-  .customers-list {
-    margin: 0 auto;
-    max-width: 22em;
-    font-size: clamp(1.625rem, 3vw, 3.25rem);
-    line-height: 1.02;
-    text-wrap: balance;
+  .customers-label {
+    color: var(--muted);
   }
   .playlist {
     display: block;
@@ -833,25 +723,21 @@ const people = about.sections ?? [];
 <script>
   // The two loops: they start after the page has loaded (so they never compete with
   // the poster image), pause off-screen and never autoplay under reduced motion. The
-  // title in the footer row names the film on screen and doubles as the pause/play
-  // control for both (WCAG 2.2.2).
+  // small control in the footer row pauses and plays both (WCAG 2.2.2).
   const hero = document.getElementById('top');
   const video = document.querySelector<HTMLVideoElement>('[data-hero-video]');
   const toggle = document.querySelector<HTMLButtonElement>('[data-hero-toggle]');
   if (hero && video && toggle) {
     const filmHost = document.querySelector<HTMLElement>('[data-reel-film]');
     const filmVideo = document.querySelector<HTMLVideoElement>('[data-film-video]');
-    const firstTitle = toggle.textContent?.trim() ?? '';
     const clips = [{ video, host: hero, seen: true }];
     if (filmHost && filmVideo) clips.push({ video: filmVideo, host: filmHost, seen: false });
 
     let wanted = !matchMedia('(prefers-reduced-motion: reduce)').matches; // play unless paused or reduced motion
     let started = false;
-    let title = firstTitle;
 
     const render = () => {
-      toggle.textContent = title;
-      toggle.setAttribute('aria-label', `${(wanted ? toggle.dataset.pause : toggle.dataset.play) ?? ''}: ${title}`);
+      toggle.textContent = (wanted ? toggle.dataset.pause : toggle.dataset.play) ?? '';
     };
     const sync = () => {
       if (!started) return;
@@ -889,13 +775,6 @@ const people = about.sections ?? [];
         },
         { rootMargin: '200px 0px' },
       ).observe(filmHost);
-      new IntersectionObserver(
-        ([e]) => {
-          title = e?.isIntersecting ? (filmHost.dataset.title ?? firstTitle) : firstTitle;
-          render();
-        },
-        { rootMargin: '-50% 0px -50% 0px' },
-      ).observe(filmHost);
     }
 
     render();
@@ -908,8 +787,8 @@ const people = about.sections ?? [];
     else addEventListener('load', idle, { once: true });
   }
 
-  // Hero sequence. As the page scrolls the words animate in, then the closing line settles
-  // in. Past the sheet, the reel's line shrinks away so the films can be watched.
+  // Hero sequence. As the page scrolls the words light one at a time, then the closing line
+  // settles in. Past the sheet, the reel's line shrinks away so the films can be watched.
   const frame = document.querySelector<HTMLElement>('[data-hero-frame]');
   const end = document.querySelector<HTMLElement>('[data-bloom-end]');
   const words = document.querySelector<HTMLElement>('[data-words]');
@@ -924,7 +803,6 @@ const people = about.sections ?? [];
     const seg = (v: number, from: number, to: number) => Math.min(1, Math.max(0, (v - from) / (to - from)));
     const MARK = 0.72;
 
-    let wordsTop = 0;
     let pinFrom = 0;
     let pinTo = 0;
     let endTop = 0;
@@ -950,7 +828,7 @@ const people = about.sections ?? [];
       const first = end.firstElementChild!;
       // The closing line's rest position: take its entrance offset out of the reading.
       endTop = first.getBoundingClientRect().top - new DOMMatrix(getComputedStyle(first).transform).m42 - b.top;
-      wordsTop = words.getBoundingClientRect().top + scrollY;
+      const wordsTop = words.getBoundingClientRect().top + scrollY;
       const stick = parseFloat(getComputedStyle(wordList).top) || 0;
       pinFrom = wordsTop - stick;
       pinTo = wordsTop + words.offsetHeight - wordList.offsetHeight - stick;
@@ -964,25 +842,10 @@ const people = about.sections ?? [];
       return i + t * t * (3 - 2 * t);
     };
     const animateWords = (y: number) => {
-      const mode = document.documentElement.dataset.anim;
+      const v = held(seg(y, pinFrom, pinTo));
       rows.forEach((row, i) => {
-        let transform = '';
-        let opacity = 1;
-        if (mode === 'roll') {
-          const d = i - held(seg(y, pinFrom, pinTo));
-          transform = `translate3d(0, ${d * 105}%, 0)`;
-          opacity = 1 - Math.min(1, Math.abs(d));
-        } else if (mode === 'focus') {
-          opacity = 0.14 + 0.86 * (1 - Math.min(1, Math.abs(i - held(seg(y, pinFrom, pinTo)))));
-        } else if (mode === 'sweep') {
-          const t = seg(seg(y, wordsTop - innerHeight * 0.85, wordsTop - innerHeight * 0.3) * rows.length - i, 0, 1.2);
-          opacity = 0.14 + 0.86 * t;
-          transform = `translate3d(0, ${(1 - t) * 8}%, 0)`;
-        }
-        row.style.transform = transform;
-        row.style.opacity = String(opacity);
+        row.style.opacity = String(0.5 + 0.5 * (1 - Math.min(1, Math.abs(i - v))));
       });
-      words.classList.toggle('is-in', y + innerHeight * MARK >= wordsTop);
     };
 
     const render = (y: number) => {
@@ -996,7 +859,7 @@ const people = about.sections ?? [];
       if (reel) {
         // The line arrives once the sheet has lifted about halfway off the footage.
         reel.classList.toggle('is-in', y + innerHeight * 0.45 >= reelTop);
-        const inReel = y >= reelTop - innerHeight * 0.1 && y <= reelEnd - innerHeight * 1.02;
+        const inReel = y >= reelTop - innerHeight * 0.1 && y <= reelEnd;
         hero.classList.toggle('in-reel', inReel);
         // The header stays light until the film has actually scrolled up under it.
         document.documentElement.classList.toggle('on-reel', y >= reelTop - 40 && y <= reelEnd - 40);
@@ -1025,24 +888,6 @@ const people = about.sections ?? [];
     addEventListener('resize', refresh);
     document.fonts?.ready.then(refresh);
     refresh();
-
-    // Temporary: the audition switcher.
-    const picks = Array.from(document.querySelectorAll<HTMLButtonElement>('[data-anim-pick]'));
-    const showPick = () =>
-      picks.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.animPick === document.documentElement.dataset.anim)));
-    picks.forEach((b) =>
-      b.addEventListener('click', () => {
-        document.documentElement.dataset.anim = b.dataset.animPick;
-        try {
-          localStorage.setItem('wdm-anim', b.dataset.animPick ?? '');
-        } catch (e) {}
-        showPick();
-        refresh();
-        // Jump to just before the words, ready to scroll through them again.
-        scrollTo({ top: wordsTop - innerHeight * 0.95, behavior: 'instant' });
-      }),
-    );
-    showPick();
   }
 
   // Focus moves inside the playlist's frame, where CSS focus states can't see it, so

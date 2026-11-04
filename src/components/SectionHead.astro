@@ -3,23 +3,17 @@
 interface Props {
   title: string;
   id: string;
-  /** A smaller title, for sections with large type of their own. */
-  small?: boolean;
 }
-const { title, id, small = false } = Astro.props;
+const { title, id } = Astro.props;
 ---
 
-<h2 id={id} class:list={['sh-title display', { 'is-small': small }]} data-reveal>{title}</h2>
+<h2 id={id} class="sh-title display" data-reveal>{title}</h2>
 
 <style>
   .sh-title {
-    margin: 0 0 clamp(1.5rem, 3vw, 2.75rem);
-    font-size: min(20svh, 9vw);
+    margin: 0 0 clamp(1.25rem, 2.5vw, 2.25rem);
+    font-size: clamp(1.875rem, 3.2vw, 3.25rem);
     line-height: 1;
     text-align: center;
-  }
-  .sh-title.is-small {
-    margin-bottom: clamp(1.25rem, 2.5vw, 2.25rem);
-    font-size: clamp(1.875rem, 3.2vw, 3.25rem);
   }
 </style>
