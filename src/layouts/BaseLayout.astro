@@ -71,20 +71,6 @@ const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url).href;
         );
         items.forEach((el) => io.observe(el));
       }
-
-      // Deep links into the accordions (#services-…, #work-…) open their item first.
-      const openFor = (hash: string) => {
-        if (hash.length < 2) return;
-        const target = document.getElementById(decodeURIComponent(hash.slice(1)));
-        const details = target?.closest('details');
-        if (details && !details.open) details.open = true;
-      };
-      document.addEventListener('click', (e) => {
-        const a = (e.target as Element).closest<HTMLAnchorElement>('a[href*="#"]');
-        if (a && a.pathname === location.pathname) openFor(a.hash);
-      });
-      addEventListener('hashchange', () => openFor(location.hash));
-      openFor(location.hash);
     </script>
   </body>
 </html>

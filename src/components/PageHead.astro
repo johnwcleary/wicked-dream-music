@@ -1,75 +1,30 @@
 ---
-/** Interior page opener: catalogue line, two-line display headline, lede. */
-import { getSite, isCurrent, pad, splitHeadline } from '../lib/content';
+/** Plain page opener: a two-line display headline. */
+import { splitHeadline } from '../lib/content';
 
 interface Props {
-  title: string;
   headline: string;
-  lede?: string;
-  /** Right-hand meta (e.g. the page eyebrow). */
-  meta?: string;
-  /** Override the catalogue number (defaults to the page's nav position). */
-  number?: string;
 }
-const site = await getSite();
-const { title, headline, lede, meta, number } = Astro.props;
-const navIndex = site.nav.findIndex((n) => isCurrent(n.href, Astro.url.pathname));
-const no = number ?? (navIndex >= 0 ? pad(navIndex + 1) : undefined);
+const { headline } = Astro.props;
 const [a, b] = splitHeadline(headline);
 ---
 
 <div class="ph wrap">
-  <div class="ph-grid grid12">
-    <p class="ph-meta label">
-      {no && <span class="label-muted" aria-hidden="true">{no} —</span>} {title}
-    </p>
-    {meta && <p class="ph-meta-r label label-muted">{meta}</p>}
-    <h1 class="ph-title display d-lg">
-      <span>{a}</span>
-      {b && <span>{b}</span>}
-    </h1>
-    {lede && <p class="ph-lede statement">{lede}</p>}
-    <slot />
-  </div>
+  <h1 class="ph-title display d-lg">
+    <span>{a}</span>
+    {b && <span>{b}</span>}
+  </h1>
+  <slot />
 </div>
 
 <style>
   .ph {
     padding-top: clamp(1.5rem, 4vw, 3.5rem);
   }
-  .ph-grid {
-    row-gap: 1.25rem;
-  }
-  .ph-meta {
-    grid-column: 1 / span 6;
-    margin: 0;
-  }
-  .ph-meta-r {
-    grid-column: 7 / -1;
-    margin: 0;
-    text-align: right;
-  }
   .ph-title {
-    grid-column: 1 / -1;
     margin: 0.5rem 0 0;
   }
   .ph-title span {
     display: block;
-  }
-  .ph-lede {
-    grid-column: 1 / -1;
-    margin: 1rem 0 0;
-    max-width: 26ch;
-  }
-
-  @media (min-width: 768px) {
-    .ph-grid {
-      row-gap: 1.5rem;
-    }
-    .ph-lede {
-      grid-column: 6 / -1;
-      margin-top: clamp(1.5rem, 4vw, 3.5rem);
-      max-width: 28ch;
-    }
   }
 </style>

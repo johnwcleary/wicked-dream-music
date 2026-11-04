@@ -19,7 +19,7 @@ const { lines, as: Tag = 'p', id, class: className, i = 0 } = Astro.props;
   {
     lines.filter(Boolean).map((line, l) => (
       <span class="ln" style={`--l: ${l}`}>
-        <span>{line}</span>
+        <span>{line}</span>{' '}
       </span>
     ))
   }<slot />

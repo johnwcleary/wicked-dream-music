@@ -1,6 +1,6 @@
 ---
 import Logo from './Logo.astro';
-import { getSite, pad, toSection } from '../lib/content';
+import { getSite, toSection } from '../lib/content';
 
 const site = await getSite();
 const year = new Date().getFullYear();
@@ -19,10 +19,10 @@ const year = new Date().getFullYear();
       <nav class="colo-nav" aria-label={site.ui.footer_nav_label}>
         <ul>
           {
-            site.nav.map((item, i) => (
+            site.nav.map((item) => (
               <li>
                 <a class="label" href={toSection(item.href)}>
-                  <span class="label-muted" aria-hidden="true">{pad(i + 1)}</span> {item.label}
+                  {item.label}
                 </a>
               </li>
             ))
@@ -42,7 +42,6 @@ const year = new Date().getFullYear();
     row-gap: 1.75rem;
     align-items: start;
     padding-block: 1.5rem 2rem;
-    border-top: 1px solid var(--rule);
   }
   .colo-logo {
     grid-column: 1 / span 4;

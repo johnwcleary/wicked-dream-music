@@ -1,70 +1,29 @@
 ---
-import Lines from './Lines.astro';
-import { pad } from '../lib/content';
-
+/**
+ * A section title, large and centred, with its last word in italics
+ * (the same treatment as the hero's lines).
+ */
 interface Props {
   title: string;
   id: string;
-  /** Number of entries in the section, shown as an archival count. */
-  count?: number;
-  /** Optional kicker (e.g. an eyebrow or lede from content). */
-  kicker?: string;
-  /** Section number, shown before the kicker. */
-  number?: number;
 }
-const { title, id, count, kicker, number } = Astro.props;
+const { title, id } = Astro.props;
+const words = title.trim().split(/\s+/);
+const last = words.pop();
 ---
 
-<div class="sh grid12">
-  <span class="sh-rule" data-reveal="rule" aria-hidden="true"></span>
-  {
-    kicker && (
-      <p class="sh-kicker label label-muted" data-reveal>
-        {number !== undefined && <span class="sh-no" aria-hidden="true">{pad(number)} —</span>} {kicker}
-      </p>
-    )
-  }
-  <Lines as="h2" id={id} class="sh-title display d-md" lines={[title]} i={1}>
-    {count !== undefined && <sup class="sh-count label" aria-hidden="true">({pad(count)})</sup>}
-  </Lines>
-</div>
+<h2 id={id} class="sh-title display" data-reveal>
+  {words.join(' ')} <em>{last}</em>
+</h2>
 
 <style>
-  .sh {
-    position: relative;
-    row-gap: 1rem;
-    padding-top: 1rem;
-    margin-bottom: clamp(2rem, 5vw, 4.5rem);
+  .sh-title {
+    margin: 0 0 clamp(2rem, 4.5vw, 4rem);
+    font-size: min(30svh, 15.5vw);
+    line-height: 1;
+    text-align: center;
   }
-  .sh-rule {
-    position: absolute;
-    inset: 0 var(--col-gap) auto 0;
-    left: 0;
-    right: 0;
-    height: 1px;
-    background: var(--rule-strong);
-  }
-  .sh-kicker {
-    grid-column: 1 / -1;
-    margin: 0;
-    max-width: 70ch;
-  }
-  .sh-no {
-    color: var(--paper);
-  }
-  /* Lines renders the heading, so reach it with a child selector. */
-  .sh > :global(.sh-title) {
-    grid-column: 1 / -1;
-    justify-self: start;
-    position: relative;
-    margin: 0;
-    padding-right: 2.75rem;
-  }
-  .sh-count {
-    position: absolute;
-    top: 0.2em;
-    right: 0;
-    font-size: 0.8125rem;
-    letter-spacing: 0;
+  .sh-title em {
+    font-style: italic;
   }
 </style>

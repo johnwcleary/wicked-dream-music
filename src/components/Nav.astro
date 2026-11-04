@@ -1,6 +1,6 @@
 ---
 import Logo from './Logo.astro';
-import { getSite, pad, sectionId, toSection } from '../lib/content';
+import { getSite, sectionId, toSection } from '../lib/content';
 
 const site = await getSite();
 ---
@@ -18,10 +18,9 @@ const site = await getSite();
       <nav aria-label={site.ui.nav_label}>
         <ul class="menu-list">
           {
-            site.nav.map((item, i) => (
+            site.nav.map((item) => (
               <li>
                 <a href={toSection(item.href)} data-section={sectionId(item.href)}>
-                  <span class="menu-num label" aria-hidden="true">{pad(i + 1)}</span>
                   <span class="menu-text">{item.label}</span>
                 </a>
               </li>
@@ -53,16 +52,9 @@ const site = await getSite();
     background: color-mix(in srgb, var(--ink) 88%, transparent);
     backdrop-filter: saturate(1.4) blur(10px);
     -webkit-backdrop-filter: saturate(1.4) blur(10px);
-    border-bottom: 1px solid transparent;
-    transition: border-color 0.4s;
-  }
-  :global(html.scrolled) .site-header::before {
-    border-bottom-color: var(--rule);
   }
   .site-header::before {
-    transition:
-      background-color 0.35s,
-      border-color 0.4s;
+    transition: background-color 0.35s;
   }
   /* Over the hero the footage runs up to the top edge, under a scrim that keeps the
      logo and links legible when the huge type passes beneath them. */
@@ -76,7 +68,6 @@ const site = await getSite();
     );
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
-    border-bottom-width: 0;
   }
   .bar {
     display: flex;
@@ -139,9 +130,6 @@ const site = await getSite();
     text-decoration-thickness: 1px;
     text-underline-offset: 0.22em;
   }
-  .menu-num {
-    display: none;
-  }
   .menu-list a::before {
     content: '';
     width: 0.4rem;
@@ -194,10 +182,6 @@ const site = await getSite();
     .menu.is-open .menu-list {
       flex-direction: column;
       gap: 0;
-      border-bottom: 1px solid var(--rule);
-    }
-    .menu.is-open .menu-list li {
-      border-top: 1px solid var(--rule);
     }
     .menu.is-open .menu-list a {
       display: flex;
@@ -213,14 +197,6 @@ const site = await getSite();
     }
     .menu.is-open .menu-list a::before {
       display: none;
-    }
-    .menu.is-open .menu-num {
-      display: inline;
-      min-width: 1.75rem;
-      color: var(--muted);
-    }
-    .menu.is-open .menu-list a[aria-current] .menu-num {
-      color: var(--paper);
     }
     .menu.is-open .menu-list a[aria-current] .menu-text {
       text-decoration: underline;

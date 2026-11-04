@@ -2,20 +2,18 @@
 import { Image } from 'astro:assets';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Lines from '../components/Lines.astro';
-import WordField from '../components/WordField.astro';
 import SectionHead from '../components/SectionHead.astro';
-import ServiceAccordion from '../components/ServiceAccordion.astro';
-import WorkAccordion from '../components/WorkAccordion.astro';
-import { getPage, getServices, getSite, getWork, pad, paragraphs, splitHeadline, toSection } from '../lib/content';
+import ServiceGrid from '../components/ServiceGrid.astro';
+import { getPage, getServices, getSite, paragraphs, splitHeadline, toSection } from '../lib/content';
 
 const site = await getSite();
 const page = await getPage('home');
 const about = await getPage('about');
 const servicesPage = await getPage('services');
 const workPage = await getPage('work');
+const playlist = workPage.playlist;
 const contact = await getPage('contact');
 const services = await getServices();
-const work = await getWork();
 // The headline, on two lines. Its last word is in italics, and the lines start from it.
 const [headOne = '', headTwo = ''] = splitHeadline(page.headline);
 const headLast = headTwo.split(' ').pop() ?? '';
@@ -92,7 +90,8 @@ const people = about.sections ?? [];
                     ))}
                   </span>
                 ))}
-              </p>
+
+                {expand.resolve_note && <span class="bloom-note">{expand.resolve_note}</span>}              </p>
             </div>
           )
         }
@@ -140,7 +139,6 @@ const people = about.sections ?? [];
     }
     <div class="hero-bar">
         <div class="wrap hero-foot">
-          <p class="hero-strap label label-muted">{page.strapline}</p>
           {
             page.cta && (
               <a class="hero-cta label" href={toSection(page.cta.href)}>
@@ -168,19 +166,14 @@ const people = about.sections ?? [];
 
   <!-- 01 — Services -->
   <section id="services" class="sec wrap" aria-labelledby="services-title">
-    <SectionHead id="services-title" title={servicesPage.headline} count={services.length} kicker={servicesPage.lede} number={1} />
-    <ServiceAccordion items={services} />
+    <SectionHead id="services-title" title={servicesPage.headline} />
+    <ServiceGrid items={services} />
   </section>
 
-  <!-- Artists. Ideas. Sound. Culture. — with the four plates set into the line -->
-  <WordField words={site.ticker} items={work} />
 
   <!-- 02 — About -->
-  <section id="about" class="band band-ink" aria-labelledby="about-label">
+  <section id="about" class="band band-ink" aria-label={about.title}>
     <div class="wrap">
-      <p id="about-label" class="band-label label" data-reveal>
-        <span aria-hidden="true">{pad(2)} —</span> {about.title}
-      </p>
       {
         people.map((person) => (
           <article class="bio">
@@ -196,26 +189,36 @@ const people = about.sections ?? [];
     </div>
   </section>
 
-  <!-- 03 — Selected work -->
+  <!-- 03 — Selected work: one Spotify playlist -->
   <section id="work" class="sec wrap" aria-labelledby="work-title">
-    <SectionHead id="work-title" title={workPage.headline} count={work.length} kicker={workPage.lede} number={3} />
-    <WorkAccordion items={work} />
-    {workPage.footnote && <p class="sec-foot label label-muted">{workPage.footnote}</p>}
+    <SectionHead id="work-title" title={workPage.headline} />
+    {
+      playlist && (
+        <>
+          <iframe
+            class="playlist"
+            src={`https://open.spotify.com/embed/playlist/${playlist.spotify_id}?theme=0`}
+            title={playlist.title}
+            loading="lazy"
+            allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+          />
+          <a class="sec-foot label link-line" href={`https://open.spotify.com/playlist/${playlist.spotify_id}`}>
+            {playlist.link_label} <span aria-hidden="true">↗</span>
+          </a>
+        </>
+      )
+    }
   </section>
 
   <!-- 04 — Contact: one big email call to action -->
   <section id="contact" class="band band-cta" aria-labelledby="contact-title">
     <div class="wrap grid12 cta">
-      <p class="band-label label cta-label" data-reveal>
-        <span aria-hidden="true">{pad(4)} —</span> {contact.intro_heading}
-      </p>
       <Lines as="h2" id="contact-title" class="cta-title display d-lg" lines={splitHeadline(contact.headline)} />
       <p class="cta-lede body-lg" data-reveal style="--i: 2">{contact.lede} {contact.intro}</p>
       <a class="cta-mail display" href={`mailto:${site.email}`} data-reveal style="--i: 3">
         <span class="cta-mail-text">{site.email.split('@')[0]}@<wbr />{site.email.split('@')[1]}</span>
         <span class="cta-mail-arrow" aria-hidden="true">↗</span>
       </a>
-      <p class="cta-loc label" data-reveal style="--i: 4">{site.location}</p>
     </div>
   </section>
 </BaseLayout>
@@ -331,6 +334,17 @@ const people = about.sections ?? [];
   .bloom-end-line {
     display: block;
   }
+  /* Small, but still large text for AA (24px) since it's also a window onto the footage. */
+  .bloom-note {
+    display: block;
+    margin-top: 1em;
+    -webkit-text-stroke: 0;
+    font-family: var(--font-sans);
+    font-size: 1.5rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    line-height: 1.2;
+  }
   @media (min-width: 768px) {
     .run {
       font-size: min(34svh, 14.8vw);
@@ -418,18 +432,11 @@ const people = about.sections ?? [];
     position: relative;
     z-index: 4;
     background: var(--ink);
-    border-top: 1px solid color-mix(in srgb, var(--paper) 22%, transparent);
-    transition:
-      background-color 0.4s,
-      border-color 0.4s;
+    transition: background-color 0.4s;
   }
-  /* Over the films the row drops its ground and the services list, leaving the frame clear. */
+  /* Over the films the row drops its ground, leaving the frame clear. */
   .hero.in-reel .hero-bar {
     background: transparent;
-    border-top-color: transparent;
-  }
-  .hero.in-reel .hero-strap {
-    visibility: hidden;
   }
   .hero-foot {
     display: flex;
@@ -438,11 +445,9 @@ const people = about.sections ?? [];
     gap: 0.35rem 2rem;
     padding-block: 0.75rem;
   }
-  .hero-strap {
-    margin: 0 auto 0 0;
-  }
   .hero-cta {
     display: inline-flex;
+    margin-right: auto;
     gap: 0.5rem;
     padding: 0.35rem 0;
     color: var(--paper);
@@ -580,6 +585,13 @@ const people = about.sections ?? [];
       opacity: 1;
       transform: none;
     }
+    :global(html.js) .bloom-note {
+      opacity: 0;
+      transition: opacity 0.8s var(--ease-out) 0.45s;
+    }
+    :global(html.js) .bloom-end.is-in .bloom-note {
+      opacity: 1;
+    }
   }
 
   /* ---------- Sections ---------- */
@@ -588,8 +600,15 @@ const people = about.sections ?? [];
     scroll-margin-top: 4rem;
   }
   .sec-foot {
-    margin: 1.25rem 0 0;
-    max-width: 52ch;
+    display: inline-block;
+    margin-top: 1.25rem;
+  }
+  .playlist {
+    display: block;
+    width: 100%;
+    height: clamp(30rem, 78svh, 46rem);
+    border: 0;
+    border-radius: 12px;
   }
 
   /* The contact band runs straight into the footer. */
@@ -597,27 +616,17 @@ const people = about.sections ?? [];
     margin-top: 0;
   }
 
-  /* ---------- Full-width sections, split by a hairline ---------- */
+  /* ---------- Full-width sections ---------- */
   .band {
     padding-block: clamp(4rem, 9vw, 8rem);
     scroll-margin-top: 4rem;
-    border-top: 1px solid var(--rule);
   }
-  .band-label {
-    margin: 0 0 clamp(2.5rem, 6vw, 5rem);
-  }
-
   /* About — each person large: name left, bio right. */
-  .band-ink .band-label {
-    color: var(--accent);
-  }
   .bio {
     display: grid;
     grid-template-columns: repeat(12, minmax(0, 1fr));
     column-gap: var(--col-gap);
     row-gap: 1.5rem;
-    padding-top: 1rem;
-    border-top: 1px solid var(--rule);
   }
   .bio > * {
     grid-column: 1 / -1;
@@ -641,12 +650,6 @@ const people = about.sections ?? [];
   }
   .cta {
     row-gap: 1.5rem;
-  }
-  .cta-label,
-  .cta-loc {
-    grid-column: 1 / -1;
-    margin: 0;
-    color: var(--soft);
   }
   .cta :global(.cta-title) {
     grid-column: 1 / -1;
@@ -688,9 +691,6 @@ const people = about.sections ?? [];
   }
   .cta-mail:hover .cta-mail-arrow {
     transform: translate(0.12em, -0.12em);
-  }
-  .cta-loc {
-    margin-top: 0.5rem;
   }
 
   @media (min-width: 900px) {
