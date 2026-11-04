@@ -8,6 +8,7 @@ strapline: "Artist Development / A&R Consulting"
 hero_expand:
   words: ["songwriting", "production", "performance", "emotion"]
   resolve: "your sound is your brand"
+  resolve_note: "let's develop it together"
   outro: "Our work"
 hero_film:
   title: "IMIN"

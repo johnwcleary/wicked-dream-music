@@ -1,6 +1,6 @@
 ---
-title: Selected Work
-headline: "The work."
+title: Selected Works
+headline: "Selected works"
 lede: "Songwriting, production, artist collaborations, and international A&R."
 playlist:
   spotify_id: "37i9dQZF1DX0XUsuxWHRQd"

@@ -90,6 +90,7 @@ const pages = defineCollection({
       .object({
         words: z.array(z.string()),
         resolve: z.string(),
+        resolve_note: z.string().optional(),
         outro: z.string().optional(),
       })
       .optional(),

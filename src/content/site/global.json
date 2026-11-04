@@ -8,7 +8,7 @@
     { "label": "Home", "href": "/" },
     { "label": "Services", "href": "/services" },
     { "label": "About", "href": "/about" },
-    { "label": "Selected Work", "href": "/work" },
+    { "label": "Selected Works", "href": "/work" },
     { "label": "Contact", "href": "/contact" }
   ],
   "ticker": ["Artists.", "Ideas.", "Sound.", "Culture."],
