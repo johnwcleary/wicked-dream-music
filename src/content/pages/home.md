@@ -7,7 +7,7 @@ cta: { label: "See what we do", href: "/services" }
 strapline: "Artist Development / A&R Consulting / Songwriting / Music Production"
 hero_expand:
   words: ["songwriting", "production", "performance", "emotion"]
-  resolve: "brand"
+  resolve: "your sound is your brand"
 hero_video:
   title: "ALICE - ALL MY GIRLS"
   poster: "../../assets/photos/hero-poster.jpg"
