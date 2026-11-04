@@ -11,10 +11,10 @@
   --wdm-black: #111111;
   --wdm-gradient: linear-gradient(180deg, var(--wdm-lavender), var(--wdm-pink));
 
-  /* design/archive — near-black type on white. Contrast on paper: ink 19, muted 6.4. */
+  /* design/archive — near-black type on light beige. Contrast on paper: ink 16.6, muted 5.9. */
   --ink: #0f0f10;
-  --paper: #ffffff;
-  --muted: #5e5e62;
+  --paper: #f4eee3;
+  --muted: #5e5a54;
   --accent: #e4e2dc;              /* silver: the email link, quote and small accents */
   --accent-2: #a9a9b3;            /* pewter: second stop of the accent gradient */
   --accent-gradient: linear-gradient(180deg, var(--accent), var(--accent-2));

@@ -20,8 +20,8 @@ const [headOne = '', headTwo = ''] = splitHeadline(page.headline);
 const headLast = headTwo.split(' ').pop() ?? '';
 const headRest = headTwo.slice(0, -headLast.length).trim();
 const expand = page.hero_expand;
-// The closing line: two lines. Only the headline's word and this line's last word take italics.
-const closing = expand ? splitHeadline(expand.resolve) : [];
+// The closing line. Only the headline's word and this line's last word take italics.
+const closing = expand ? [expand.resolve] : [];
 const stressed = [headLast, expand?.resolve.trim().split(/\s+/).pop()];
 const video = page.hero_video;
 const film = page.hero_film;
@@ -30,9 +30,19 @@ const people = about.sections ?? [];
 ---
 
 <BaseLayout title={page.title} intro>
+  <!-- Temporary: picks the word animation being auditioned, before the hero paints. -->
+  <script is:inline>
+    (function () {
+      var saved = null;
+      try {
+        saved = new URLSearchParams(location.search).get('anim') || localStorage.getItem('wdm-anim');
+      } catch (e) {}
+      document.documentElement.dataset.anim = saved || 'roll';
+    })();
+  </script>
   <!-- 00 — Hero: all the type is a window onto the footage, which holds still behind
-       a white sheet as the page scrolls. One thin line draws down the left edge, past
-       each word in the list, to the closing line. Without JS or with reduced
+       a beige sheet as the page scrolls. The words animate in, then the closing line.
+       Without JS or with reduced
        motion the type sits still and stacked, over the poster. -->
   <section id="top" class={`hero${video ? ' has-video' : ''}`} aria-labelledby="hero-title" data-hero>
     {
@@ -72,6 +82,7 @@ const people = about.sections ?? [];
         {
           expand && (
             <div class="bloom">
+              <div class="words" data-words>
               <ul class="bloom-list display">
                 {expand.words.map((word) => (
                   <li data-bloom-word>
@@ -79,6 +90,7 @@ const people = about.sections ?? [];
                   </li>
                 ))}
               </ul>
+              </div>
               <p class="bloom-end display" data-bloom-end>
                 {closing.map((line) => (
                   <span class="bloom-end-line">
@@ -95,7 +107,6 @@ const people = about.sections ?? [];
           )
         }
       </div>
-      {expand && <span class="spine" aria-hidden="true" data-spine />}
     </div>
     {
       expand?.outro && (
@@ -162,6 +173,14 @@ const people = about.sections ?? [];
         </div>
     </div>
   </section>
+
+  <!-- Temporary: the word animation audition. -->
+  <div class="pick" role="group" aria-label="Word animation">
+    <button type="button" data-anim-pick="roll">1 roll</button>
+    <button type="button" data-anim-pick="focus">2 focus</button>
+    <button type="button" data-anim-pick="sweep">3 sweep</button>
+    <button type="button" data-anim-pick="wipe">4 wipe</button>
+  </div>
 
   <!-- 01 — Services -->
   <section id="services" class="sec wrap" aria-labelledby="services-title">
@@ -239,7 +258,6 @@ const people = about.sections ?? [];
   /* ---------- Hero: the type is a window onto the footage ---------- */
   .hero {
     --run-size: 15vw;
-    --word-size: 13vw;
     --ease-soft: cubic-bezier(0.16, 1, 0.3, 1);
     position: relative;
     isolation: isolate;
@@ -278,7 +296,7 @@ const people = about.sections ?? [];
     opacity: 1;
   }
   /* The sheet scrolls over the footage with its own shade underneath: inside the
-     letters the brightest frame still gives 3.1:1 against the white, and the footage
+     letters the brightest frame still gives 3.1:1 against the beige, and the footage
      below the sheet's edge is untouched. */
   .hero-sheet {
     position: relative;
@@ -286,11 +304,11 @@ const people = about.sections ?? [];
   .hero-lift {
     position: absolute;
     inset: 0;
-    background: color-mix(in srgb, var(--ink) 45%, transparent);
+    background: color-mix(in srgb, var(--ink) 50%, transparent);
   }
 
-  /* The sheet: white everywhere, black type. "Lighten" keeps the higher of sheet and
-     footage, so the sheet stays exactly white and the footage shows only in the type. */
+  /* The sheet: beige everywhere, black type. "Lighten" keeps the higher of sheet and
+     footage, so the sheet stays exactly beige and the footage shows only in the type. */
   .hero-cut {
     position: relative;
     background: var(--paper);
@@ -322,9 +340,6 @@ const people = about.sections ?? [];
   .bloom {
     padding: 0 var(--gutter) clamp(2rem, 5vw, 4rem);
   }
-  .spine {
-    display: none;
-  }
   .bloom-list {
     display: flex;
     flex-wrap: wrap;
@@ -337,7 +352,7 @@ const people = about.sections ?? [];
   }
   .bloom-end {
     margin: 1.5rem 0 0;
-    font-size: clamp(2.5rem, 8vw, 8rem);
+    font-size: 7.6vw;
     line-height: 0.95;
   }
   .bloom-end-line {
@@ -355,7 +370,6 @@ const people = about.sections ?? [];
   @media (min-width: 768px) {
     .hero {
       --run-size: min(22svh, 9.4vw);
-      --word-size: min(13svh, 8vw);
     }
   }
 
@@ -535,50 +549,91 @@ const people = about.sections ?? [];
     :global(html.js) .bloom {
       padding: 0 var(--gutter);
     }
-    /* One line down the left edge, drawn by the script below as the page scrolls. */
-    :global(html.js) .spine {
-      display: block;
-      position: absolute;
-      left: var(--gutter);
-      width: 1px;
-      background: linear-gradient(to bottom, transparent, color-mix(in srgb, var(--ink) 70%, transparent) 10rem);
-      transform: scaleY(0);
-      transform-origin: 50% 0;
-      will-change: transform;
-      pointer-events: none;
-    }
+    /* Temporary audition of the word animations (html[data-anim]). All are compact:
+       roll and focus pin briefly, sweep and wipe scroll straight past. */
     :global(html.js) .bloom-list {
-      display: grid;
-      grid-auto-rows: 22svh;
+      flex-wrap: nowrap;
       gap: 0;
-      padding-left: clamp(1.25rem, 2.2vw, 2rem);
-      font-size: var(--word-size);
-      line-height: 1;
       white-space: nowrap;
     }
     :global(html.js) .bloom-list li {
-      align-self: center;
-      justify-self: start;
+      will-change: transform, opacity;
     }
-    :global(html.js) .bloom-list span {
-      display: inline-block;
-      padding-inline: 0.05em;
-      opacity: 0;
-      transform: translateY(0.12em);
-      transition:
-        opacity 1.1s var(--ease-soft),
-        transform 1.5s var(--ease-soft);
+    /* 1 — roll: one line, each word rolling up through a mask. */
+    :global(html.js[data-anim='roll']) .words {
+      height: 125svh;
     }
-    :global(html.js) .bloom-list li.is-in span {
-      opacity: 1;
-      transform: none;
+    :global(html.js[data-anim='roll']) .bloom-list {
+      position: sticky;
+      top: calc(50svh - 0.6em);
+      display: block;
+      height: 1.2em;
+      overflow: clip;
+      font-size: min(20svh, 13vw);
+      line-height: 1.2;
+    }
+    :global(html.js[data-anim='roll']) .bloom-list li {
+      position: absolute;
+      inset: 0 auto auto 0;
+    }
+    /* 2 — focus: a tight stack, one word lit at a time. */
+    :global(html.js[data-anim='focus']) .words {
+      height: 125svh;
+    }
+    :global(html.js[data-anim='focus']) .bloom-list {
+      position: sticky;
+      top: calc(50svh - 2.1em);
+      display: grid;
+      font-size: min(10svh, 9vw);
+      line-height: 1.05;
+    }
+    /* 3 — sweep: one line, lit word by word as it scrolls up. */
+    :global(html.js[data-anim='sweep']) .words {
+      padding-block: 12svh;
+    }
+    :global(html.js[data-anim='sweep']) .bloom-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0 0.32em;
+      font-size: clamp(2.25rem, 4.6vw, 5rem);
+      line-height: 1.1;
+    }
+    /* 4 — wipe: two by two, each word drawn on from the left. */
+    :global(html.js[data-anim='wipe']) .words {
+      padding-block: 8svh;
+    }
+    :global(html.js[data-anim='wipe']) .bloom-list {
+      display: grid;
+      grid-template-columns: repeat(2, max-content);
+      gap: 0.02em 0.5em;
+      font-size: min(11svh, 8.4vw);
+      line-height: 1.1;
+    }
+    :global(html.js[data-anim='wipe']) .bloom-list span {
+      display: block;
+      padding-right: 0.06em;
+      clip-path: inset(-10% 100% -25% 0);
+      transition: clip-path 1.5s var(--ease-soft);
+    }
+    :global(html.js[data-anim='wipe']) .bloom-list li:nth-child(2) span {
+      transition-delay: 0.18s;
+    }
+    :global(html.js[data-anim='wipe']) .bloom-list li:nth-child(3) span {
+      transition-delay: 0.36s;
+    }
+    :global(html.js[data-anim='wipe']) .bloom-list li:nth-child(4) span {
+      transition-delay: 0.54s;
+    }
+    :global(html.js[data-anim='wipe']) .words.is-in .bloom-list span {
+      clip-path: inset(-10% -5% -25% 0);
     }
     :global(html.js) .bloom-end {
       display: grid;
       place-content: center start;
-      min-height: 62svh;
+      min-height: 46svh;
       margin: 0;
-      font-size: var(--run-size);
+      font-size: min(14svh, 7.6vw);
+      white-space: nowrap;
     }
     :global(html.js) .bloom-end-line {
       opacity: 0;
@@ -586,9 +641,6 @@ const people = about.sections ?? [];
       transition:
         opacity 1.1s var(--ease-soft),
         transform 1.5s var(--ease-soft);
-    }
-    :global(html.js) .bloom-end-line:nth-child(2) {
-      transition-delay: 0.12s;
     }
     :global(html.js) .bloom-end.is-in .bloom-end-line {
       opacity: 1;
@@ -600,6 +652,41 @@ const people = about.sections ?? [];
     }
     :global(html.js) .bloom-end.is-in .bloom-note {
       opacity: 1;
+    }
+  }
+
+  /* Temporary: the audition switcher. */
+  .pick {
+    position: fixed;
+    top: calc(var(--header-h) + 0.25rem);
+    right: var(--gutter);
+    z-index: 60;
+    display: flex;
+    gap: 0.15rem;
+    padding: 0.2rem;
+    border-radius: 999px;
+    background: var(--ink);
+    color: var(--paper);
+    font-size: 0.8125rem;
+  }
+  .pick button {
+    padding: 0.3rem 0.7rem;
+    border: 0;
+    border-radius: 999px;
+    background: none;
+    color: inherit;
+    cursor: pointer;
+  }
+  .pick button[aria-pressed='true'] {
+    background: var(--paper);
+    color: var(--ink);
+  }
+  .pick :focus-visible {
+    outline-color: var(--paper);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .pick {
+      display: none;
     }
   }
 
@@ -821,25 +908,25 @@ const people = about.sections ?? [];
     else addEventListener('load', idle, { once: true });
   }
 
-  // Hero sequence. As the page scrolls, one line draws down the left edge, its tip
-  // following a mark 72% of the way down the screen, and each word settles in as the
-  // tip reaches it. Past the sheet, the reel's line shrinks away so the films can be watched.
+  // Hero sequence. As the page scrolls the words animate in, then the closing line settles
+  // in. Past the sheet, the reel's line shrinks away so the films can be watched.
   const frame = document.querySelector<HTMLElement>('[data-hero-frame]');
   const end = document.querySelector<HTMLElement>('[data-bloom-end]');
-  const spine = document.querySelector<HTMLElement>('[data-spine]');
+  const words = document.querySelector<HTMLElement>('[data-words]');
+  const wordList = words?.querySelector<HTMLElement>('.bloom-list');
   const rows = Array.from(document.querySelectorAll<HTMLElement>('[data-bloom-word]'));
   const reel = document.querySelector<HTMLElement>('[data-reel]');
   const reelTitle = document.querySelector<HTMLElement>('[data-reel-title]');
   const reelText = document.querySelector<HTMLElement>('[data-reel-text]');
   const reelWash = document.querySelector<HTMLElement>('[data-reel-wash]');
   const reelEdge = document.querySelector<HTMLElement>('[data-reel-edge]');
-  if (hero && end && spine && rows.length && matchMedia('(prefers-reduced-motion: no-preference)').matches) {
+  if (hero && end && words && wordList && rows.length && matchMedia('(prefers-reduced-motion: no-preference)').matches) {
     const seg = (v: number, from: number, to: number) => Math.min(1, Math.max(0, (v - from) / (to - from)));
     const MARK = 0.72;
 
-    let tops: number[] = [];
-    let spineTop = 0;
-    let spineEnd = 0;
+    let wordsTop = 0;
+    let pinFrom = 0;
+    let pinTo = 0;
     let endTop = 0;
     let heroTop = 0;
     let reelTop = 0;
@@ -863,15 +950,39 @@ const people = about.sections ?? [];
       const first = end.firstElementChild!;
       // The closing line's rest position: take its entrance offset out of the reading.
       endTop = first.getBoundingClientRect().top - new DOMMatrix(getComputedStyle(first).transform).m42 - b.top;
-      tops = rows.map((row) => {
-        const r = row.getBoundingClientRect();
-        return r.top + r.height * 0.3 - b.top;
+      wordsTop = words.getBoundingClientRect().top + scrollY;
+      const stick = parseFloat(getComputedStyle(wordList).top) || 0;
+      pinFrom = wordsTop - stick;
+      pinTo = wordsTop + words.offsetHeight - wordList.offsetHeight - stick;
+    };
+
+    // Each of the four words holds, then moves on: v runs 0 to 3 with rests at the whole numbers.
+    const held = (p: number) => {
+      const f = p * (rows.length - 1);
+      const i = Math.min(Math.floor(f), rows.length - 2);
+      const t = seg(f - i, 0.3, 1);
+      return i + t * t * (3 - 2 * t);
+    };
+    const animateWords = (y: number) => {
+      const mode = document.documentElement.dataset.anim;
+      rows.forEach((row, i) => {
+        let transform = '';
+        let opacity = 1;
+        if (mode === 'roll') {
+          const d = i - held(seg(y, pinFrom, pinTo));
+          transform = `translate3d(0, ${d * 105}%, 0)`;
+          opacity = 1 - Math.min(1, Math.abs(d));
+        } else if (mode === 'focus') {
+          opacity = 0.14 + 0.86 * (1 - Math.min(1, Math.abs(i - held(seg(y, pinFrom, pinTo)))));
+        } else if (mode === 'sweep') {
+          const t = seg(seg(y, wordsTop - innerHeight * 0.85, wordsTop - innerHeight * 0.3) * rows.length - i, 0, 1.2);
+          opacity = 0.14 + 0.86 * t;
+          transform = `translate3d(0, ${(1 - t) * 8}%, 0)`;
+        }
+        row.style.transform = transform;
+        row.style.opacity = String(opacity);
       });
-      spineTop = rows[0]!.getBoundingClientRect().top - b.top - innerHeight * 0.02;
-      spineEnd = endTop - innerHeight * 0.04;
-      const sheet = spine.parentElement!.getBoundingClientRect();
-      spine.style.top = `${spineTop - (sheet.top - b.top)}px`;
-      spine.style.height = `${spineEnd - spineTop}px`;
+      words.classList.toggle('is-in', y + innerHeight * MARK >= wordsTop);
     };
 
     const render = (y: number) => {
@@ -891,8 +1002,7 @@ const people = about.sections ?? [];
         document.documentElement.classList.toggle('on-reel', y >= reelTop - 40 && y <= reelEnd - 40);
       }
       const mark = y + innerHeight * MARK - heroTop;
-      spine.style.transform = `scaleY(${seg(mark, spineTop, spineEnd)})`;
-      rows.forEach((row, i) => row.classList.toggle('is-in', mark >= (tops[i] ?? 0)));
+      animateWords(y);
       end.classList.toggle('is-in', mark >= endTop);
     };
 
@@ -915,6 +1025,24 @@ const people = about.sections ?? [];
     addEventListener('resize', refresh);
     document.fonts?.ready.then(refresh);
     refresh();
+
+    // Temporary: the audition switcher.
+    const picks = Array.from(document.querySelectorAll<HTMLButtonElement>('[data-anim-pick]'));
+    const showPick = () =>
+      picks.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.animPick === document.documentElement.dataset.anim)));
+    picks.forEach((b) =>
+      b.addEventListener('click', () => {
+        document.documentElement.dataset.anim = b.dataset.animPick;
+        try {
+          localStorage.setItem('wdm-anim', b.dataset.animPick ?? '');
+        } catch (e) {}
+        showPick();
+        refresh();
+        // Jump to just before the words, ready to scroll through them again.
+        scrollTo({ top: wordsTop - innerHeight * 0.95, behavior: 'instant' });
+      }),
+    );
+    showPick();
   }
 
   // Focus moves inside the playlist's frame, where CSS focus states can't see it, so
