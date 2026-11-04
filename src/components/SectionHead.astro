@@ -6,13 +6,15 @@
 interface Props {
   title: string;
   id: string;
+  /** A smaller title, for sections with large type of their own. */
+  small?: boolean;
 }
-const { title, id } = Astro.props;
+const { title, id, small = false } = Astro.props;
 const words = title.trim().split(/\s+/);
 const last = words.pop();
 ---
 
-<h2 id={id} class="sh-title display" data-reveal>
+<h2 id={id} class:list={['sh-title display', { 'is-small': small }]} data-reveal>
   {words.join(' ')} <em>{last}</em>
 </h2>
 
@@ -22,6 +24,10 @@ const last = words.pop();
     font-size: min(30svh, 15.5vw);
     line-height: 1;
     text-align: center;
+  }
+  .sh-title.is-small {
+    margin-bottom: clamp(1.75rem, 3.5vw, 3rem);
+    font-size: clamp(2.5rem, 5vw, 5.25rem);
   }
   .sh-title em {
     font-style: italic;

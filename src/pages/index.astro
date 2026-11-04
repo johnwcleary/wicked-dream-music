@@ -12,6 +12,7 @@ const about = await getPage('about');
 const servicesPage = await getPage('services');
 const workPage = await getPage('work');
 const playlist = workPage.playlist;
+const customers = servicesPage.customers;
 const contact = await getPage('contact');
 const services = await getServices();
 // The headline, on two lines. Its last word is in italics, and the lines start from it.
@@ -166,14 +167,27 @@ const people = about.sections ?? [];
 
   <!-- 01 — Services -->
   <section id="services" class="sec wrap" aria-labelledby="services-title">
-    <SectionHead id="services-title" title={servicesPage.headline} />
-    <ServiceGrid items={services} />
+    <SectionHead id="services-title" title={servicesPage.headline} small />
+    <ServiceGrid items={services} stills={[video?.poster, film?.poster]} />
+    {
+      customers && (
+        <div class="customers">
+          <p class="customers-label display" data-reveal>
+            {customers.label}
+          </p>
+          <p class="customers-list display" data-reveal style="--i: 1">
+            {customers.list}
+          </p>
+        </div>
+      )
+    }
   </section>
 
 
   <!-- 02 — About -->
-  <section id="about" class="band band-ink" aria-label={about.title}>
+  <section id="about" class="band band-ink" aria-labelledby="about-title">
     <div class="wrap">
+      <SectionHead id="about-title" title={about.section_title ?? about.title} small />
       {
         people.map((person) => (
           <article class="bio">
@@ -596,12 +610,33 @@ const people = about.sections ?? [];
 
   /* ---------- Sections ---------- */
   .sec {
-    padding-block: clamp(3rem, 7vw, 6rem);
+    padding-block: clamp(1.75rem, 3.5vw, 3.25rem);
     scroll-margin-top: 4rem;
   }
   .sec-foot {
     display: inline-block;
     margin-top: 1.25rem;
+  }
+  /* The closing line of Services: who the company has worked for. */
+  .customers {
+    margin-top: clamp(2.5rem, 5vw, 4.5rem);
+    text-align: center;
+  }
+  .customers-label {
+    margin: 0 0 0.35em;
+    color: var(--muted);
+    font-size: clamp(1.375rem, 2vw, 2.125rem);
+    font-style: italic;
+    line-height: 1.1;
+  }
+  .customers-list {
+    margin: 0 auto;
+    max-width: 22em;
+    color: var(--accent);
+    font-size: clamp(2.5rem, 5.2vw, 5.75rem);
+    line-height: 1.04;
+    letter-spacing: -0.012em;
+    text-wrap: balance;
   }
   .playlist {
     display: block;
@@ -622,7 +657,7 @@ const people = about.sections ?? [];
 
   /* ---------- Full-width sections ---------- */
   .band {
-    padding-block: clamp(4rem, 9vw, 8rem);
+    padding-block: clamp(1.75rem, 3.5vw, 3.25rem);
     scroll-margin-top: 4rem;
   }
   /* About — each person large: name left, bio right. */
