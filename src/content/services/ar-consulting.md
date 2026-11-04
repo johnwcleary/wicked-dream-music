@@ -1,6 +1,6 @@
 ---
 order: 2
-category: "Creative services"
+category: "For music companies"
 title: "A&R Consulting"
 summary: "Talent scouting, song selection, and development for your roster, backed by 30 years in the industry."
 bullets:

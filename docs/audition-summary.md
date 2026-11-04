@@ -60,17 +60,17 @@ Photos are grayscale and high contrast, multiplied over the gradient, with the b
 
 **Palette: "chrome".** Ink `#0F0F10`, paper `#F7F7F5`, a silver accent `#E4E2DC` and a pewter accent `#A9A9B3`.
 - Every section sits on the near-black ground; silver is kept for the email link and small accents.
-- The hero loop is graded black and white to match.
+- The hero loop and the IMIN loop are in full color; the photos stay black and white.
 - Text passes AA: paper/ink 17.9:1, silver/ink 14.8:1, muted/ink 7.5:1. Letters that show the video keep at least 3.4:1 (large text), because the footage has a 42% lift behind the sheet. "Our work" keeps 3.4:1 over a 50% ink shade.
 - The brand lavender and pink remain the client's logo colours in `--wdm-*`, but this direction doesn't use them.
 
 Chosen from an in-page audition of 6 palettes × 5 type pairings. The comparison sheets are in `screenshots/design/archive/audition/` (local).
 
 **Page order.**
-1. **Hero.** Wordmark top left in the header. The footage stays pinned while a dark sheet scrolls over it, with all the type as a window onto it (`mix-blend-mode: darken`). "Artist development starts with *sound*" fits one screen. Lines draw from "sound" to songwriting, production, performance and emotion as each pops, then to "your sound is your brand". Past the sheet, "Our work" sits over the full-screen video. The words are in `pages/home.md` (`headline`, `hero_expand`). With reduced motion or no JS the type is still and stacked, over the poster.
-2. **Services** (`#services`). Artist Development and A&R Consulting, as numbered rows that expand to show their lists.
+1. **Hero.** Wordmark top left in the header. The footage stays pinned while a dark sheet scrolls over it, with all the type as a window onto it (`mix-blend-mode: darken`). "Artist development starts with *sound*" fits one screen. Lines draw from "sound" to songwriting, production, performance and emotion as each pops, then to "your sound is your brand". Past the sheet, "Our work" sits over the full-screen video, then shrinks to the top as the shade clears so the film can be watched. The IMIN loop scrolls in next, also full screen. The words and films are in `pages/home.md` (`headline`, `hero_expand`, `hero_video`, `hero_film`). With reduced motion or no JS the type is still and stacked, over the posters.
+2. **Services** (`#services`). Artist Development (for artists) and A&R Consulting (for music companies), as numbered rows that start open and can be closed.
 3. **Words and photos.** "Artists. Ideas. Sound. Culture." set huge, with the four work photos inline. Each word keeps its photo beside it: two pairs per line on desktop, one per line on phones. Each photo opens its work entry.
-4. **About** (`#about`). The company in a row (title left, body right), then David Kim's bio set large. His bio is the second section in `pages/about.md`.
+4. **About** (`#about`). David Kim's name and bio, set large. His bio is in `pages/about.md`.
 5. **Selected work** (`#work`). Expandable rows: the Miley portrait, the click-to-play YouTube video for International A&R, and the photos.
 6. **Contact** (`#contact`). The headline, intro and one giant `mailto:` link. **The form was removed at John's request.** Phase 2 needs no form backend for this direction.
 
@@ -201,6 +201,7 @@ The strip's progress bar uses CSS scroll-driven animation, no JS.
    - The loops were cut with `ffmpeg-static`, a dev dependency.
 9. **Photos are Unsplash placeholders** and must be replaced with licensed or owned imagery before launch. Their pairing with work entries is arbitrary.
 10. **David Kim bio** is John's supplied copy, used verbatim; the artist names and "award-winning" should be confirmed by David before launch. **Hero blend** (`mix-blend-mode` over `<video>`) has been checked in desktop Chromium only, so test it in iOS Safari.
+    **IMIN loop** is cut from John's "Imin vid.mp4" (shots chosen to avoid its burned-in captions). The on-screen title "IMIN" is taken from the file name, so confirm the title and the right to use the footage.
 10. **Contact form** has correct `name`s and `method="POST"` but no action. A comment marks the Phase 2 hookup (Cloudflare Pages Function or Netlify form). Archive has no form; it uses a single mailto link.
 11. **Content the designers wished existed** (not added, to keep content identical across branches; worth deciding before Phase 2):
    - Per-work `year`/`role` fields.

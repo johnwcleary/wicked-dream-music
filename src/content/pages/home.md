@@ -9,6 +9,13 @@ hero_expand:
   words: ["songwriting", "production", "performance", "emotion"]
   resolve: "your sound is your brand"
   outro: "Our work"
+hero_film:
+  title: "IMIN"
+  poster: "../../assets/photos/imin-poster.jpg"
+  mp4: "/media/imin/imin-1280.mp4"
+  webm: "/media/imin/imin-1280.webm"
+  mobile_mp4: "/media/imin/imin-720x1280.mp4"
+  mobile_webm: "/media/imin/imin-720x1280.webm"
 hero_video:
   title: "ALICE - ALL MY GIRLS"
   poster: "../../assets/photos/hero-poster.jpg"

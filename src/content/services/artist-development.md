@@ -1,8 +1,8 @@
 ---
 order: 1
-category: "Creative services"
+category: "For artists"
 title: "Artist Development"
-summary: "Shaping an artist's identity, songs, and sound, with a plan for the long term."
+summary: "Your identity, songs, and sound, shaped with a plan for the long term."
 bullets:
   - "Mentorship"
   - "Songwriting"

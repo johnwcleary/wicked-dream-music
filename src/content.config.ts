@@ -65,6 +65,17 @@ const pages = defineCollection({
         mobile_webm: z.string().optional(),
       })
       .optional(),
+    // A second full-screen loop, after the outro line. Same shape as hero_video.
+    hero_film: z
+      .object({
+        title: z.string(),
+        poster: image(),
+        mp4: z.string(),
+        webm: z.string().optional(),
+        mobile_mp4: z.string().optional(),
+        mobile_webm: z.string().optional(),
+      })
+      .optional(),
     // The headline's last word opening into a list, then resolving on a closing
     // line. The outro is the short line shown over the video after it.
     hero_expand: z
