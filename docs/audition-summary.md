@@ -54,27 +54,27 @@ Photos are grayscale and high contrast, multiplied over the gradient, with the b
 
 *Revised over several review rounds: a single page with a full-screen video hero, expandable services and work, and one email call to action.*
 
-**Pitch.** The whole company on one fast scroll. It opens on a full-screen loop from the ALL MY GIRLS video with the lavender wordmark over it, then runs through services, about and work as numbered, expandable sections, and ends on a single big email link.
+**Pitch.** A title sequence, then the whole company on one scroll. It opens with the headline cut out of a dark sheet, so the ALL MY GIRLS loop plays inside the letters; thin lines draw from "sound" to the words below it, then close on "your sound is your brand". The sheet lifts to show the video at full screen under "Our work", and numbered, expandable sections follow, ending in one big email call to action.
 
-**Type.** Archivo Variable (`@fontsource-variable/archivo`, preloaded). Display is set at 70% width and weight 780, a heavy condensed cut that echoes the wordmark; body text uses Archivo at normal width. JetBrains Mono Variable handles labels and numbering. Both are OFL.
+**Type.** Instrument Serif (`@fontsource/instrument-serif`, OFL, preloaded) for display, with its italic for emphasis; Archivo Variable for body text; JetBrains Mono Variable for labels and numbers.
 
 **Palette: "chrome".** Ink `#0F0F10`, paper `#F7F7F5`, a silver accent `#E4E2DC` and a pewter accent `#A9A9B3`.
-- Every section sits on the near-black ground; silver is kept for the email link and the quote.
+- Every section sits on the near-black ground; silver is kept for the email link and small accents.
 - The hero loop is graded black and white to match.
-- Every text pairing passes AA: ink/paper 17.9:1, silver/ink 14.8:1, muted/paper 6.0:1.
+- Text passes AA: paper/ink 17.9:1, silver/ink 14.8:1, muted/ink 7.5:1. Letters that show the video keep at least 3.4:1 (large text), because the footage has a 42% lift behind the sheet. "Our work" keeps 3.4:1 over a 50% ink shade.
 - The brand lavender and pink remain the client's logo colours in `--wdm-*`, but this direction doesn't use them.
 
 Chosen from an in-page audition of 6 palettes × 5 type pairings. The comparison sheets are in `screenshots/design/archive/audition/` (local).
 
 **Page order.**
-1. **Hero.** A pinned scroll sequence over the black-and-white video loop, with the wordmark top left in the header. "Artist development starts with *sound*" is too big for the screen and runs across as you scroll; "sound" opens into songwriting, production, performance and emotion, which close on "brand". Services follow straight after. The words are in `pages/home.md` (`headline`, `hero_expand`). With reduced motion or no JS it is stacked text. The footer row lists the services, the button and the video title.
-2. **Services** (`#services`). Numbered rows that expand to show their bullets.
+1. **Hero.** Wordmark top left in the header. The footage stays pinned while a dark sheet scrolls over it, with all the type as a window onto it (`mix-blend-mode: darken`). "Artist development starts with *sound*" fits one screen. Lines draw from "sound" to songwriting, production, performance and emotion as each pops, then to "your sound is your brand". Past the sheet, "Our work" sits over the full-screen video. The words are in `pages/home.md` (`headline`, `hero_expand`). With reduced motion or no JS the type is still and stacked, over the poster.
+2. **Services** (`#services`). Artist Development and A&R Consulting, as numbered rows that expand to show their lists.
 3. **Words and photos.** "Artists. Ideas. Sound. Culture." set huge, with the four work photos inline. Each word keeps its photo beside it: two pairs per line on desktop, one per line on phones. Each photo opens its work entry.
-4. **About** (`#about`). Each chapter is a row with the title on the left and the body on the right; there is one chapter for now, to be expanded. The pull quote below is set in lavender-to-pink gradient type.
+4. **About** (`#about`). The company in a row (title left, body right), then David Kim's bio set large. His bio is the second section in `pages/about.md`.
 5. **Selected work** (`#work`). Expandable rows: the Miley portrait, the click-to-play YouTube video for International A&R, and the photos.
 6. **Contact** (`#contact`). The headline, intro and one giant `mailto:` link. **The form was removed at John's request.** Phase 2 needs no form backend for this direction.
 
-**Accent.** The silver-to-pewter gradient is used on the hovered photos, the video play button and the pull quote's type. The wordmark, the main button and the contact band are solid silver.
+**Accent.** The silver-to-pewter gradient is used on the hovered photos and the video play button. The email link is solid silver.
 
 **Video hero.**
 - The loop starts after the page has loaded, pauses off-screen, and never autoplays for visitors with reduced motion turned on.
@@ -84,11 +84,11 @@ Chosen from an in-page audition of 6 palettes × 5 type pairings. The comparison
 **Old routes.** `/about`, `/services`, `/work` and `/contact` redirect to their sections (static meta-refresh pages; Phase 2 should replace these with real 301s in the host's redirect config).
 
 **Motion** (all off under reduced motion):
-- Masked line reveals.
+- Masked line reveals; hero words pop as the drawn lines reach them.
 - Photos unmask and drift with parallax.
 - The video pushes in slowly through the hero sequence.
 
-**Push further.** Short loops cut from the Imin film for the work rows. A nav order that matches the page order (Services now comes before About). Real metadata per work entry.
+**Push further.** A portrait of David Kim beside his bio. Short loops cut from the Imin film for the work rows. Real metadata per work entry.
 
 **JS.** Vanilla only:
 - Mobile menu.
@@ -200,6 +200,7 @@ The strip's progress bar uses CSS scroll-driven animation, no JS.
    - The source files in `src/assets/videos/` are gitignored. Confirm the client may use this footage.
    - The loops were cut with `ffmpeg-static`, a dev dependency.
 9. **Photos are Unsplash placeholders** and must be replaced with licensed or owned imagery before launch. Their pairing with work entries is arbitrary.
+10. **David Kim bio** is John's supplied copy, used verbatim; the artist names and "award-winning" should be confirmed by David before launch. **Hero blend** (`mix-blend-mode` over `<video>`) has been checked in desktop Chromium only, so test it in iOS Safari.
 10. **Contact form** has correct `name`s and `method="POST"` but no action. A comment marks the Phase 2 hookup (Cloudflare Pages Function or Netlify form). Archive has no form; it uses a single mailto link.
 11. **Content the designers wished existed** (not added, to keep content identical across branches; worth deciding before Phase 2):
    - Per-work `year`/`role` fields.
