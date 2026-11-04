@@ -10,7 +10,7 @@ import displayFont from '@fontsource-variable/archivo/files/archivo-latin-wdth-n
 interface Props {
   title: string;
   description?: string;
-  /** Home only: allow the once-per-session load counter. */
+  /** Home only: the page opens on the hero, under a transparent header. */
   intro?: boolean;
 }
 const site = await getSite();
@@ -31,7 +31,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url).href;
     <link rel="canonical" href={canonical} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="preload" href={displayFont} as="font" type="font/woff2" crossorigin />
-    <meta name="theme-color" content="#f7f7f5" />
+    <meta name="theme-color" content="#0f0f10" />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content={site.name} />
     <meta property="og:title" content={fullTitle} />
@@ -43,15 +43,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url).href;
     <script is:inline define:vars={{ intro }}>
       var h = document.documentElement;
       h.classList.add('js');
-      if (intro) {
-        h.classList.add('on-hero');
-        try {
-          if (!matchMedia('(prefers-reduced-motion: reduce)').matches && !sessionStorage.getItem('wdm-intro-seen')) {
-            sessionStorage.setItem('wdm-intro-seen', '1');
-            h.classList.add('intro');
-          }
-        } catch (e) {}
-      }
+      if (intro) h.classList.add('on-hero');
     </script>
   </head>
   <body>
@@ -104,8 +96,8 @@ const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url).href;
     top: 0.75rem;
     z-index: 100;
     padding: 0.6rem 0.9rem;
-    background: var(--ink);
-    color: var(--paper);
+    background: var(--paper);
+    color: var(--ink);
     font-family: var(--font-mono);
     font-size: 0.8125rem;
     text-transform: uppercase;
@@ -114,7 +106,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url).href;
   .skip:focus,
   .skip:focus-visible {
     transform: none;
-    outline: 2px solid var(--ink);
+    outline: 2px solid var(--paper);
     outline-offset: 3px;
   }
 </style>

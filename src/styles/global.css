@@ -1,4 +1,5 @@
 @import "@fontsource-variable/archivo/wdth.css";
+@import "@fontsource-variable/archivo/wdth-italic.css";
 @import "@fontsource-variable/jetbrains-mono/index.css";
 @import "tailwindcss";
 
@@ -12,16 +13,17 @@
   --wdm-gradient: linear-gradient(180deg, var(--wdm-lavender), var(--wdm-pink));
 
   /* design/archive — "chrome": near-black, off-white and silver (chosen from the
-     palette audition). Contrast: ink/paper 17.9, accent/ink 14.8, muted/paper 6.0. */
+     palette audition), every section on the near-black ground.
+     Contrast on ink: paper 17.9, accent 14.8, muted 7.5. */
   --ink: #0f0f10;
   --paper: #f7f7f5;
-  --muted: #5e5e62;
-  --accent: #e4e2dc;              /* silver: wordmark, buttons, contact band */
+  --muted: #a3a3a9;
+  --accent: #e4e2dc;              /* silver: the email link, quote and small accents */
   --accent-2: #a9a9b3;            /* pewter: second stop of the accent gradient */
   --accent-gradient: linear-gradient(180deg, var(--accent), var(--accent-2));
-  --rule: color-mix(in srgb, var(--ink) 16%, transparent);    /* hairlines */
-  --rule-strong: color-mix(in srgb, var(--ink) 85%, transparent);
-  --plate: #e7e7e3;               /* empty image ground */
+  --rule: color-mix(in srgb, var(--paper) 18%, transparent);    /* hairlines */
+  --rule-strong: color-mix(in srgb, var(--paper) 85%, transparent);
+  --plate: #1c1c1e;               /* empty image ground */
 
   /* Type: Archivo (variable width, run condensed and heavy for display, echoing the
      wordmark) with JetBrains Mono for labels. Chosen from the type audition. */
@@ -33,7 +35,7 @@
   --display-tracking: -0.015em;
   --display-leading: 0.86;
 
-  --header-h: 4.25rem;
+  --header-h: 5rem;
   --gutter: clamp(1rem, 2.2vw, 2rem);
   --col-gap: clamp(0.75rem, 1.6vw, 1.5rem);
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
@@ -50,14 +52,15 @@
 
 @layer base {
   html {
-    background: var(--paper);
-    color: var(--ink);
+    color-scheme: dark;
+    background: var(--ink);
+    color: var(--paper);
     -webkit-text-size-adjust: 100%;
     text-rendering: optimizeLegibility;
   }
   body {
-    background: var(--paper);
-    color: var(--ink);
+    background: var(--ink);
+    color: var(--paper);
     font-family: var(--font-sans);
     font-size: 1.0625rem;
     line-height: 1.5;
@@ -75,7 +78,7 @@
     text-decoration: none;
   }
   :focus-visible {
-    outline: 2px solid var(--ink);
+    outline: 2px solid var(--paper);
     outline-offset: 3px;
     border-radius: 1px;
   }
@@ -227,7 +230,7 @@
   }
   .acc-sum:hover .acc-num,
   .acc[open] .acc-num {
-    color: var(--ink);
+    color: var(--paper);
   }
   .acc-body {
     row-gap: 0;

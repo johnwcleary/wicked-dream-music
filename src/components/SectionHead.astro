@@ -50,9 +50,10 @@ const { title, id, count, kicker, number } = Astro.props;
     max-width: 70ch;
   }
   .sh-no {
-    color: var(--ink);
+    color: var(--paper);
   }
-  .sh-title {
+  /* Lines renders the heading, so reach it with a child selector. */
+  .sh > :global(.sh-title) {
     grid-column: 1 / -1;
     justify-self: start;
     position: relative;

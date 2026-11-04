@@ -1,17 +1,15 @@
 ---
-import { getSite, initials, pad, sectionId, toSection } from '../lib/content';
+import Logo from './Logo.astro';
+import { getSite, pad, sectionId, toSection } from '../lib/content';
 
 const site = await getSite();
-const mark = initials(site.name);
 ---
 
 <header class="site-header">
   <div class="bar wrap">
     <a href="/#top" class="mark">
-      <span aria-hidden="true">{mark}<span class="mark-c">©</span></span>
-      <span class="sr-only">{site.name}</span>
+      <Logo label={site.name} class="mark-logo" />
     </a>
-    <p class="loc label">{site.location}</p>
     <button type="button" class="menu-btn label" aria-expanded="false" aria-controls="site-menu" data-open={site.ui.menu_open} data-close={site.ui.menu_close}>
       <span class="menu-btn-text">{site.ui.menu_open}</span>
       <span class="menu-btn-icon" aria-hidden="true"></span>
@@ -52,7 +50,7 @@ const mark = initials(site.name);
     position: absolute;
     inset: 0;
     z-index: -1;
-    background: color-mix(in srgb, var(--paper) 97%, transparent);
+    background: color-mix(in srgb, var(--ink) 88%, transparent);
     backdrop-filter: saturate(1.4) blur(10px);
     -webkit-backdrop-filter: saturate(1.4) blur(10px);
     border-bottom: 1px solid transparent;
@@ -61,29 +59,17 @@ const mark = initials(site.name);
   :global(html.scrolled) .site-header::before {
     border-bottom-color: var(--rule);
   }
-  /* Over the dark hero band the header goes dark too, so the top reads as one band. */
-  .site-header,
   .site-header::before {
     transition:
-      color 0.35s,
       background-color 0.35s,
       border-color 0.4s;
-  }
-  :global(html.on-hero:not(.menu-open)) .site-header {
-    color: var(--paper);
   }
   /* Over the hero the header is transparent: the footage runs up to the top edge. */
   :global(html.on-hero:not(.menu-open)) .site-header::before {
     background: transparent;
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
-    border-bottom-color: color-mix(in srgb, var(--paper) 16%, transparent);
-  }
-  :global(html.on-hero:not(.menu-open)) .loc {
-    color: color-mix(in srgb, var(--paper) 62%, transparent);
-  }
-  :global(html.on-hero:not(.menu-open)) .site-header :focus-visible {
-    outline-color: var(--paper);
+    border-bottom-color: transparent;
   }
   .bar {
     display: flex;
@@ -92,24 +78,14 @@ const mark = initials(site.name);
     min-height: var(--header-h);
   }
   .mark {
-    font-size: 1.375rem;
-    font-weight: 620;
-    font-family: var(--font-display);
-    font-stretch: var(--display-stretch);
-    letter-spacing: -0.04em;
-    line-height: 1;
-    padding-block: 0.4rem;
+    display: block;
+    padding-block: 0.5rem;
     margin-right: auto;
   }
-  .mark-c {
-    font-size: 0.6em;
-    vertical-align: 0.55em;
-    margin-left: 0.04em;
-    letter-spacing: 0;
-  }
-  .loc {
-    display: none;
-    color: var(--muted);
+  .mark :global(.mark-logo) {
+    display: block;
+    width: auto;
+    height: 3.75rem;
   }
   .menu-btn {
     display: none;
@@ -174,13 +150,6 @@ const mark = initials(site.name);
     display: none;
   }
 
-  @media (min-width: 1100px) {
-    .loc {
-      display: block;
-      margin-right: auto;
-    }
-  }
-
   @media (max-width: 767px) {
     :global(html:not(.js)) .bar {
       flex-wrap: wrap;
@@ -209,9 +178,9 @@ const mark = initials(site.name);
       flex-direction: column;
       justify-content: space-between;
       gap: 2rem;
-      padding: 5.5rem var(--gutter) 1.75rem;
-      background: var(--paper);
-      color: var(--ink);
+      padding: 6rem var(--gutter) 1.75rem;
+      background: var(--ink);
+      color: var(--paper);
       overflow-y: auto;
       animation: menu-in 0.35s var(--ease-out);
     }
@@ -245,7 +214,7 @@ const mark = initials(site.name);
       color: var(--muted);
     }
     .menu.is-open .menu-list a[aria-current] .menu-num {
-      color: var(--ink);
+      color: var(--paper);
     }
     .menu.is-open .menu-list a[aria-current] .menu-text {
       text-decoration: underline;
