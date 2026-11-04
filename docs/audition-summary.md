@@ -15,7 +15,7 @@ Screenshots are local and gitignored. Regenerate with `npm run screenshots` on a
 
 ## A — `design/signal` · Poster / loud accent
 
-**Pitch.** Every page is a poster: enormous condensed uppercase type against tiny tracked labels, on full-bleed bands that alternate ink and paper on a strict 12-column grid. The lavender→pink gradient is the only colour on the site, so it reads like a signal light.
+**Pitch.** A title sequence, then the whole company on one scroll. It opens with the headline cut out of a beige sheet, so the ALL MY GIRLS loop plays inside the letters. "your *sound* is your *brand*" then holds a full screen of its own. The sheet lifts to show the video at full screen under "our work", then the IMIN film, and short sections follow, ending in one big email call to action.
 
 **Type.** Anton (display, `@fontsource/anton`, preloaded) + Instrument Sans Variable (body/labels, `@fontsource-variable/instrument-sans`). Anton's tall, heavy condensed caps sit closest to the wordmark.
 
@@ -66,9 +66,9 @@ Photos are grayscale and high contrast, multiplied over the gradient, with the b
 Chosen from an in-page audition of 6 palettes × 5 type pairings. The comparison sheets are in `screenshots/design/archive/audition/` (local).
 
 **Page order.**
-1. **Hero.** "wdm." as a text mark top left (the old logo is off the page). The footage stays pinned while a beige sheet scrolls over it, with the type as a window onto it. "artist development starts with *sound*" fits one screen, anchored bottom left. Songwriting, production, performance and emotion sit in a tight stack, pinned briefly while each lights in turn, then "your *sound* is your *brand*" on one line, with "let's develop it together" small beneath it. Past the sheet, "our work" sits over the full-screen video, then shrinks to the top as the shade clears so the film can be watched. The IMIN loop scrolls in next, also full screen. The words and films are in `pages/home.md`. With reduced motion or no JS the type is still and stacked, over the posters.
+1. **Hero.** "wdm." with the name nested under it, top left. The footage stays pinned while a beige sheet scrolls over it, with the type as a window onto it. "artist development starts with *sound*" fits one screen, anchored bottom left. "your *sound* is your *brand*" follows at full width on one line, with "let's develop it together" beneath it, held on screen briefly. Past the sheet, "our work" sits over the full-screen video, then shrinks to the top as the shade clears so the film can be watched. The IMIN loop scrolls in next, also full screen. The words and films are in `pages/home.md` (`headline`, `hero_closing`, `hero_video`, `hero_film`). With reduced motion or no JS the type is still and stacked, over the posters.
 2. **Services** (`#services`). A centred "our services" title, then artist development (for artists) with a&r consulting (for music companies) under it. Each title is filled with a still from one of the films, drifting as you scroll, and opens on click to a compact grid of its offerings. "customers include: …" sits small and left-aligned under a&r consulting, set in `pages/services.md` (`customers`); John supplied the names, so confirm they can be named.
-3. **About** (`#about`). A centred "Our *founder*" title, then David Kim's name and bio, set large. Both are in `pages/about.md`.
+3. **About** (`#about`). "our founder", then David Kim's name with his bio right beside it, in paper type over the ALL MY GIRLS loop, shaded 65% so the text keeps 5.2:1 over white footage. It has its own pause control. Both are in `pages/about.md`. He isn't in this footage, so a film of his own work or a portrait would suit it better.
 4. **Selected works** (`#work`). A large centred title over one embedded Spotify playlist, set in `pages/work.md` (`playlist`). **The current playlist is a placeholder from John.** The iframe loads lazily as it nears the screen, and Spotify may set cookies once it loads, so check that against the privacy policy.
 5. **Contact** (`#contact`). The headline, intro and one giant `mailto:` link. **The form was removed at John's request.** Phase 2 needs no form backend for this direction.
 
@@ -82,7 +82,7 @@ Chosen from an in-page audition of 6 palettes × 5 type pairings. The comparison
 **Old routes.** `/about`, `/services`, `/work` and `/contact` redirect to their sections (static meta-refresh pages; Phase 2 should replace these with real 301s in the host's redirect config).
 
 **Motion** (all off under reduced motion):
-- Masked line reveals; hero words settle in as the line reaches them; section titles fade up.
+- Masked line reveals; the closing line and note settle in; section titles fade up.
 - The video pushes in slowly through the hero sequence.
 
 **Push further.** A portrait of David Kim beside his bio.

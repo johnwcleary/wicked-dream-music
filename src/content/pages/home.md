@@ -5,10 +5,9 @@ headline: "Artist development starts with sound"
 lede: "We develop artists, write and produce their songs, and help labels and publishers find and grow new talent."
 cta: { label: "See what we do", href: "/services" }
 strapline: "Artist Development / A&R Consulting"
-hero_expand:
-  words: ["songwriting", "production", "performance", "emotion"]
-  resolve: "your sound is your brand"
-  resolve_note: "let's develop it together"
+hero_closing:
+  line: "your sound is your brand"
+  note: "let's develop it together"
   outro: "Our work"
 hero_film:
   title: "IMIN"
