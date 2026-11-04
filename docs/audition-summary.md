@@ -56,7 +56,7 @@ Photos are grayscale and high contrast, multiplied over the gradient, with the b
 
 **Pitch.** A title sequence, then the whole company on one scroll. It opens with the headline cut out of a dark sheet, so the ALL MY GIRLS loop plays inside the letters; thin lines draw from "sound" to the words below it, then close on "your sound is your brand". The sheet lifts to show the video at full screen under "Our work", and numbered, expandable sections follow, ending in one big email call to action.
 
-**Type.** Instrument Serif (`@fontsource/instrument-serif`, OFL, preloaded) for display, with its italic for emphasis; Archivo Variable for body text; JetBrains Mono Variable for labels and numbers.
+**Type.** One typeface, Inter Tight (`@fontsource-variable/inter-tight`, OFL, preloaded): large type at weight 500–600 with very tight spacing, small type at normal spacing. All text is lowercase through CSS (`text-transform`), so the content files, metadata and screen-reader text keep their normal capitals. Only "sound" and "brand" are italic. The direction takes its restraint from a neutral, lowercase portfolio reference John supplied, kept dark.
 
 **Palette: "chrome".** Ink `#0F0F10`, paper `#F7F7F5`, a silver accent `#E4E2DC` and a pewter accent `#A9A9B3`.
 - Every section sits on the near-black ground; silver is kept for the email link and small accents.
@@ -68,12 +68,12 @@ Chosen from an in-page audition of 6 palettes × 5 type pairings. The comparison
 
 **Page order.**
 1. **Hero.** Wordmark top left in the header. The footage stays pinned while a dark sheet scrolls over it, with all the type as a window onto it (`mix-blend-mode: darken`). "Artist development starts with *sound*" fits one screen. Lines draw from "sound" to songwriting, production, performance and emotion as each pops, then to "your sound is your brand", with "let's develop it together" small beneath it. Past the sheet, "Our work" sits over the full-screen video, then shrinks to the top as the shade clears so the film can be watched. The IMIN loop scrolls in next, also full screen. The words and films are in `pages/home.md` (`headline`, `hero_expand`, `hero_video`, `hero_film`). With reduced motion or no JS the type is still and stacked, over the posters.
-2. **Services** (`#services`). A centred "Our *services*" title, then Artist Development (for artists) with A&R Consulting (for music companies) under it. Each has its title filled with a still from one of the films, drifting as you scroll, beside a compact two-column grid of its offerings. The customers line closes the section, set in `pages/services.md` (`customers`); John supplied the names, so confirm they can be named.
+2. **Services** (`#services`). A centred "our services" title, then artist development (for artists) with a&r consulting (for music companies) under it. Each title is filled with a still from one of the films, drifting as you scroll, and opens on click to a compact grid of its offerings. The customers line closes the section, set in `pages/services.md` (`customers`); John supplied the names, so confirm they can be named.
 3. **About** (`#about`). A centred "Our *founder*" title, then David Kim's name and bio, set large. Both are in `pages/about.md`.
 4. **Selected works** (`#work`). A large centred title over one embedded Spotify playlist, set in `pages/work.md` (`playlist`). **The current playlist is a placeholder from John.** The iframe loads lazily as it nears the screen, and Spotify may set cookies once it loads, so check that against the privacy policy.
 5. **Contact** (`#contact`). The headline, intro and one giant `mailto:` link. **The form was removed at John's request.** Phase 2 needs no form backend for this direction.
 
-**Accent.** Solid silver on the email link and the "For artists" / "For music companies" labels. There are no section numbers, sub-labels or horizontal rules, at John's request.
+**Accent.** None beyond paper on ink: the current nav item is a paper pill. There are no section numbers, sub-labels or horizontal rules, at John's request.
 
 **Video hero.**
 - The loop starts after the page has loaded, pauses off-screen, and never autoplays for visitors with reduced motion turned on.
