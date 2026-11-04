@@ -56,24 +56,23 @@ Photos are grayscale and high contrast, multiplied over the gradient, with the b
 
 **Pitch.** A title sequence, then the whole company on one scroll. It opens with the headline cut out of a dark sheet, so the ALL MY GIRLS loop plays inside the letters; thin lines draw from "sound" to the words below it, then close on "your sound is your brand". The sheet lifts to show the video at full screen under "Our work", and numbered, expandable sections follow, ending in one big email call to action.
 
-**Type.** One typeface, Inter Tight (`@fontsource-variable/inter-tight`, OFL, preloaded): large type at weight 500–600 with very tight spacing, small type at normal spacing. All text is lowercase through CSS (`text-transform`), so the content files, metadata and screen-reader text keep their normal capitals. Only "sound" and "brand" are italic. The direction takes its restraint from a neutral, lowercase portfolio reference John supplied, kept dark.
+**Type.** One typeface, Inter Tight (`@fontsource-variable/inter-tight`, OFL, preloaded): large type at weight 500–600 with very tight spacing, small type at normal spacing. All text is lowercase through CSS (`text-transform`), so the content files, metadata and screen-reader text keep their normal capitals. Only "sound" and "brand" are italic. The direction takes its restraint from a neutral, lowercase portfolio reference John supplied.
 
-**Palette: "chrome".** Ink `#0F0F10`, paper `#F7F7F5`, a silver accent `#E4E2DC` and a pewter accent `#A9A9B3`.
-- Every section sits on the near-black ground; silver is kept for the email link and small accents.
-- The hero loop and the IMIN loop are in full color; the photos stay black and white.
-- Text passes AA: paper/ink 17.9:1, silver/ink 14.8:1, muted/ink 7.5:1. Letters that show the video keep at least 3.4:1 (large text), because the footage has a 42% lift behind the sheet. "Our work" keeps 3.4:1 over a 50% ink shade.
+**Palette.** Near-black `#0F0F10` type on white, muted `#5E5E62` for small text (6.4:1).
+- The hero loop and the IMIN loop are in full color; the footage shows through the type on a white sheet (`mix-blend-mode: lighten`), shaded 45% so the brightest frames keep 3.1:1 (large text).
+- "our work" and the header over the films sit on dark shades instead (3.4:1 or better).
 - The brand lavender and pink remain the client's logo colours in `--wdm-*`, but this direction doesn't use them.
 
 Chosen from an in-page audition of 6 palettes × 5 type pairings. The comparison sheets are in `screenshots/design/archive/audition/` (local).
 
 **Page order.**
-1. **Hero.** Wordmark top left in the header. The footage stays pinned while a dark sheet scrolls over it, with all the type as a window onto it (`mix-blend-mode: darken`). "artist development starts with *sound*" fits one screen, anchored bottom left. One thin vertical line draws down the left edge as you scroll, past songwriting, production, performance and emotion as each settles in, to "your *sound* is your *brand*", with "let's develop it together" small beneath it. Past the sheet, "our work" sits over the full-screen video, then shrinks to the top as the shade clears so the film can be watched. The IMIN loop scrolls in next, also full screen. The words and films are in `pages/home.md` (`headline`, `hero_expand`, `hero_video`, `hero_film`). With reduced motion or no JS the type is still and stacked, over the posters.
+1. **Hero.** Wordmark top left in the header. The footage stays pinned while a white sheet scrolls over it, with all the type as a window onto it. "artist development starts with *sound*" fits one screen, anchored bottom left. One thin vertical line draws down the left edge as you scroll, past songwriting, production, performance and emotion as each settles in, to "your *sound* is your *brand*", with "let's develop it together" small beneath it. Past the sheet, "our work" sits over the full-screen video, then shrinks to the top as the shade clears so the film can be watched. The IMIN loop scrolls in next, also full screen. The words and films are in `pages/home.md` (`headline`, `hero_expand`, `hero_video`, `hero_film`). With reduced motion or no JS the type is still and stacked, over the posters.
 2. **Services** (`#services`). A centred "our services" title, then artist development (for artists) with a&r consulting (for music companies) under it. Each title is filled with a still from one of the films, drifting as you scroll, and opens on click to a compact grid of its offerings. The customers line closes the section, set in `pages/services.md` (`customers`); John supplied the names, so confirm they can be named.
 3. **About** (`#about`). A centred "Our *founder*" title, then David Kim's name and bio, set large. Both are in `pages/about.md`.
 4. **Selected works** (`#work`). A large centred title over one embedded Spotify playlist, set in `pages/work.md` (`playlist`). **The current playlist is a placeholder from John.** The iframe loads lazily as it nears the screen, and Spotify may set cookies once it loads, so check that against the privacy policy.
 5. **Contact** (`#contact`). The headline, intro and one giant `mailto:` link. **The form was removed at John's request.** Phase 2 needs no form backend for this direction.
 
-**Accent.** None beyond paper on ink: the current nav item is a paper pill. There are no section numbers, sub-labels or horizontal rules, at John's request.
+**Accent.** None: the current nav item is a dark pill. There are no section numbers, sub-labels or horizontal rules, at John's request.
 
 **Video hero.**
 - The loop starts after the page has loaded, pauses off-screen, and never autoplays for visitors with reduced motion turned on.
