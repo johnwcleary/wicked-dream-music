@@ -49,7 +49,7 @@ const site = await getSite();
     position: absolute;
     inset: 0;
     z-index: -1;
-    background: color-mix(in srgb, var(--ink) 88%, transparent);
+    background: color-mix(in srgb, var(--paper) 88%, transparent);
     backdrop-filter: saturate(1.4) blur(10px);
     -webkit-backdrop-filter: saturate(1.4) blur(10px);
   }
@@ -62,12 +62,27 @@ const site = await getSite();
     bottom: -2.5rem;
     background: linear-gradient(
       to bottom,
-      color-mix(in srgb, var(--ink) 85%, transparent) 0%,
-      color-mix(in srgb, var(--ink) 70%, transparent) 45%,
+      color-mix(in srgb, var(--paper) 85%, transparent) 0%,
+      color-mix(in srgb, var(--paper) 70%, transparent) 45%,
       transparent 100%
     );
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
+  }
+  /* Over the full-screen films the header turns light, on a dark scrim. */
+  :global(html.on-reel:not(.menu-open)) .site-header {
+    color: var(--paper);
+  }
+  :global(html.on-reel:not(.menu-open)) .site-header::before {
+    background: linear-gradient(
+      to bottom,
+      color-mix(in srgb, var(--ink) 85%, transparent) 0%,
+      color-mix(in srgb, var(--ink) 70%, transparent) 45%,
+      transparent 100%
+    );
+  }
+  :global(html.on-reel:not(.menu-open)) .site-header :focus-visible {
+    outline-color: var(--paper);
   }
   .bar {
     display: flex;
@@ -128,9 +143,16 @@ const site = await getSite();
       color 0.3s;
   }
   .menu-list a:hover {
-    background: color-mix(in srgb, var(--paper) 14%, transparent);
+    background: color-mix(in srgb, var(--ink) 8%, transparent);
   }
   .menu-list a[aria-current] {
+    background: var(--ink);
+    color: var(--paper);
+  }
+  :global(html.on-reel:not(.menu-open)) .menu-list a:hover {
+    background: color-mix(in srgb, var(--paper) 16%, transparent);
+  }
+  :global(html.on-reel:not(.menu-open)) .menu-list a[aria-current] {
     background: var(--paper);
     color: var(--ink);
   }
@@ -167,8 +189,8 @@ const site = await getSite();
       justify-content: space-between;
       gap: 2rem;
       padding: 6rem var(--gutter) 1.75rem;
-      background: var(--ink);
-      color: var(--paper);
+      background: var(--paper);
+      color: var(--ink);
       overflow-y: auto;
       animation: menu-in 0.35s var(--ease-out);
     }

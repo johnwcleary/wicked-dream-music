@@ -31,7 +31,7 @@ const people = about.sections ?? [];
 
 <BaseLayout title={page.title} intro>
   <!-- 00 — Hero: all the type is a window onto the footage, which holds still behind
-       a dark sheet as the page scrolls. One thin line draws down the left edge, past
+       a white sheet as the page scrolls. One thin line draws down the left edge, past
        each word in the list, to the closing line. Without JS or with reduced
        motion the type sits still and stacked, over the poster. -->
   <section id="top" class={`hero${video ? ' has-video' : ''}`} aria-labelledby="hero-title" data-hero>
@@ -209,7 +209,7 @@ const people = about.sections ?? [];
         <>
           <iframe
             class="playlist"
-            src={`https://open.spotify.com/embed/playlist/${playlist.spotify_id}?theme=0`}
+            src={`https://open.spotify.com/embed/playlist/${playlist.spotify_id}`}
             title={playlist.title}
             loading="lazy"
             allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
@@ -238,8 +238,6 @@ const people = about.sections ?? [];
 <style>
   /* ---------- Hero: the type is a window onto the footage ---------- */
   .hero {
-    --hero-soft: color-mix(in srgb, var(--paper) 86%, transparent);
-    --hero-muted: color-mix(in srgb, var(--paper) 70%, transparent);
     --run-size: 15vw;
     --word-size: 13vw;
     --ease-soft: cubic-bezier(0.16, 1, 0.3, 1);
@@ -248,9 +246,6 @@ const people = about.sections ?? [];
     margin-top: calc(var(--header-h) * -1);
     scroll-margin-top: 0;
     overflow: clip;
-  }
-  .hero :global(.label-muted) {
-    color: var(--hero-muted);
   }
 
   /* Media stack: optimised poster (the LCP image) and the loop over it once it
@@ -282,8 +277,8 @@ const people = about.sections ?? [];
   .hero.is-playing .hero-video {
     opacity: 1;
   }
-  /* The sheet scrolls over the footage with its own lift underneath: inside the
-     letters the darkest frame still gives 3.4:1 against the ink, and the footage
+  /* The sheet scrolls over the footage with its own shade underneath: inside the
+     letters the brightest frame still gives 3.1:1 against the white, and the footage
      below the sheet's edge is untouched. */
   .hero-sheet {
     position: relative;
@@ -291,17 +286,16 @@ const people = about.sections ?? [];
   .hero-lift {
     position: absolute;
     inset: 0;
-    background: color-mix(in srgb, var(--paper) 42%, transparent);
+    background: color-mix(in srgb, var(--ink) 45%, transparent);
   }
 
-  /* The sheet: ink everywhere, white type. "Darken" keeps the lower of sheet and
-     footage, so the sheet stays exactly ink and the footage shows only in the type.
-     The stroke adds weight, so the letters are wide enough to see through. */
+  /* The sheet: white everywhere, black type. "Lighten" keeps the higher of sheet and
+     footage, so the sheet stays exactly white and the footage shows only in the type. */
   .hero-cut {
     position: relative;
-    background: var(--ink);
-    color: #fff;
-    mix-blend-mode: darken;
+    background: var(--paper);
+    color: #000;
+    mix-blend-mode: lighten;
   }
   .run,
   .bloom-list,
@@ -442,12 +436,15 @@ const people = about.sections ?? [];
   .hero-bar {
     position: relative;
     z-index: 4;
-    background: var(--ink);
-    transition: background-color 0.4s;
+    background: var(--paper);
+    transition:
+      background-color 0.4s,
+      color 0.4s;
   }
   /* Over the films the row drops its ground, leaving the frame clear. */
   .hero.in-reel .hero-bar {
     background: transparent;
+    color: var(--paper);
   }
   .hero-foot {
     display: flex;
@@ -461,7 +458,6 @@ const people = about.sections ?? [];
     margin-right: auto;
     gap: 0.5rem;
     padding: 0.35rem 0;
-    color: var(--paper);
   }
   .hero-cta:hover {
     text-decoration: underline;
@@ -472,11 +468,15 @@ const people = about.sections ?? [];
     padding: 0.35rem 0;
     border: 0;
     background: none;
-    color: var(--hero-soft);
+    color: inherit;
     cursor: pointer;
   }
   .hero-credit:hover {
-    color: var(--paper);
+    text-decoration: underline;
+    text-underline-offset: 0.25em;
+  }
+  .hero.in-reel .hero-bar :focus-visible {
+    outline-color: var(--paper);
   }
 
   /* The sequence. The footage stays pinned for the whole hero while the sheet
@@ -541,7 +541,7 @@ const people = about.sections ?? [];
       position: absolute;
       left: var(--gutter);
       width: 1px;
-      background: linear-gradient(to bottom, transparent, color-mix(in srgb, var(--paper) 70%, transparent) 10rem);
+      background: linear-gradient(to bottom, transparent, color-mix(in srgb, var(--ink) 70%, transparent) 10rem);
       transform: scaleY(0);
       transform-origin: 50% 0;
       will-change: transform;
@@ -628,7 +628,6 @@ const people = about.sections ?? [];
   .customers-list {
     margin: 0 auto;
     max-width: 22em;
-    color: var(--paper);
     font-size: clamp(1.625rem, 3vw, 3.25rem);
     line-height: 1.02;
     text-wrap: balance;
@@ -641,7 +640,7 @@ const people = about.sections ?? [];
     border-radius: 12px;
   }
   .playlist.is-focused {
-    outline: 2px solid var(--paper);
+    outline: 2px solid var(--ink);
     outline-offset: 3px;
   }
 
@@ -682,7 +681,7 @@ const people = about.sections ?? [];
 
   /* Contact — one giant email link, in silver. */
   .band-cta {
-    --soft: color-mix(in srgb, var(--paper) 78%, transparent);
+    --soft: color-mix(in srgb, var(--ink) 74%, transparent);
   }
   .cta {
     row-gap: 1.5rem;
@@ -706,7 +705,6 @@ const people = about.sections ?? [];
     margin-top: clamp(1.5rem, 4vw, 3rem);
     flex-wrap: wrap;
     max-width: 100%;
-    color: var(--paper);
     font-size: clamp(1.5rem, 6vw, 4rem);
     line-height: 1.05;
   }
@@ -887,7 +885,10 @@ const people = about.sections ?? [];
       if (reel) {
         // The line arrives once the sheet has lifted about halfway off the footage.
         reel.classList.toggle('is-in', y + innerHeight * 0.45 >= reelTop);
-        hero.classList.toggle('in-reel', y >= reelTop - innerHeight * 0.1 && y <= reelEnd - innerHeight * 1.02);
+        const inReel = y >= reelTop - innerHeight * 0.1 && y <= reelEnd - innerHeight * 1.02;
+        hero.classList.toggle('in-reel', inReel);
+        // The header stays light until the film has actually scrolled up under it.
+        document.documentElement.classList.toggle('on-reel', y >= reelTop - 40 && y <= reelEnd - 40);
       }
       const mark = y + innerHeight * MARK - heroTop;
       spine.style.transform = `scaleY(${seg(mark, spineTop, spineEnd)})`;

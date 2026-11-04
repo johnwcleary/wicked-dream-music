@@ -31,7 +31,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url).href;
     <link rel="canonical" href={canonical} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="preload" href={displayFont} as="font" type="font/woff2" crossorigin />
-    <meta name="theme-color" content="#0f0f10" />
+    <meta name="theme-color" content="#ffffff" />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content={site.name} />
     <meta property="og:title" content={fullTitle} />
@@ -82,15 +82,15 @@ const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url).href;
     top: 0.75rem;
     z-index: 100;
     padding: 0.6rem 0.9rem;
-    background: var(--paper);
-    color: var(--ink);
+    background: var(--ink);
+    color: var(--paper);
     font-size: 0.8125rem;
     transform: translateY(-200%);
   }
   .skip:focus,
   .skip:focus-visible {
     transform: none;
-    outline: 2px solid var(--paper);
+    outline: 2px solid var(--ink);
     outline-offset: 3px;
   }
 </style>

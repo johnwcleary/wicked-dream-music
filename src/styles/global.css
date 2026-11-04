@@ -11,12 +11,10 @@
   --wdm-black: #111111;
   --wdm-gradient: linear-gradient(180deg, var(--wdm-lavender), var(--wdm-pink));
 
-  /* design/archive — "chrome": near-black, off-white and silver (chosen from the
-     palette audition), every section on the near-black ground.
-     Contrast on ink: paper 17.9, accent 14.8, muted 7.5. */
+  /* design/archive — near-black type on white. Contrast on paper: ink 19, muted 6.4. */
   --ink: #0f0f10;
-  --paper: #f7f7f5;
-  --muted: #a3a3a9;
+  --paper: #ffffff;
+  --muted: #5e5e62;
   --accent: #e4e2dc;              /* silver: the email link, quote and small accents */
   --accent-2: #a9a9b3;            /* pewter: second stop of the accent gradient */
   --accent-gradient: linear-gradient(180deg, var(--accent), var(--accent-2));
@@ -46,15 +44,15 @@
 
 @layer base {
   html {
-    color-scheme: dark;
-    background: var(--ink);
-    color: var(--paper);
+    color-scheme: light;
+    background: var(--paper);
+    color: var(--ink);
     -webkit-text-size-adjust: 100%;
     text-rendering: optimizeLegibility;
   }
   body {
-    background: var(--ink);
-    color: var(--paper);
+    background: var(--paper);
+    color: var(--ink);
     font-family: var(--font-sans);
     font-size: 1rem;
     line-height: 1.4;
@@ -73,7 +71,7 @@
     text-decoration: none;
   }
   :focus-visible {
-    outline: 2px solid var(--paper);
+    outline: 2px solid var(--ink);
     outline-offset: 3px;
     border-radius: 1px;
   }
