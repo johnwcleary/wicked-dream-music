@@ -65,6 +65,13 @@ const pages = defineCollection({
         mobile_webm: z.string().optional(),
       })
       .optional(),
+    // The headline's last word opening into a list, then resolving on one word.
+    hero_expand: z
+      .object({
+        words: z.array(z.string()),
+        resolve: z.string(),
+      })
+      .optional(),
   }),
 });
 
