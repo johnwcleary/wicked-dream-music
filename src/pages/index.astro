@@ -29,23 +29,6 @@ const people = about.sections ?? [];
 ---
 
 <BaseLayout title={page.title} intro>
-  <!-- Temporary: picks the font being auditioned, before the page paints. -->
-  <script is:inline>
-    (function () {
-      var saved = null;
-      try {
-        saved = new URLSearchParams(location.search).get('font') || localStorage.getItem('wdm-font');
-      } catch (e) {}
-      if (saved) document.documentElement.dataset.font = saved;
-    })();
-  </script>
-  <div class="pick" role="group" aria-label="Font">
-    <button type="button" data-font-pick="">inter tight</button>
-    <button type="button" data-font-pick="hanken">hanken grotesk</button>
-    <button type="button" data-font-pick="geist">geist</button>
-    <button type="button" data-font-pick="instrument">instrument sans</button>
-    <button type="button" data-font-pick="dm">dm sans</button>
-  </div>
   <!-- 00 — Hero: all the type is a window onto the footage, which holds still behind
        a beige sheet as the page scrolls, then the closing line holds a screen of its own.
        Without JS or with reduced
@@ -359,7 +342,7 @@ const people = about.sections ?? [];
   }
   .bloom-end {
     margin: 1.5rem 0 0;
-    --line-size: calc((100vw - 2 * var(--gutter)) / var(--line-em, 10.4));
+    --line-size: calc((100vw - 2 * var(--gutter)) / 10.4);
     font-size: var(--line-size);
     line-height: 0.95;
   }
@@ -601,39 +584,6 @@ const people = about.sections ?? [];
     :global(html.js) .bloom-end.is-in .bloom-note {
       opacity: 1;
     }
-  }
-
-  /* Temporary: the font switcher. */
-  .pick {
-    position: fixed;
-    top: calc(var(--header-h) + 0.25rem);
-    right: var(--gutter);
-    z-index: 60;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.15rem;
-    max-width: calc(100vw - 2 * var(--gutter));
-    padding: 0.2rem;
-    border-radius: 1.1rem;
-    background: var(--ink);
-    color: var(--paper);
-    font-size: 0.8125rem;
-  }
-  .pick button {
-    padding: 0.3rem 0.7rem;
-    border: 0;
-    border-radius: 999px;
-    background: none;
-    color: inherit;
-    font: inherit;
-    cursor: pointer;
-  }
-  .pick button[aria-pressed='true'] {
-    background: var(--paper);
-    color: var(--ink);
-  }
-  .pick :focus-visible {
-    outline-color: var(--paper);
   }
 
   /* ---------- Sections ---------- */
@@ -968,24 +918,6 @@ const people = about.sections ?? [];
     document.fonts?.ready.then(refresh);
     refresh();
   }
-
-  // Temporary: the font switcher. Stays where you are on the page, so fonts compare in place.
-  const fontPicks = Array.from(document.querySelectorAll<HTMLButtonElement>('[data-font-pick]'));
-  const showFont = () =>
-    fontPicks.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.fontPick === (document.documentElement.dataset.font ?? ''))));
-  fontPicks.forEach((b) =>
-    b.addEventListener('click', () => {
-      const pick = b.dataset.fontPick ?? '';
-      if (pick) document.documentElement.dataset.font = pick;
-      else delete document.documentElement.dataset.font;
-      try {
-        localStorage.setItem('wdm-font', pick);
-      } catch (e) {}
-      showFont();
-      document.fonts?.ready.then(() => dispatchEvent(new Event('resize')));
-    }),
-  );
-  showFont();
 
   // Focus moves inside the playlist's frame, where CSS focus states can't see it, so
   // tabbing in marks the frame from here to give keyboard users a visible ring.

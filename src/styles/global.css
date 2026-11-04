@@ -1,14 +1,5 @@
 @import "@fontsource-variable/inter-tight/wght.css";
 @import "@fontsource-variable/inter-tight/wght-italic.css";
-/* Temporary: the font audition. */
-@import "@fontsource-variable/hanken-grotesk/wght.css";
-@import "@fontsource-variable/hanken-grotesk/wght-italic.css";
-@import "@fontsource-variable/geist/wght.css";
-@import "@fontsource-variable/geist/wght-italic.css";
-@import "@fontsource-variable/instrument-sans/wght.css";
-@import "@fontsource-variable/instrument-sans/wght-italic.css";
-@import "@fontsource-variable/dm-sans/wght.css";
-@import "@fontsource-variable/dm-sans/wght-italic.css";
 @import "tailwindcss";
 
 /* Brand tokens, sampled from the supplied logo PNGs. */
@@ -41,33 +32,6 @@
   --gutter: clamp(1rem, 2.2vw, 2rem);
   --col-gap: clamp(0.75rem, 1.6vw, 1.5rem);
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-/* Temporary: the font audition. --line-em and --title-em are each font's measured width
-   of the closing line and "artist development", so they keep to one line. */
-html[data-font='hanken'] {
-  --font-sans: "Hanken Grotesk Variable", "Helvetica Neue", Helvetica, Arial, sans-serif;
-  --display-tracking: -0.03em;
-  --line-em: 10.9;
-  --title-em: 8.15;
-}
-html[data-font='geist'] {
-  --font-sans: "Geist Variable", "Helvetica Neue", Helvetica, Arial, sans-serif;
-  --display-tracking: -0.035em;
-  --line-em: 11.1;
-  --title-em: 8.6;
-}
-html[data-font='instrument'] {
-  --font-sans: "Instrument Sans Variable", "Helvetica Neue", Helvetica, Arial, sans-serif;
-  --display-tracking: -0.025em;
-  --line-em: 11.2;
-  --title-em: 8.7;
-}
-html[data-font='dm'] {
-  --font-sans: "DM Sans Variable", "Helvetica Neue", Helvetica, Arial, sans-serif;
-  --display-tracking: -0.03em;
-  --line-em: 11.5;
-  --title-em: 8.85;
 }
 
 @theme {
