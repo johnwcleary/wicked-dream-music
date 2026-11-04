@@ -242,6 +242,8 @@ const people = about.sections ?? [];
   .hero {
     --hero-soft: color-mix(in srgb, var(--paper) 86%, transparent);
     --hero-muted: color-mix(in srgb, var(--paper) 70%, transparent);
+    --run-size: 15vw;
+    --word-size: 13vw;
     position: relative;
     isolation: isolate;
     margin-top: calc(var(--header-h) * -1);
@@ -315,7 +317,7 @@ const people = about.sections ?? [];
   }
   .run {
     margin: 0;
-    font-size: 15vw;
+    font-size: var(--run-size);
   }
   .run-line {
     display: block;
@@ -360,8 +362,9 @@ const people = about.sections ?? [];
     line-height: 1.2;
   }
   @media (min-width: 768px) {
-    .run {
-      font-size: min(24svh, 10.4vw);
+    .hero {
+      --run-size: min(24svh, 10.4vw);
+      --word-size: min(14svh, 9vw);
     }
   }
 
@@ -535,7 +538,9 @@ const people = about.sections ?? [];
       }
     }
 
+    /* Starts just under the headline and keeps to its width. */
     :global(html.js) .bloom {
+      margin-top: -20svh;
       padding: 0 var(--gutter);
     }
     :global(html.js) .links {
@@ -550,9 +555,10 @@ const people = about.sections ?? [];
     }
     :global(html.js) .bloom-list {
       display: grid;
-      grid-auto-rows: 36svh;
+      grid-auto-rows: 22svh;
       gap: 0;
-      font-size: min(20svh, 13vw);
+      max-width: calc(var(--run-size) * 6.3);
+      font-size: var(--word-size);
       line-height: 1;
       white-space: nowrap;
     }
@@ -579,11 +585,10 @@ const people = about.sections ?? [];
     }
     :global(html.js) .bloom-end {
       display: grid;
-      place-content: center;
-      min-height: 80svh;
+      place-content: center start;
+      min-height: 62svh;
       margin: 0;
-      font-size: min(21svh, 12.5vw);
-      text-align: center;
+      font-size: var(--run-size);
     }
     :global(html.js) .bloom-end-line {
       opacity: 0;
@@ -905,7 +910,8 @@ const people = about.sections ?? [];
       const first = end.firstElementChild!;
       // The closing line's rest position: take its pop offset out of the reading.
       endTop = first.getBoundingClientRect().top - new DOMMatrix(getComputedStyle(first).transform).m42 - b.top;
-      const endX = b.width / 2;
+      const lead = first.getBoundingClientRect();
+      const endX = lead.left + lead.width / 2 - b.left;
       tops = rows.map((row) => {
         const r = row.getBoundingClientRect();
         const x = r.left + r.width / 2 - b.left;
