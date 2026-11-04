@@ -54,22 +54,24 @@ const pictures = await Promise.all(
     scroll-margin-top: 6rem;
   }
   .svc-head {
-    position: relative;
-    display: block;
-    padding-right: 3rem;
+    display: grid;
+    grid-template-columns: max-content auto;
+    justify-content: start;
+    align-items: center;
+    column-gap: clamp(0.75rem, 1.4vw, 1.25rem);
     list-style: none;
     cursor: pointer;
   }
   .svc-head::-webkit-details-marker {
     display: none;
   }
+  /* Sits right beside the title, level with its lowercase letters. */
   .svc-icon {
-    position: absolute;
-    top: 50%;
-    right: 0;
+    grid-area: 1 / 2;
+    position: relative;
     width: clamp(1.25rem, 2vw, 1.75rem);
     aspect-ratio: 1;
-    translate: 0 -50%;
+    translate: 0 0.15em;
   }
   .svc-icon::before,
   .svc-icon::after {
@@ -90,7 +92,7 @@ const pictures = await Promise.all(
   }
   .svc-title {
     margin: 0;
-    font-size: clamp(2.75rem, 5.8vw, 6.25rem);
+    font-size: 10.2vw;
     font-weight: 600;
     line-height: 0.92;
     /* Room for descenders: the still only paints inside this box. */
@@ -112,6 +114,7 @@ const pictures = await Promise.all(
     }
   }
   .svc-for {
+    grid-area: 2 / 1 / auto / -1;
     display: block;
     margin: 0.6em 0 0;
     color: var(--muted);
@@ -167,6 +170,11 @@ const pictures = await Promise.all(
     }
   }
 
+  @media (min-width: 768px) {
+    .svc-title {
+      font-size: clamp(3rem, 5.8vw, 6.25rem);
+    }
+  }
   @media (min-width: 900px) {
     .svc-grid {
       grid-template-columns: repeat(4, minmax(0, 1fr));

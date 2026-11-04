@@ -19,10 +19,9 @@ const services = await getServices();
 const [headOne = '', headTwo = ''] = splitHeadline(page.headline);
 const headLast = headTwo.split(' ').pop() ?? '';
 const headRest = headTwo.slice(0, -headLast.length).trim();
-const expand = page.hero_expand;
-// The closing line. Only the headline's word and this line's last word take italics.
-const closing = expand ? [expand.resolve] : [];
-const stressed = [headLast, expand?.resolve.trim().split(/\s+/).pop()];
+const closing = page.hero_closing;
+// Only the headline's last word and the closing line's take italics.
+const stressed = [headLast, closing?.line.trim().split(/\s+/).pop()];
 const video = page.hero_video;
 const film = page.hero_film;
 
@@ -31,7 +30,7 @@ const people = about.sections ?? [];
 
 <BaseLayout title={page.title} intro>
   <!-- 00 — Hero: all the type is a window onto the footage, which holds still behind
-       a beige sheet as the page scrolls. The words light one at a time, then the closing line.
+       a beige sheet as the page scrolls, then the closing line holds a screen of its own.
        Without JS or with reduced
        motion the type sits still and stacked, over the poster. -->
   <section id="top" class={`hero${video ? ' has-video' : ''}`} aria-labelledby="hero-title" data-hero>
@@ -70,43 +69,32 @@ const people = about.sections ?? [];
           </h1>
         </div>
         {
-          expand && (
+          closing && (
             <div class="bloom">
-              <div class="words" data-words>
-              <ul class="bloom-list display">
-                {expand.words.map((word) => (
-                  <li data-bloom-word>
-                    <span>{word}</span>
-                  </li>
-                ))}
-              </ul>
-              </div>
               <p class="bloom-end display" data-bloom-end>
-                {closing.map((line) => (
-                  <span class="bloom-end-line">
-                    {line.split(' ').map((w) => (
-                      <>
-                        {stressed.includes(w) ? <em>{w}</em> : w}{' '}
-                      </>
-                    ))}
-                  </span>
-                ))}
-
-                {expand.resolve_note && <span class="bloom-note">{expand.resolve_note}</span>}              </p>
+                <span class="bloom-end-line">
+                  {closing.line.split(' ').map((w) => (
+                    <>
+                      {stressed.includes(w) ? <em>{w}</em> : w}{' '}
+                    </>
+                  ))}
+                </span>
+                {closing.note && <span class="bloom-note">{closing.note}</span>}
+              </p>
             </div>
           )
         }
       </div>
     </div>
     {
-      expand?.outro && (
+      closing?.outro && (
         <div class="reel" data-reel>
           <div class="reel-top">
             <span class="reel-wash" data-reel-wash />
             <span class="reel-edge" data-reel-edge />
             <div class="reel-title" data-reel-title>
               <p class="reel-text display" data-reel-text>
-                {expand?.outro}
+                {closing.outro}
               </p>
             </div>
           </div>
@@ -178,8 +166,32 @@ const people = about.sections ?? [];
 
 
   <!-- 02 — About -->
-  <section id="about" class="band band-ink" aria-labelledby="about-title">
-    <div class="wrap">
+  <section id="about" class="founder" aria-labelledby="about-title" data-founder>
+    {
+      video && (
+        <div class="founder-media" aria-hidden="true">
+          <Image
+            src={video.poster}
+            alt=""
+            widths={[640, 960, 1280, 1920].filter((w) => w <= video.poster.width)}
+            width={Math.min(1920, video.poster.width)}
+            sizes="100vw"
+            loading="lazy"
+            decoding="async"
+            quality={62}
+            class="founder-poster"
+          />
+          <video class="founder-video" muted loop playsinline preload="none" disablepictureinpicture data-founder-video>
+            {video.mobile_webm && <source src={video.mobile_webm} type="video/webm" media="(max-width: 767px)" />}
+            {video.mobile_mp4 && <source src={video.mobile_mp4} type="video/mp4" media="(max-width: 767px)" />}
+            {video.webm && <source src={video.webm} type="video/webm" />}
+            <source src={video.mp4} type="video/mp4" />
+          </video>
+          <span class="founder-shade" />
+        </div>
+      )
+    }
+    <div class="wrap founder-inner">
       <SectionHead id="about-title" title={about.section_title ?? about.title} />
       {
         people.map((person) => (
@@ -192,6 +204,19 @@ const people = about.sections ?? [];
             </div>
           </article>
         ))
+      }
+      {
+        video && (
+          <button
+            type="button"
+            class="hero-credit label founder-pause"
+            data-hero-toggle
+            data-play={site.ui.play_video}
+            data-pause={site.ui.pause_video}
+          >
+            {site.ui.pause_video}
+          </button>
+        )
       }
     </div>
   </section>
@@ -292,7 +317,6 @@ const people = about.sections ?? [];
     mix-blend-mode: lighten;
   }
   .run,
-  .bloom-list,
   .bloom-end {
     font-weight: 600;
   }
@@ -316,29 +340,20 @@ const people = about.sections ?? [];
   .bloom {
     padding: 0 var(--gutter) clamp(2rem, 5vw, 4rem);
   }
-  .bloom-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0 0.3em;
-    margin: 0;
-    padding: 0;
-    list-style: none;
-    font-size: clamp(2.25rem, 5.5vw, 5.5rem);
-    line-height: 1.05;
-  }
   .bloom-end {
     margin: 1.5rem 0 0;
-    font-size: 7.6vw;
+    --line-size: calc((100vw - 2 * var(--gutter)) / 10.4);
+    font-size: var(--line-size);
     line-height: 0.95;
   }
   .bloom-end-line {
     display: block;
   }
-  /* Small, but still large text for AA (24px) since it's also a window onto the footage. */
+  /* Large text for AA (24px or more), since it's also a window onto the footage. */
   .bloom-note {
     display: block;
-    margin-top: 1em;
-    font-size: 1.5rem;
+    margin-top: 0.7em;
+    font-size: clamp(1.5rem, 3.2vw, 3.25rem);
     font-weight: 600;
     letter-spacing: -0.02em;
     line-height: 1.2;
@@ -535,33 +550,20 @@ const people = about.sections ?? [];
       }
     }
 
+    /* The closing line holds a screen of its own, a little longer than the scroll past it. */
     :global(html.js) .bloom {
+      height: 130svh;
       padding: 0 var(--gutter);
     }
-    /* A tight stack, pinned just long enough for each word to light in turn. */
-    :global(html.js) .words {
-      height: calc(4.2em + 42svh);
-      font-size: min(10svh, 9vw);
-    }
-    :global(html.js) .bloom-list {
-      position: sticky;
-      top: calc(50svh - 2.1em);
-      display: grid;
-      flex-wrap: nowrap;
-      gap: 0;
-      font-size: inherit;
-      line-height: 1.05;
-      white-space: nowrap;
-    }
-    :global(html.js) .bloom-list li {
-      will-change: opacity;
-    }
     :global(html.js) .bloom-end {
+      position: sticky;
+      top: 0;
       display: grid;
-      place-content: center start;
-      min-height: 46svh;
+      align-content: center;
+      justify-items: start;
+      min-height: 100svh;
       margin: 0;
-      font-size: min(14svh, 7.6vw);
+      font-size: min(22svh, var(--line-size));
       white-space: nowrap;
     }
     :global(html.js) .bloom-end-line {
@@ -631,18 +633,53 @@ const people = about.sections ?? [];
     padding-block: clamp(1.75rem, 3.5vw, 3.25rem);
     scroll-margin-top: 4rem;
   }
-  /* About — each person large: name left, bio right. */
+  /* About — the name right beside the bio, in light type over the footage. The 65% ink
+     keeps the bio at 5.2:1 over white footage. */
+  .founder {
+    position: relative;
+    isolation: isolate;
+    overflow: clip;
+    color: var(--paper);
+    scroll-margin-top: 0;
+  }
+  .founder :global(:focus-visible) {
+    outline-color: var(--paper);
+  }
+  .founder-media {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: var(--ink);
+  }
+  .founder-media :global(.founder-poster),
+  .founder-video {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .founder-video {
+    opacity: 0;
+    transition: opacity 1.2s var(--ease-out);
+  }
+  .founder.is-playing .founder-video {
+    opacity: 1;
+  }
+  .founder-shade {
+    position: absolute;
+    inset: 0;
+    background: color-mix(in srgb, var(--ink) 65%, transparent);
+  }
+  .founder-inner {
+    padding-block: calc(var(--header-h) + 0.75rem) clamp(1.25rem, 2.5vw, 2rem);
+  }
   .bio {
     display: grid;
-    grid-template-columns: repeat(12, minmax(0, 1fr));
-    column-gap: var(--col-gap);
-    row-gap: 1.5rem;
-  }
-  .bio > * {
-    grid-column: 1 / -1;
+    gap: 0.75rem clamp(1.5rem, 3vw, 3rem);
   }
   .bio + .bio {
-    margin-top: clamp(4rem, 9vw, 8rem);
+    margin-top: clamp(2.5rem, 5vw, 4.5rem);
   }
   .bio :global(.bio-name) {
     margin: 0;
@@ -654,6 +691,10 @@ const people = about.sections ?? [];
     font-weight: 450;
     line-height: 1.25;
     letter-spacing: -0.012em;
+  }
+  .founder-pause {
+    display: block;
+    margin: clamp(1.25rem, 2.5vw, 2rem) 0 0 auto;
   }
 
   /* Contact — one giant email link, in silver. */
@@ -705,11 +746,8 @@ const people = about.sections ?? [];
   }
 
   @media (min-width: 900px) {
-    .bio > :global(.bio-name) {
-      grid-column: 1 / span 4;
-    }
-    .bio > .bio-body {
-      grid-column: 5 / -1;
+    .bio {
+      grid-template-columns: max-content minmax(0, 1fr);
     }
     .cta-lede {
       grid-column: 1 / span 6;
@@ -721,23 +759,27 @@ const people = about.sections ?? [];
 </style>
 
 <script>
-  // The two loops: they start after the page has loaded (so they never compete with
-  // the poster image), pause off-screen and never autoplay under reduced motion. The
-  // small control in the footer row pauses and plays both (WCAG 2.2.2).
+  // The loops: they start after the page has loaded (so they never compete with the
+  // poster image), pause off-screen and never autoplay under reduced motion. The small
+  // pause controls, in the hero's footer row and the founder section, work on all of them
+  // (WCAG 2.2.2).
   const hero = document.getElementById('top');
   const video = document.querySelector<HTMLVideoElement>('[data-hero-video]');
-  const toggle = document.querySelector<HTMLButtonElement>('[data-hero-toggle]');
-  if (hero && video && toggle) {
+  const toggles = Array.from(document.querySelectorAll<HTMLButtonElement>('[data-hero-toggle]'));
+  if (hero && video && toggles.length) {
     const filmHost = document.querySelector<HTMLElement>('[data-reel-film]');
     const filmVideo = document.querySelector<HTMLVideoElement>('[data-film-video]');
     const clips = [{ video, host: hero, seen: true }];
     if (filmHost && filmVideo) clips.push({ video: filmVideo, host: filmHost, seen: false });
+    const founderHost = document.querySelector<HTMLElement>('[data-founder]');
+    const founderVideo = document.querySelector<HTMLVideoElement>('[data-founder-video]');
+    if (founderHost && founderVideo) clips.push({ video: founderVideo, host: founderHost, seen: false });
 
     let wanted = !matchMedia('(prefers-reduced-motion: reduce)').matches; // play unless paused or reduced motion
     let started = false;
 
     const render = () => {
-      toggle.textContent = (wanted ? toggle.dataset.pause : toggle.dataset.play) ?? '';
+      for (const toggle of toggles) toggle.textContent = (wanted ? toggle.dataset.pause : toggle.dataset.play) ?? '';
     };
     const sync = () => {
       if (!started) return;
@@ -749,11 +791,13 @@ const people = about.sections ?? [];
       }
     };
     for (const clip of clips) clip.video.addEventListener('playing', () => clip.host.classList.add('is-playing'));
-    toggle.addEventListener('click', () => {
-      wanted = !wanted;
-      render();
-      sync();
-    });
+    for (const toggle of toggles) {
+      toggle.addEventListener('click', () => {
+        wanted = !wanted;
+        render();
+        sync();
+      });
+    }
 
     // The first loop is in view until the second film has fully covered it.
     const cover = [document.querySelector('.hero-sheet'), document.querySelector('[data-reel-one]')].filter((el): el is Element => !!el);
@@ -767,14 +811,14 @@ const people = about.sections ?? [];
       sync();
     });
     cover.forEach((el) => firstWatch.observe(el));
-    if (filmHost && clips[1]) {
+    for (const clip of clips.slice(1)) {
       new IntersectionObserver(
         ([e]) => {
-          clips[1]!.seen = !!e?.isIntersecting;
+          clip.seen = !!e?.isIntersecting;
           sync();
         },
         { rootMargin: '200px 0px' },
-      ).observe(filmHost);
+      ).observe(clip.host);
     }
 
     render();
@@ -787,30 +831,27 @@ const people = about.sections ?? [];
     else addEventListener('load', idle, { once: true });
   }
 
-  // Hero sequence. As the page scrolls the words light one at a time, then the closing line
-  // settles in. Past the sheet, the reel's line shrinks away so the films can be watched.
+  // Hero sequence. The closing line settles in as it arrives. Past the sheet, the reel's line shrinks away so the films can be watched.
   const frame = document.querySelector<HTMLElement>('[data-hero-frame]');
   const end = document.querySelector<HTMLElement>('[data-bloom-end]');
-  const words = document.querySelector<HTMLElement>('[data-words]');
-  const wordList = words?.querySelector<HTMLElement>('.bloom-list');
-  const rows = Array.from(document.querySelectorAll<HTMLElement>('[data-bloom-word]'));
+  const founder = document.querySelector<HTMLElement>('[data-founder]');
   const reel = document.querySelector<HTMLElement>('[data-reel]');
   const reelTitle = document.querySelector<HTMLElement>('[data-reel-title]');
   const reelText = document.querySelector<HTMLElement>('[data-reel-text]');
   const reelWash = document.querySelector<HTMLElement>('[data-reel-wash]');
   const reelEdge = document.querySelector<HTMLElement>('[data-reel-edge]');
-  if (hero && end && words && wordList && rows.length && matchMedia('(prefers-reduced-motion: no-preference)').matches) {
+  if (hero && end && matchMedia('(prefers-reduced-motion: no-preference)').matches) {
     const seg = (v: number, from: number, to: number) => Math.min(1, Math.max(0, (v - from) / (to - from)));
     const MARK = 0.72;
 
-    let pinFrom = 0;
-    let pinTo = 0;
     let endTop = 0;
     let heroTop = 0;
     let reelTop = 0;
     let reelEnd = 0;
     let titleLift = 0;
     let titleScale = 1;
+    let founderTop = 0;
+    let founderEnd = 0;
 
     // Coordinates are the hero's own.
     const measure = () => {
@@ -825,27 +866,14 @@ const people = about.sections ?? [];
         titleLift = innerHeight / 2 - (header + 36);
         titleScale = 28 / parseFloat(getComputedStyle(reelText).fontSize);
       }
-      const first = end.firstElementChild!;
-      // The closing line's rest position: take its entrance offset out of the reading.
-      endTop = first.getBoundingClientRect().top - new DOMMatrix(getComputedStyle(first).transform).m42 - b.top;
-      const wordsTop = words.getBoundingClientRect().top + scrollY;
-      const stick = parseFloat(getComputedStyle(wordList).top) || 0;
-      pinFrom = wordsTop - stick;
-      pinTo = wordsTop + words.offsetHeight - wordList.offsetHeight - stick;
-    };
-
-    // Each of the four words holds, then moves on: v runs 0 to 3 with rests at the whole numbers.
-    const held = (p: number) => {
-      const f = p * (rows.length - 1);
-      const i = Math.min(Math.floor(f), rows.length - 2);
-      const t = seg(f - i, 0.3, 1);
-      return i + t * t * (3 - 2 * t);
-    };
-    const animateWords = (y: number) => {
-      const v = held(seg(y, pinFrom, pinTo));
-      rows.forEach((row, i) => {
-        row.style.opacity = String(0.5 + 0.5 * (1 - Math.min(1, Math.abs(i - v))));
-      });
+      // The line is centred in its screen, so it's about three quarters of the way down
+      // the view when the mark reaches this point.
+      endTop = end.parentElement!.getBoundingClientRect().top - b.top + innerHeight * 0.47;
+      if (founder) {
+        const f = founder.getBoundingClientRect();
+        founderTop = f.top + scrollY;
+        founderEnd = f.bottom + scrollY;
+      }
     };
 
     const render = (y: number) => {
@@ -861,11 +889,12 @@ const people = about.sections ?? [];
         reel.classList.toggle('is-in', y + innerHeight * 0.45 >= reelTop);
         const inReel = y >= reelTop - innerHeight * 0.1 && y <= reelEnd;
         hero.classList.toggle('in-reel', inReel);
-        // The header stays light until the film has actually scrolled up under it.
-        document.documentElement.classList.toggle('on-reel', y >= reelTop - 40 && y <= reelEnd - 40);
       }
+      // The header turns light over the films and the founder section.
+      const overFilm = reel ? y >= reelTop - 40 && y <= reelEnd - 40 : false;
+      const overFounder = founder ? y + 40 >= founderTop && y + 40 <= founderEnd : false;
+      document.documentElement.classList.toggle('on-reel', overFilm || overFounder);
       const mark = y + innerHeight * MARK - heroTop;
-      animateWords(y);
       end.classList.toggle('is-in', mark >= endTop);
     };
 
