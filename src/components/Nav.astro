@@ -64,9 +64,15 @@ const site = await getSite();
       background-color 0.35s,
       border-color 0.4s;
   }
-  /* Over the hero the header is transparent: the footage runs up to the top edge. */
+  /* Over the hero the footage runs up to the top edge, under a scrim that keeps the
+     logo and links legible when the huge type passes beneath them. */
   :global(html.on-hero:not(.menu-open)) .site-header::before {
-    background: transparent;
+    background: linear-gradient(
+      to bottom,
+      color-mix(in srgb, var(--ink) 85%, transparent) 0%,
+      color-mix(in srgb, var(--ink) 70%, transparent) 65%,
+      transparent 100%
+    );
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
     border-bottom-color: transparent;
@@ -201,7 +207,6 @@ const site = await getSite();
       font-size: clamp(2.25rem, 11vw, 3.25rem);
       font-family: var(--font-display);
       font-weight: var(--display-weight);
-      font-stretch: var(--display-stretch);
       letter-spacing: var(--display-tracking);
       line-height: 1;
     }

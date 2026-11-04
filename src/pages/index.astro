@@ -16,11 +16,14 @@ const workPage = await getPage('work');
 const contact = await getPage('contact');
 const services = await getServices();
 const work = await getWork();
-// The headline's last word is the one set in italics, and the one that expands.
-const headWords = page.headline.trim().split(/\s+/);
-const headLast = headWords.pop();
-const headLead = headWords.join(' ');
+// The headline, on two lines. Its last word is in italics, and the lines start from it.
+const [headOne = '', headTwo = ''] = splitHeadline(page.headline);
+const headLast = headTwo.split(' ').pop() ?? '';
+const headRest = headTwo.slice(0, -headLast.length).trim();
 const expand = page.hero_expand;
+// The closing line: two lines, with the headline's word and its own last word in italics.
+const closing = expand ? splitHeadline(expand.resolve) : [];
+const stressed = [headLast, expand?.resolve.trim().split(/\s+/).pop()];
 const video = page.hero_video;
 
 const chapters = about.sections ?? [];
@@ -30,14 +33,15 @@ const quote = firstParas[firstParas.length - 1];
 ---
 
 <BaseLayout title={page.title} intro>
-  <!-- 00 — Hero: the footage holds still behind a line too big for the screen.
-       Scrolling runs the line across, opens its last word into a list, then
-       resolves on one word. Without JS or with reduced motion it's stacked text. -->
+  <!-- 00 — Hero: all the type is a window onto the footage, which holds still behind
+       a dark sheet as the page scrolls. Thin lines draw from the headline's last word
+       to each word in the list, and on to the closing line. Without JS or with reduced
+       motion the type sits still and stacked, over the poster. -->
   <section id="top" class={`hero${video ? ' has-video' : ''}`} aria-labelledby="hero-title" data-hero>
-    <div class="hero-stage">
-      {
-        video && (
-          <div class="hero-media" aria-hidden="true" data-hero-media>
+    {
+      video && (
+        <div class="hero-media" aria-hidden="true">
+          <div class="hero-frame" data-hero-frame>
             <Image
               src={video.poster}
               alt=""
@@ -55,58 +59,69 @@ const quote = firstParas[firstParas.length - 1];
               {video.webm && <source src={video.webm} type="video/webm" />}
               <source src={video.mp4} type="video/mp4" />
             </video>
-            <span class="hero-shade" />
+          </div>
+          <span class="hero-lift" />
+        </div>
+      )
+    }
+    <div class="hero-cut">
+      <div class="hero-stage">
+        <h1 id="hero-title" class="run display">
+          <span class="run-line">{headOne}</span>
+          <span class="run-line">{headRest} <em data-run-last>{headLast}</em></span>
+        </h1>
+      </div>
+      {
+        expand && (
+          <div class="bloom">
+            <ul class="bloom-list display">
+              {expand.words.map((word) => (
+                <li data-bloom-word>
+                  <em>{word}</em>
+                </li>
+              ))}
+            </ul>
+            <p class="bloom-end display" data-bloom-end>
+              {closing.map((line) => (
+                <span class="bloom-end-line">
+                  {line.split(' ').map((w) => (
+                    <>
+                      {stressed.includes(w) ? <em>{w}</em> : w}{' '}
+                    </>
+                  ))}
+                </span>
+              ))}
+            </p>
           </div>
         )
       }
-      <div class="hero-type">
-        <h1 id="hero-title" class="run display">
-          <span class="run-line" data-run-line>
-            <span class="run-lead" data-run-lead>{headLead}</span>{' '}
-            <em class="run-last" data-run-last>{headLast}</em>
-          </span>
-        </h1>
-        {
-          expand && (
-            <div class="bloom">
-              <ul class="bloom-list display">
-                {expand.words.map((word) => (
-                  <li data-bloom-word>
-                    <em>{word}</em>
-                  </li>
-                ))}
-              </ul>
-              <p class="bloom-end display" data-bloom-end>
-                <em>{expand.resolve}</em>
-              </p>
-            </div>
-          )
-        }
-      </div>
-      <div class="wrap hero-foot">
-        <p class="hero-strap label label-muted">{page.strapline}</p>
-        {
-          page.cta && (
-            <a class="hero-cta label" href={toSection(page.cta.href)}>
-              {page.cta.label} <span aria-hidden="true">↓</span>
-            </a>
-          )
-        }
-        {
-          video && (
-            <button
-              type="button"
-              class="hero-credit label"
-              data-hero-toggle
-              data-play={`${site.ui.play_video}: ${video.title}`}
-              data-pause={`${site.ui.pause_video}: ${video.title}`}
-              aria-label={`${site.ui.pause_video}: ${video.title}`}
-            >
-              {video.title}
-            </button>
-          )
-        }
-      </div>
+    </div>
+    {expand && <svg class="links" aria-hidden="true" focusable="false" data-links />}
+    <div class="hero-bar">
+        <div class="wrap hero-foot">
+          <p class="hero-strap label label-muted">{page.strapline}</p>
+          {
+            page.cta && (
+              <a class="hero-cta label" href={toSection(page.cta.href)}>
+                {page.cta.label} <span aria-hidden="true">↓</span>
+              </a>
+            )
+          }
+          {
+            video && (
+              <button
+                type="button"
+                class="hero-credit label"
+                data-hero-toggle
+                data-play={`${site.ui.play_video}: ${video.title}`}
+                data-pause={`${site.ui.pause_video}: ${video.title}`}
+                aria-label={`${site.ui.pause_video}: ${video.title}`}
+              >
+                {video.title}
+              </button>
+            )
+          }
+        </div>
     </div>
   </section>
 
@@ -182,38 +197,33 @@ const quote = firstParas[firstParas.length - 1];
 </BaseLayout>
 
 <style>
-  /* ---------- Hero: a pinned stage, video behind and type in front ---------- */
+  /* ---------- Hero: the type is a window onto the footage ---------- */
   .hero {
     --hero-soft: color-mix(in srgb, var(--paper) 86%, transparent);
     --hero-muted: color-mix(in srgb, var(--paper) 70%, transparent);
     position: relative;
+    isolation: isolate;
     margin-top: calc(var(--header-h) * -1);
     scroll-margin-top: 0;
-  }
-  .hero-stage {
-    position: relative;
-    isolation: isolate;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
-    gap: clamp(2rem, 5vw, 4rem);
-    min-height: 100svh;
-    padding-top: calc(var(--header-h) + 2rem);
     overflow: clip;
   }
   .hero :global(.label-muted) {
     color: var(--hero-muted);
   }
 
-  /* Media stack: optimised poster (the LCP image), the loop over it once it
-     plays, and a shade that keeps text AA. The grade is baked into the footage
-     and poster, so nothing is filtered per frame. */
+  /* Media stack: optimised poster (the LCP image) and the loop over it once it
+     plays. The grade is baked into the footage and poster, so nothing is filtered
+     per frame. */
   .hero-media {
     position: absolute;
     inset: 0;
-    z-index: -1;
+    overflow: clip;
   }
-  .hero-media :global(.hero-poster),
+  .hero-frame {
+    position: absolute;
+    inset: 0;
+  }
+  .hero-frame :global(.hero-poster),
   .hero-video {
     position: absolute;
     inset: 0;
@@ -228,34 +238,46 @@ const quote = firstParas[firstParas.length - 1];
   .hero.is-playing .hero-video {
     opacity: 1;
   }
-  /* Never below 50% ink behind the type: white footage still gives 3.4:1. */
-  .hero-shade {
+  /* Lifts the footage's blacks: inside the letters, the darkest frame still gives
+     3.4:1 against the ink sheet. */
+  .hero-lift {
     position: absolute;
     inset: 0;
-    background: linear-gradient(
-      to bottom,
-      color-mix(in srgb, var(--ink) 70%, transparent) 0%,
-      color-mix(in srgb, var(--ink) 50%, transparent) 20%,
-      color-mix(in srgb, var(--ink) 50%, transparent) 72%,
-      color-mix(in srgb, var(--ink) 92%, transparent) 90%,
-      var(--ink) 100%
-    );
+    background: color-mix(in srgb, var(--paper) 42%, transparent);
   }
 
-  /* Stacked text by default: no JS, or reduced motion. */
-  .hero-type {
-    padding-inline: var(--gutter);
+  /* The sheet: ink everywhere, white type. "Darken" keeps the lower of sheet and
+     footage, so the sheet stays exactly ink and the footage shows only in the type.
+     The stroke adds weight, so the letters are wide enough to see through. */
+  .hero-cut {
+    position: relative;
+    background: var(--ink);
+    color: #fff;
+    -webkit-text-stroke: 0.022em #fff;
+    mix-blend-mode: darken;
+  }
+  .hero-stage {
+    display: flex;
+    align-items: center;
+    min-height: 100svh;
+    padding: calc(var(--header-h) + 1rem) var(--gutter) 4rem;
   }
   .run {
     margin: 0;
-    font-size: clamp(3.4rem, 11vw, 12rem);
+    font-size: 19.5vw;
+  }
+  .run-line {
+    display: block;
   }
   .run em,
   .bloom em {
     font-style: italic;
   }
   .bloom {
-    margin-top: 1.5rem;
+    padding: 0 var(--gutter) clamp(2rem, 5vw, 4rem);
+  }
+  .links {
+    display: none;
   }
   .bloom-list {
     display: flex;
@@ -264,21 +286,35 @@ const quote = firstParas[firstParas.length - 1];
     margin: 0;
     padding: 0;
     list-style: none;
-    font-size: clamp(2rem, 6vw, 6rem);
-    line-height: 1;
+    font-size: clamp(3rem, 8vw, 8rem);
+    line-height: 1.05;
   }
   .bloom-end {
-    margin: 0.75rem 0 0;
-    font-size: clamp(3.4rem, 11vw, 12rem);
+    margin: 1.5rem 0 0;
+    font-size: clamp(3.25rem, 11vw, 12rem);
+    line-height: 0.95;
+  }
+  .bloom-end-line {
+    display: block;
+  }
+  @media (min-width: 768px) {
+    .run {
+      font-size: min(34svh, 14.8vw);
+    }
   }
 
+  .hero-bar {
+    position: relative;
+    z-index: 2;
+    background: var(--ink);
+    border-top: 1px solid color-mix(in srgb, var(--paper) 22%, transparent);
+  }
   .hero-foot {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
     gap: 0.35rem 2rem;
     padding-block: 0.75rem;
-    border-top: 1px solid color-mix(in srgb, var(--paper) 22%, transparent);
   }
   .hero-strap {
     margin: 0 auto 0 0;
@@ -305,78 +341,100 @@ const quote = firstParas[firstParas.length - 1];
     color: var(--paper);
   }
 
-  /* The sequence: a tall track with the stage pinned inside it. Everything moves
-     by transform and opacity from the script below. */
+  /* The sequence. The footage stays pinned for the whole hero while the sheet
+     scrolls over it: words pop as the lines (drawn by the script below) reach them. */
   @media (prefers-reduced-motion: no-preference) {
-    :global(html.js) .hero {
-      height: 540svh;
-    }
-    :global(html.js) .hero-stage {
+    :global(html.js) .hero-media {
       position: sticky;
       top: 0;
+      inset-inline: 0;
       height: 100svh;
-      gap: 0;
-      padding-top: var(--header-h);
+      margin-bottom: -100svh;
     }
-    :global(html.js) .hero-media {
+    :global(html.js) .hero-frame {
       will-change: transform;
     }
-    :global(html.js) .hero-type {
-      position: relative;
-      flex: 1;
-      min-height: 0;
-      display: flex;
-      align-items: center;
-      padding-inline: 0;
-    }
-    :global(html.js) .run {
-      font-size: min(58svh, 42vw);
-      white-space: nowrap;
+    /* Stays on screen for the whole hero: it holds the video's pause control. */
+    :global(html.js) .hero-bar {
+      position: sticky;
+      bottom: 0;
     }
     :global(html.js) .run-line {
-      display: inline-block;
-      position: relative;
-      padding-inline: var(--gutter);
-      will-change: transform;
+      animation: run-in 1.2s var(--ease-out) both;
     }
-    :global(html.js) .run-lead,
-    :global(html.js) .run-last {
-      display: inline-block;
+    :global(html.js) .run-line + .run-line {
+      animation-delay: 0.12s;
     }
-    :global(html.js) .run-last {
-      padding-right: 0.08em;
+    @keyframes run-in {
+      from {
+        opacity: 0;
+        transform: translateY(0.18em);
+      }
     }
+
     :global(html.js) .bloom {
+      padding: 0 var(--gutter);
+    }
+    :global(html.js) .links {
+      display: block;
       position: absolute;
-      inset: 0.5rem var(--gutter);
-      margin: 0;
+      top: 0;
+      left: 0;
+      z-index: 1;
+      overflow: visible;
       pointer-events: none;
+      color: color-mix(in srgb, var(--paper) 72%, transparent);
     }
     :global(html.js) .bloom-list {
       display: grid;
-      grid-template-rows: repeat(4, minmax(0, 1fr));
+      grid-auto-rows: 52svh;
       gap: 0;
-      height: 100%;
-      font-size: min(22svh, 19vw);
-      line-height: 0.9;
+      font-size: min(30svh, 20vw);
+      line-height: 1;
       white-space: nowrap;
     }
     :global(html.js) .bloom-list li {
       align-self: center;
-      opacity: 0;
+      justify-self: start;
     }
-    /* Alternating sides, so the list spreads across the whole frame. */
+    /* Alternating sides, so the lines fan out across the whole frame. */
     :global(html.js) .bloom-list li:nth-child(even) {
       justify-self: end;
     }
-    :global(html.js) .bloom-end {
-      position: absolute;
-      inset: 0;
-      display: grid;
-      place-items: center;
-      margin: 0;
-      font-size: min(58svh, 42vw);
+    :global(html.js) .bloom-list em {
+      display: inline-block;
+      padding-inline: 0.05em;
       opacity: 0;
+      transform: translateY(0.3em) scale(0.8);
+      transition:
+        opacity 0.4s var(--ease-out),
+        transform 0.8s cubic-bezier(0.2, 1.45, 0.35, 1);
+    }
+    :global(html.js) .bloom-list li.is-in em {
+      opacity: 1;
+      transform: none;
+    }
+    :global(html.js) .bloom-end {
+      display: grid;
+      place-content: center;
+      min-height: 100svh;
+      margin: 0;
+      font-size: min(32svh, 18.5vw);
+      text-align: center;
+    }
+    :global(html.js) .bloom-end-line {
+      opacity: 0;
+      transform: translateY(0.25em) scale(0.9);
+      transition:
+        opacity 0.5s var(--ease-out),
+        transform 0.9s cubic-bezier(0.2, 1.35, 0.35, 1);
+    }
+    :global(html.js) .bloom-end-line:nth-child(2) {
+      transition-delay: 0.12s;
+    }
+    :global(html.js) .bloom-end.is-in .bloom-end-line {
+      opacity: 1;
+      transform: none;
     }
   }
 
@@ -452,7 +510,7 @@ const quote = firstParas[firstParas.length - 1];
     margin: 0;
     font-size: clamp(2rem, 4.8vw, 5rem);
     line-height: 1.12;
-    letter-spacing: -0.03em;
+    letter-spacing: -0.012em;
     text-indent: -0.4em;
   }
   .pull-cap {
@@ -593,73 +651,106 @@ const quote = firstParas[firstParas.length - 1];
     else addEventListener('load', begin, { once: true });
   }
 
-  // Hero sequence, driven by how far the pinned stage has scrolled (0 to 1):
-  // the line runs until its last word is centred, that word opens into the list,
-  // then the list closes back on one word. Same timings everywhere; only sizes change.
-  const track = document.querySelector<HTMLElement>('[data-hero]');
-  const line = document.querySelector<HTMLElement>('[data-run-line]');
-  const lead = document.querySelector<HTMLElement>('[data-run-lead]');
+  // Hero sequence. As the page scrolls, lines draw from the headline's last word to
+  // each word in the list, and from those to the closing line. A line's tip follows a
+  // mark 72% of the way down the screen, and each word pops as the mark reaches it.
   const last = document.querySelector<HTMLElement>('[data-run-last]');
-  const media = document.querySelector<HTMLElement>('[data-hero-media]');
+  const frame = document.querySelector<HTMLElement>('[data-hero-frame]');
   const end = document.querySelector<HTMLElement>('[data-bloom-end]');
+  const svg = document.querySelector<SVGSVGElement>('[data-links]');
   const rows = Array.from(document.querySelectorAll<HTMLElement>('[data-bloom-word]'));
-  if (track && line && lead && last && end && rows.length && matchMedia('(prefers-reduced-motion: no-preference)').matches) {
-    const seg = (p: number, from: number, to: number) => Math.min(1, Math.max(0, (p - from) / (to - from)));
-    const easeOut = (t: number) => 1 - (1 - t) ** 3;
-    const easeIn = (t: number) => t ** 3;
+  if (hero && last && end && svg && rows.length && matchMedia('(prefers-reduced-motion: no-preference)').matches) {
+    const seg = (v: number, from: number, to: number) => Math.min(1, Math.max(0, (v - from) / (to - from)));
+    const NS = 'http://www.w3.org/2000/svg';
+    const MARK = 0.72;
 
-    let reach = 0;
-    let offsets: number[] = [];
+    type Link = { el: SVGPathElement; from: number; to: number; shown: number };
+    type Node = { el: SVGCircleElement; at: number };
+    let links: Link[] = [];
+    let nodes: Node[] = [];
+    let tops: number[] = [];
+    let endTop = 0;
+    let heroTop = 0;
+    let heroEnd = 0;
+
+    const addNode = (x: number, y: number, at: number) => {
+      const el = document.createElementNS(NS, 'circle');
+      el.setAttribute('cx', String(x));
+      el.setAttribute('cy', String(y));
+      el.setAttribute('r', '3');
+      el.setAttribute('fill', 'currentColor');
+      svg.append(el);
+      nodes.push({ el, at });
+    };
+    const addLink = (x0: number, y0: number, x1: number, y1: number) => {
+      const el = document.createElementNS(NS, 'path');
+      const bend = (y1 - y0) * 0.55;
+      el.setAttribute('d', `M${x0} ${y0}C${x0} ${y0 + bend} ${x1} ${y1 - bend} ${x1} ${y1}`);
+      el.setAttribute('fill', 'none');
+      el.setAttribute('stroke', 'currentColor');
+      el.setAttribute('stroke-width', '1');
+      el.setAttribute('pathLength', '1');
+      el.setAttribute('stroke-dasharray', '1 1');
+      el.setAttribute('stroke-dashoffset', '1');
+      svg.append(el);
+      links.push({ el, from: y0, to: y1, shown: -1 });
+    };
+
+    // Coordinates are the hero's own.
     const measure = () => {
-      reach = Math.max(0, last.offsetLeft + last.offsetWidth / 2 - innerWidth / 2);
-      const box = end.getBoundingClientRect();
-      const mid = box.top + box.height / 2;
-      offsets = rows.map((r) => {
-        // Read each row's resting place, ignoring its current transform.
-        const m = new DOMMatrix(getComputedStyle(r).transform);
-        const b = r.getBoundingClientRect();
-        return mid - (b.top - m.m42 + b.height / 2);
+      const b = hero.getBoundingClientRect();
+      heroTop = b.top + scrollY;
+      heroEnd = b.bottom + scrollY - innerHeight;
+
+      svg.replaceChildren();
+      links = [];
+      nodes = [];
+      svg.setAttribute('width', String(b.width));
+      svg.setAttribute('height', String(b.height));
+      const w = last.getBoundingClientRect();
+      const originX = w.left + w.width / 2 - b.left;
+      const originY = w.top + w.height * 0.88 - b.top;
+      const first = end.firstElementChild!;
+      // The closing line's rest position: take its pop offset out of the reading.
+      endTop = first.getBoundingClientRect().top - new DOMMatrix(getComputedStyle(first).transform).m42 - b.top;
+      const endX = b.width / 2;
+      tops = rows.map((row) => {
+        const r = row.getBoundingClientRect();
+        const x = r.left + r.width / 2 - b.left;
+        const top = r.top - b.top;
+        addLink(originX, originY, x, top + r.height * 0.06);
+        addNode(x, top + r.height * 0.06, top);
+        addLink(x, top + r.height * 1.02, endX, endTop - 6);
+        return top;
       });
+      addNode(originX, originY, originY);
+      addNode(endX, endTop - 6, endTop);
     };
 
-    const render = (p: number) => {
-      // 1. The line runs across.
-      line.style.transform = `translate3d(${-reach * seg(p, 0, 0.4)}px, 0, 0)`;
-      if (media) media.style.transform = `scale(${1 + p * 0.16})`;
-      // 2. The rest of the line clears, the last word swells and dissolves into the list.
-      lead.style.opacity = String(1 - seg(p, 0.38, 0.46));
-      const swell = seg(p, 0.42, 0.56);
-      last.style.transform = `scale(${1 + easeIn(swell) * 0.9})`;
-      last.style.opacity = String(1 - seg(p, 0.46, 0.56));
-      // 3. The list opens out from the centre, one row at a time, then closes.
-      const close = easeIn(seg(p, 0.78, 0.88));
-      rows.forEach((row, i) => {
-        const open = easeOut(seg(p, 0.46 + i * 0.05, 0.56 + i * 0.05));
-        const y = (offsets[i] ?? 0) * (1 - open + close);
-        row.style.transform = `translate3d(0, ${y}px, 0) scale(${0.55 + 0.45 * open - 0.25 * close})`;
-        row.style.opacity = String(open * (1 - close));
-      });
-      // 4. One word is left.
-      const settle = easeOut(seg(p, 0.84, 0.94));
-      end.style.opacity = String(settle);
-      end.style.transform = `scale(${0.7 + 0.3 * settle})`;
+    const render = (y: number) => {
+      if (frame) frame.style.transform = `scale(${1 + seg(y, heroTop, heroEnd) * 0.16})`;
+      const mark = y + innerHeight * MARK - heroTop;
+      for (const link of links) {
+        const shown = Math.round(seg(mark, link.from, link.to) * 1000) / 1000;
+        if (shown === link.shown) continue;
+        link.shown = shown;
+        link.el.setAttribute('stroke-dashoffset', String(1 - shown));
+      }
+      for (const node of nodes) node.el.style.opacity = mark >= node.at ? '1' : '0';
+      rows.forEach((row, i) => row.classList.toggle('is-in', mark >= (tops[i] ?? 0)));
+      end.classList.toggle('is-in', mark >= endTop);
     };
 
-    const target = () => {
-      const span = track.offsetHeight - innerHeight;
-      return span > 0 ? Math.min(1, Math.max(0, -track.getBoundingClientRect().top / span)) : 0;
-    };
-    let now = target();
-    let frame = 0;
+    let now = scrollY;
+    let raf = 0;
     const tick = () => {
-      const to = target();
-      now += (to - now) * 0.14;
-      if (Math.abs(to - now) < 0.0004) now = to;
+      now += (scrollY - now) * 0.16;
+      if (Math.abs(scrollY - now) < 0.5) now = scrollY;
       render(now);
-      frame = now === to ? 0 : requestAnimationFrame(tick);
+      raf = now === scrollY ? 0 : requestAnimationFrame(tick);
     };
     const wake = () => {
-      if (!frame) frame = requestAnimationFrame(tick);
+      if (!raf) raf = requestAnimationFrame(tick);
     };
     const refresh = () => {
       measure();
