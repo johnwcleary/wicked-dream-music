@@ -1,33 +1,11 @@
 ---
-import { getImage } from 'astro:assets';
-import markUrl from '../assets/brand/wdm-slant.svg?url';
-import { getPage, getSite, sectionId, toSection } from '../lib/content';
+import { getSite, sectionId, toSection } from '../lib/content';
 
 const site = await getSite();
-// The footage that plays through the logo, and the still shown when it isn't playing.
-const video = (await getPage('home')).hero_video;
-const poster = video ? await getImage({ src: video.poster, width: Math.min(480, video.poster.width), format: 'webp', quality: 55 }) : undefined;
 ---
 
-<link rel="preload" href={markUrl} as="image" type="image/svg+xml" />
 <header class="site-header">
   <div class="bar wrap">
-    <a href="/#top" class="mark">
-      <span class="mark-art" style={`--mark-url: url(${markUrl})`} aria-hidden="true">
-        {
-          video && (
-            <video class="mark-video" muted loop playsinline preload="none" disablepictureinpicture poster={poster?.src} data-mark-video>
-              {video.mobile_webm && <source src={video.mobile_webm} type="video/webm" media="(max-width: 767px)" />}
-              {video.mobile_mp4 && <source src={video.mobile_mp4} type="video/mp4" media="(max-width: 767px)" />}
-              {video.webm && <source src={video.webm} type="video/webm" />}
-              <source src={video.mp4} type="video/mp4" />
-            </video>
-          )
-        }
-        <span class="mark-shade"></span>
-      </span>
-      <span class="sr-only">{site.name}</span>
-    </a>
     <button type="button" class="menu-btn label" aria-expanded="false" aria-controls="site-menu" data-open={site.ui.menu_open} data-close={site.ui.menu_close}>
       <span class="menu-btn-text">{site.ui.menu_open}</span>
       <span class="menu-btn-icon" aria-hidden="true"></span>
@@ -77,10 +55,10 @@ const poster = video ? await getImage({ src: video.poster, width: Math.min(480, 
     );
   }
   /* Over the full-screen films the header turns light, on a dark scrim. */
-  :global(html.on-reel:not(.menu-open)) .site-header {
+  :global(html:is(.on-reel, .on-intro):not(.menu-open)) .site-header {
     color: var(--paper);
   }
-  :global(html.on-reel:not(.menu-open)) .site-header::before {
+  :global(html:is(.on-reel, .on-intro):not(.menu-open)) .site-header::before {
     background: linear-gradient(
       to bottom,
       color-mix(in srgb, var(--ink) 85%, transparent) 0%,
@@ -88,49 +66,15 @@ const poster = video ? await getImage({ src: video.poster, width: Math.min(480, 
       transparent 100%
     );
   }
-  :global(html.on-reel:not(.menu-open)) .site-header :focus-visible {
+  :global(html:is(.on-reel, .on-intro):not(.menu-open)) .site-header :focus-visible {
     outline-color: var(--paper);
   }
   .bar {
     display: flex;
+    justify-content: center;
     align-items: center;
     gap: var(--col-gap);
     min-height: var(--header-h);
-  }
-  /* The logo is a window onto the footage. The mask sits on an inner element so the
-     link's focus ring isn't cut to its shape. */
-  .mark {
-    display: block;
-    padding-block: 0.5rem;
-    margin-right: auto;
-  }
-  .mark-art {
-    position: relative;
-    display: block;
-    height: 3.5rem;
-    aspect-ratio: 2697 / 986;
-    overflow: hidden;
-    background: var(--ink);
-    -webkit-mask: var(--mark-url) center / contain no-repeat;
-    mask: var(--mark-url) center / contain no-repeat;
-  }
-  .mark-video,
-  .mark-shade {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-  }
-  .mark-video {
-    object-fit: cover;
-  }
-  /* Dark on the beige; light over the films and the founder section. */
-  .mark-shade {
-    background: color-mix(in srgb, var(--ink) 50%, transparent);
-    transition: background-color 0.35s;
-  }
-  :global(html.on-reel:not(.menu-open)) .mark-shade {
-    background: color-mix(in srgb, var(--paper) 55%, transparent);
   }
   .menu-btn {
     display: none;
@@ -181,10 +125,10 @@ const poster = video ? await getImage({ src: video.poster, width: Math.min(480, 
     background: var(--ink);
     color: var(--paper);
   }
-  :global(html.on-reel:not(.menu-open)) .menu-list a:hover {
+  :global(html:is(.on-reel, .on-intro):not(.menu-open)) .menu-list a:hover {
     background: color-mix(in srgb, var(--paper) 16%, transparent);
   }
-  :global(html.on-reel:not(.menu-open)) .menu-list a[aria-current] {
+  :global(html:is(.on-reel, .on-intro):not(.menu-open)) .menu-list a[aria-current] {
     background: var(--paper);
     color: var(--ink);
   }
@@ -202,10 +146,6 @@ const poster = video ? await getImage({ src: video.poster, width: Math.min(480, 
     }
     :global(html.js) .menu-btn {
       display: inline-flex;
-      position: relative;
-      z-index: 2;
-    }
-    :global(html.js) .mark {
       position: relative;
       z-index: 2;
     }
@@ -349,10 +289,18 @@ const poster = video ? await getImage({ src: video.poster, width: Math.min(480, 
   // while the hero band is still underneath it.
   const hero = document.getElementById('top');
   const header = document.querySelector<HTMLElement>('.site-header');
+  const opening = document.querySelector<HTMLElement>('[data-opening]');
   const onScroll = () => {
     const root = document.documentElement;
     root.classList.toggle('scrolled', scrollY > 8);
     if (hero && header) root.classList.toggle('on-hero', hero.getBoundingClientRect().bottom > header.offsetHeight);
+    // Light over the full-screen opening at the top of the home page.
+    if (opening && header) {
+      const bottom = opening.getBoundingClientRect().bottom;
+      root.classList.toggle('on-intro', bottom > header.offsetHeight);
+      // The hero's footer row sits at the foot of the screen, so it changes as the footage leaves there.
+      root.classList.toggle('intro-foot', bottom > innerHeight - 40);
+    }
   };
   addEventListener('scroll', onScroll, { passive: true });
   onScroll();

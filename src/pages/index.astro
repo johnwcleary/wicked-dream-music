@@ -1,5 +1,6 @@
 ---
 import { Image } from 'astro:assets';
+import logoUrl from '../assets/brand/wdm-slant.svg?url';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import SectionHead from '../components/SectionHead.astro';
 import ServiceGrid from '../components/ServiceGrid.astro';
@@ -24,7 +25,8 @@ const [closeBefore = '', closeAfter = ''] = closing ? closing.line.split(headLas
 const closeRest = closeAfter.split(' ');
 const closeLast = closeRest.pop();
 const video = page.hero_video;
-const films = page.hero_films ?? [];
+// The reel plays the other films first and the opening's footage last.
+const films = [...(page.hero_films ?? []), ...(video ? [video] : [])];
 
 const people = about.sections ?? [];
 ---
@@ -61,6 +63,18 @@ const people = about.sections ?? [];
         </div>
       )
     }
+    <!-- The opening: the footage at full screen with the logo centred. The beige sheet below
+         rises over it and the site carries on from there. -->
+    <div class="opening" data-opening>
+      <span class="opening-logo" role="img" aria-label={site.name} style={`--logo-url: url(${logoUrl})`}></span>
+      {
+        page.cta && (
+          <a class="opening-cta" href={toSection(page.cta.href)}>
+            {page.cta.label} <span aria-hidden="true">↓</span>
+          </a>
+        )
+      }
+    </div>
     <div class="hero-sheet">
       <span class="hero-lift" aria-hidden="true"></span>
       <div class="hero-cut">
@@ -99,9 +113,8 @@ const people = about.sections ?? [];
               </p>
             </div>
           </div>
-          <div class="reel-one" data-reel-one />
-          {films.map((film) => (
-            <div class="reel-film" data-reel-film aria-hidden="true">
+          {films.map((film, i) => (
+            <div class:list={['reel-film', { 'is-first': i === 0 }]} data-reel-film aria-hidden="true">
               <div class="reel-stage">
                 <Image
                   src={film.poster}
@@ -128,13 +141,6 @@ const people = about.sections ?? [];
     }
     <div class="hero-bar">
         <div class="wrap hero-foot">
-          {
-            page.cta && (
-              <a class="hero-cta label" href={toSection(page.cta.href)}>
-                {page.cta.label} <span aria-hidden="true">↓</span>
-              </a>
-            )
-          }
           {
             video && (
               <button
@@ -305,6 +311,64 @@ const people = about.sections ?? [];
   .hero.is-playing .hero-video {
     opacity: 1;
   }
+  /* The opening: a light shade over the footage, deeper behind the footer row to keep its
+     small text AA, with the logo centred and one pill beneath it. */
+  .opening {
+    position: relative;
+    display: grid;
+    place-content: center;
+    justify-items: center;
+    gap: clamp(1.5rem, 3vw, 2.5rem);
+    height: 100svh;
+    padding: var(--header-h) var(--gutter) 3.5rem;
+    background: linear-gradient(
+      to bottom,
+      color-mix(in srgb, var(--ink) 30%, transparent) calc(100% - 9rem),
+      color-mix(in srgb, var(--ink) 80%, transparent) calc(100% - 3rem)
+    );
+    color: var(--paper);
+  }
+  .opening-logo {
+    display: block;
+    width: clamp(16rem, 44vw, 38rem);
+    aspect-ratio: 2697 / 986;
+    background: var(--paper);
+    -webkit-mask: var(--logo-url) center / contain no-repeat;
+    mask: var(--logo-url) center / contain no-repeat;
+  }
+  .opening-cta {
+    display: inline-flex;
+    gap: 0.5rem;
+    padding: 0.55rem 1.1rem;
+    border-radius: 999px;
+    background: var(--paper);
+    color: var(--ink);
+    font-size: 0.9375rem;
+    font-weight: 500;
+    transition: transform 0.4s var(--ease-out);
+  }
+  .opening-cta:hover {
+    transform: translateY(2px);
+  }
+  .opening-cta:focus-visible {
+    outline-color: var(--paper);
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    :global(html.js) .opening-logo,
+    :global(html.js) .opening-cta {
+      animation: opening-in 1.6s var(--ease-out) both;
+    }
+    :global(html.js) .opening-cta {
+      animation-delay: 0.35s;
+    }
+    @keyframes opening-in {
+      from {
+        opacity: 0;
+        transform: translateY(0.75rem);
+      }
+    }
+  }
+
   /* The sheet scrolls over the footage with its own shade underneath: inside the
      letters the brightest frame still gives 3.1:1 against the beige, and the footage
      below the sheet's edge is untouched. */
@@ -378,7 +442,7 @@ const people = about.sections ?? [];
     }
   }
 
-  /* Past the sheet: one line over the footage at full screen, then the second film.
+  /* Past the sheet: one line over the first film at full screen, then the others.
      The 50% ink keeps the line AA over white footage (3.4:1). */
   .reel {
     position: relative;
@@ -423,9 +487,6 @@ const people = about.sections ?? [];
     font-size: min(24svh, 19vw);
     white-space: nowrap;
   }
-  .reel-one {
-    height: 100svh;
-  }
   .reel-film {
     position: relative;
     z-index: 1;
@@ -460,27 +521,19 @@ const people = about.sections ?? [];
       background-color 0.4s,
       color 0.4s;
   }
-  /* Over the films the row drops its ground, leaving the frame clear. */
-  .hero.in-reel .hero-bar {
+  /* Over the opening and the films the row drops its ground, leaving the frame clear. */
+  .hero.in-reel .hero-bar,
+  :global(html.intro-foot) .hero-bar {
     background: transparent;
     color: var(--paper);
   }
   .hero-foot {
     display: flex;
+    justify-content: flex-end;
     flex-wrap: wrap;
     align-items: center;
     gap: 0.35rem 2rem;
     padding-block: 0.75rem;
-  }
-  .hero-cta {
-    display: inline-flex;
-    margin-right: auto;
-    gap: 0.5rem;
-    padding: 0.35rem 0;
-  }
-  .hero-cta:hover {
-    text-decoration: underline;
-    text-underline-offset: 0.25em;
   }
   /* A quiet pause/play control for the loops. */
   .hero-credit {
@@ -494,6 +547,7 @@ const people = about.sections ?? [];
     text-decoration: underline;
     text-underline-offset: 0.25em;
   }
+  :global(html.intro-foot) .hero-bar :focus-visible,
   .hero.in-reel .hero-bar :focus-visible {
     outline-color: var(--paper);
   }
@@ -523,11 +577,12 @@ const people = about.sections ?? [];
       opacity: 1;
       transform: none;
     }
-    :global(html.js) .reel-one {
-      height: 165svh;
-    }
     :global(html.js) .reel-film {
       height: 160svh;
+    }
+    /* The first film also holds while the line shrinks away. */
+    :global(html.js) .reel-film.is-first {
+      height: 230svh;
     }
     :global(html.js) .reel-stage {
       position: sticky;
@@ -548,30 +603,14 @@ const people = about.sections ?? [];
       background: var(--paper);
       transition: background-color 0.4s;
     }
-    :global(html.js) .hero.in-reel .hero-foot {
+    :global(html.js) .hero.in-reel .hero-foot,
+    :global(html.intro-foot) .hero-foot {
       background: transparent;
     }
-    :global(html.js) .run-line {
-      animation: run-in 1.2s var(--ease-out) both;
-    }
-    :global(html.js) .run-line + .run-line {
-      animation-delay: 0.12s;
-    }
-    @keyframes run-in {
-      from {
-        opacity: 0;
-        transform: translateY(0.18em);
-      }
-    }
-
     /* A pinned stage: the word stays put while the script changes the words around it.
        Both copies of the word share a box shape, so they line up exactly. */
-    /* The stage starts low, in the bottom third, and rises until the word reaches its place,
-       where it pins. */
     :global(html.js) .hero-track {
-      --rise: 36svh;
-      height: calc(225svh + var(--rise));
-      padding-top: var(--rise);
+      height: 225svh;
     }
     /* Sits above centre, leaving room under the word for the lines that arrive. */
     :global(html.js) .hero-stage {
@@ -839,24 +878,6 @@ const people = about.sections ?? [];
         } else clip.video.pause();
       }
     };
-    // The logo plays while the hero or founder section is on screen, where a pause control is
-    // within reach, and rests on its still everywhere else.
-    const markVideo = document.querySelector<HTMLVideoElement>('[data-mark-video]');
-    const markHost = markVideo?.closest<HTMLElement>('.mark');
-    if (markVideo && markHost) {
-      const markClip = { video: markVideo, host: markHost, seen: true };
-      clips.push(markClip);
-      const areas = new Set<Element>();
-      const areaWatch = new IntersectionObserver((entries) => {
-        for (const e of entries) {
-          if (e.isIntersecting) areas.add(e.target);
-          else areas.delete(e.target);
-        }
-        markClip.seen = areas.size > 0;
-        sync();
-      });
-      [hero, founderHost].forEach((el) => el && areaWatch.observe(el));
-    }
     for (const clip of clips) clip.video.addEventListener('playing', () => clip.host.classList.add('is-playing'));
     for (const toggle of toggles) {
       toggle.addEventListener('click', () => {
@@ -866,8 +887,8 @@ const people = about.sections ?? [];
       });
     }
 
-    // The first loop is in view until the second film has fully covered it.
-    const cover = [document.querySelector('.hero-sheet'), document.querySelector('[data-reel-one]')].filter((el): el is Element => !!el);
+    // The first loop is in view from the opening until the first film has covered it.
+    const cover = [document.querySelector('[data-opening]'), document.querySelector('.hero-sheet')].filter((el): el is Element => !!el);
     const inView = new Set<Element>();
     const firstWatch = new IntersectionObserver((entries) => {
       for (const e of entries) {
@@ -878,7 +899,7 @@ const people = about.sections ?? [];
       sync();
     });
     cover.forEach((el) => firstWatch.observe(el));
-    for (const clip of clips.slice(1).filter((c) => c.host !== markHost)) {
+    for (const clip of clips.slice(1)) {
       new IntersectionObserver(
         ([e]) => {
           clip.seen = !!e?.isIntersecting;
@@ -941,9 +962,8 @@ const people = about.sections ?? [];
         titleScale = 28 / parseFloat(getComputedStyle(reelText).fontSize);
       }
       if (track) {
-        const rise = parseFloat(getComputedStyle(track).paddingTop) || 0;
-        trackTop = track.getBoundingClientRect().top + scrollY + rise;
-        trackSpan = track.offsetHeight - rise - innerHeight;
+        trackTop = track.getBoundingClientRect().top + scrollY;
+        trackSpan = track.offsetHeight - innerHeight;
       }
       if (soundWord && soundSlot && closingLine) {
         // Lay the closing line over the headline so its gap sits exactly on the word.
@@ -983,7 +1003,8 @@ const people = about.sections ?? [];
       if (reel) {
         // The line arrives once the sheet has lifted about halfway off the footage.
         reel.classList.toggle('is-in', y + innerHeight * 0.45 >= reelTop);
-        const inReel = y >= reelTop - innerHeight * 0.1 && y <= reelEnd;
+        // From when the first film reaches the footer row at the foot of the screen.
+        const inReel = y >= reelTop - innerHeight + 50 && y <= reelEnd;
         hero.classList.toggle('in-reel', inReel);
       }
       // The header turns light over the films and the founder section.
@@ -1010,8 +1031,6 @@ const people = about.sections ?? [];
     addEventListener('scroll', wake, { passive: true });
     addEventListener('resize', refresh);
     document.fonts?.ready.then(refresh);
-    // The headline's entrance moves it, so read the word's place again once that's done.
-    soundWord?.closest('.run-line')?.addEventListener('animationend', refresh);
     refresh();
   }
 

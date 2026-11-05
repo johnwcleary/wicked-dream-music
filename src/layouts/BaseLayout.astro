@@ -10,7 +10,7 @@ import displayFont from '@fontsource-variable/inter-tight/files/inter-tight-lati
 interface Props {
   title: string;
   description?: string;
-  /** Home only: the page opens on the hero, under a transparent header. */
+  /** Home only: the page opens on full-screen video, under a transparent header. */
   intro?: boolean;
 }
 const site = await getSite();
@@ -43,7 +43,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url).href;
     <script is:inline define:vars={{ intro }}>
       var h = document.documentElement;
       h.classList.add('js');
-      if (intro) h.classList.add('on-hero');
+      if (intro) h.classList.add('on-hero', 'on-intro', 'intro-foot');
     </script>
   </head>
   <body>
