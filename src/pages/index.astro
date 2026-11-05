@@ -71,7 +71,7 @@ const people = about.sections ?? [];
         {
           closing && (
             <div class="bloom">
-              <p class="bloom-end display" data-bloom-end>
+              <p class="bloom-end display">
                 <span class="bloom-end-line">
                   {closing.line.split(' ').map((w) => (
                     <>
@@ -550,7 +550,7 @@ const people = about.sections ?? [];
       }
     }
 
-    /* The closing line holds a screen of its own, a little longer than the scroll past it. */
+    /* The closing line scrolls up as the headline leaves, then holds for a moment. */
     :global(html.js) .bloom {
       height: 130svh;
       padding: 0 var(--gutter);
@@ -565,24 +565,6 @@ const people = about.sections ?? [];
       margin: 0;
       font-size: min(22svh, var(--line-size));
       white-space: nowrap;
-    }
-    :global(html.js) .bloom-end-line {
-      opacity: 0;
-      transform: translateY(0.1em);
-      transition:
-        opacity 1.1s var(--ease-soft),
-        transform 1.5s var(--ease-soft);
-    }
-    :global(html.js) .bloom-end.is-in .bloom-end-line {
-      opacity: 1;
-      transform: none;
-    }
-    :global(html.js) .bloom-note {
-      opacity: 0;
-      transition: opacity 1.2s var(--ease-soft) 0.4s;
-    }
-    :global(html.js) .bloom-end.is-in .bloom-note {
-      opacity: 1;
     }
   }
 
@@ -831,20 +813,17 @@ const people = about.sections ?? [];
     else addEventListener('load', idle, { once: true });
   }
 
-  // Hero sequence. The closing line settles in as it arrives. Past the sheet, the reel's line shrinks away so the films can be watched.
+  // Hero sequence. Past the sheet, the reel's line shrinks away so the films can be watched.
   const frame = document.querySelector<HTMLElement>('[data-hero-frame]');
-  const end = document.querySelector<HTMLElement>('[data-bloom-end]');
   const founder = document.querySelector<HTMLElement>('[data-founder]');
   const reel = document.querySelector<HTMLElement>('[data-reel]');
   const reelTitle = document.querySelector<HTMLElement>('[data-reel-title]');
   const reelText = document.querySelector<HTMLElement>('[data-reel-text]');
   const reelWash = document.querySelector<HTMLElement>('[data-reel-wash]');
   const reelEdge = document.querySelector<HTMLElement>('[data-reel-edge]');
-  if (hero && end && matchMedia('(prefers-reduced-motion: no-preference)').matches) {
+  if (hero && matchMedia('(prefers-reduced-motion: no-preference)').matches) {
     const seg = (v: number, from: number, to: number) => Math.min(1, Math.max(0, (v - from) / (to - from)));
-    const MARK = 0.72;
 
-    let endTop = 0;
     let heroTop = 0;
     let reelTop = 0;
     let reelEnd = 0;
@@ -866,9 +845,6 @@ const people = about.sections ?? [];
         titleLift = innerHeight / 2 - (header + 36);
         titleScale = 28 / parseFloat(getComputedStyle(reelText).fontSize);
       }
-      // The line is centred in its screen, so it's about three quarters of the way down
-      // the view when the mark reaches this point.
-      endTop = end.parentElement!.getBoundingClientRect().top - b.top + innerHeight * 0.47;
       if (founder) {
         const f = founder.getBoundingClientRect();
         founderTop = f.top + scrollY;
@@ -894,8 +870,6 @@ const people = about.sections ?? [];
       const overFilm = reel ? y >= reelTop - 40 && y <= reelEnd - 40 : false;
       const overFounder = founder ? y + 40 >= founderTop && y + 40 <= founderEnd : false;
       document.documentElement.classList.toggle('on-reel', overFilm || overFounder);
-      const mark = y + innerHeight * MARK - heroTop;
-      end.classList.toggle('is-in', mark >= endTop);
     };
 
     let now = scrollY;
