@@ -140,13 +140,14 @@ const pictures = await Promise.all(
     padding: clamp(1.25rem, 2.5vw, 2rem) 0 clamp(0.75rem, 1.5vw, 1.25rem);
     list-style: none;
   }
-  /* A brand without a logo file shows its name. */
+  /* Rows of four, each logo fitted inside the same size of cell. A brand without a logo file
+     shows its name. */
   .svc-brands {
-    display: flex;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 9rem));
     justify-content: center;
-    align-items: center;
-    gap: 1rem clamp(1.5rem, 4vw, 3.5rem);
+    place-items: center;
+    gap: clamp(1rem, 2vw, 1.75rem) clamp(1rem, 3vw, 3rem);
     margin: clamp(1.5rem, 3vw, 2.75rem) 0 0;
     padding: 0;
     list-style: none;
@@ -155,8 +156,9 @@ const pictures = await Promise.all(
     letter-spacing: -0.015em;
   }
   .svc-brands :global(.svc-brand-logo) {
-    width: auto;
+    width: 100%;
     height: clamp(3rem, 5vw, 4.5rem);
+    object-fit: contain;
   }
   /* The section's own padding is what sits below the last boxes, matching the space above. */
   .svc:last-child .svc-grid {
