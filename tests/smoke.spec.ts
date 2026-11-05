@@ -93,9 +93,10 @@ test('each service starts open on offerings with an icon and a definition', asyn
   await page.setViewportSize({ width: 1280, height: 800 });
   await page.goto('/');
   const rows = page.locator('details.svc');
-  await expect(rows).toHaveCount(2);
-  await expect(page.locator('.svc-item')).toHaveCount(9);
-  await expect(page.locator('.svc-item svg')).toHaveCount(9);
+  await expect(rows).toHaveCount(3);
+  await expect(page.locator('.svc-item')).toHaveCount(12);
+  await expect(page.locator('.svc-item svg')).toHaveCount(12);
+  await expect(page.locator('.svc-brands li')).toHaveText(['Nickelodeon', 'AMC', 'NFL', 'Discovery Channel']);
   for (const row of await rows.all()) await expect(row.locator('.svc-def').first()).toBeVisible();
   await rows.first().locator('summary').click();
   await expect(rows.first().locator('.svc-def').first()).toBeHidden();

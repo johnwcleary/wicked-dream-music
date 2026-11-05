@@ -5,7 +5,7 @@
  * offerings, each with an icon and a definition.
  */
 import type { ImageMetadata } from 'astro';
-import { getImage } from 'astro:assets';
+import { getImage, Image } from 'astro:assets';
 import { anchor, type Service } from '../lib/content';
 import ServiceIcon from './ServiceIcon.astro';
 
@@ -43,6 +43,13 @@ const pictures = await Promise.all(
               </li>
             ))}
           </ul>
+          {s.data.brands && (
+            <ul class="svc-brands" aria-label="Brands">
+              {s.data.brands.map((brand) => (
+                <li>{brand.logo ? <Image src={brand.logo} alt={brand.name} height={40} class="svc-brand-logo" /> : brand.name}</li>
+              ))}
+            </ul>
+          )}
         </details>
       );
     })
@@ -132,6 +139,24 @@ const pictures = await Promise.all(
     margin: 0 auto;
     padding: clamp(1.25rem, 2.5vw, 2rem) 0 clamp(0.75rem, 1.5vw, 1.25rem);
     list-style: none;
+  }
+  /* Names until logo files are supplied. */
+  .svc-brands {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem clamp(1.5rem, 4vw, 3.5rem);
+    margin: clamp(0.5rem, 1.5vw, 1rem) 0 0;
+    padding: 0;
+    list-style: none;
+    font-size: clamp(1.125rem, 1.6vw, 1.5rem);
+    font-weight: 600;
+    letter-spacing: -0.015em;
+  }
+  .svc-brands :global(.svc-brand-logo) {
+    width: auto;
+    height: clamp(1.75rem, 2.5vw, 2.5rem);
   }
   /* The section's own padding is what sits below the last boxes, matching the space above. */
   .svc:last-child .svc-grid {
