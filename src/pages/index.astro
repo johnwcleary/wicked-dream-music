@@ -76,7 +76,7 @@ const people = about.sections ?? [];
                 <p class="closing display" data-closing>
                   <span class="closing-line">
                     <span class="closing-seg" data-close-seg>{closeBefore}</span> <em data-sound-slot>{headLast}</em>{' '}
-                    <span class="closing-seg" data-close-seg>
+                    <span class="closing-seg closing-rest" data-close-seg>
                       {closeRest.join(' ')} <em>{closeLast}</em>
                     </span>
                   </span>
@@ -341,17 +341,24 @@ const people = about.sections ?? [];
     font-style: italic;
   }
   .closing {
+    width: fit-content;
     margin: 1.5rem 0 0;
-    font-size: calc((100vw - 2 * var(--gutter)) / 10.4);
+    font-size: var(--run-size);
     line-height: 0.95;
   }
-  .closing-line {
+  .closing-line,
+  .closing-rest {
     display: block;
+  }
+  /* Clears the descender of the y above from the dot of the i. */
+  .closing-rest {
+    margin-top: 0.16em;
   }
   /* Large text for AA (24px or more), since it's also a window onto the footage. */
   .closing-note {
     display: block;
-    margin-top: 0.7em;
+    margin-top: 1.4em;
+    text-align: center;
     font-size: clamp(1.5rem, 3.2vw, 3.25rem);
     font-weight: 600;
     letter-spacing: -0.02em;
@@ -554,16 +561,21 @@ const people = about.sections ?? [];
     :global(html.js) .hero-track {
       height: 190svh;
     }
+    /* Sits above centre, leaving room under the word for the lines that arrive. */
     :global(html.js) .hero-stage {
       position: sticky;
       top: 0;
       justify-content: center;
       height: 100svh;
       min-height: 0;
+      padding-bottom: 24svh;
+    }
+    :global(html.js) .run-old,
+    :global(html.js) .closing-seg:not(.closing-rest) {
+      display: inline-block;
     }
     :global(html.js) .run-old,
     :global(html.js) .closing-seg {
-      display: inline-block;
       will-change: transform, opacity;
     }
     :global(html.js) [data-sound-word],
@@ -590,18 +602,17 @@ const people = about.sections ?? [];
     :global(html.js) .closing-note {
       will-change: opacity;
     }
-    /* Too narrow for one line: the word keeps its place with the others above and below. */
+    /* Too narrow to fit "your" beside the word, which stays at the left edge here. */
     @media (max-width: 767px) {
-      :global(html.js) .closing-seg,
+      :global(html.js) .closing-seg:not(.closing-rest),
       :global(html.js) [data-sound-slot] {
         display: block;
       }
-    }
-    /* Sized so the whole closing line fits with the word where the headline puts it. */
-    @media (min-width: 768px) {
-      :global(html.js) .hero {
-        --run-size: min(24svh, calc((100vw - 2 * var(--gutter)) / 12.8));
+      :global(html.js) .closing-seg:not(.closing-rest) {
+        margin-bottom: 0.16em;
       }
+    }
+    @media (min-width: 768px) {
       :global(html.js) .run {
         white-space: nowrap;
       }
