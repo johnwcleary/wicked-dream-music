@@ -110,6 +110,12 @@
     margin-inline: auto;
     padding-inline: var(--gutter);
   }
+  /* Everything below the films sits closer to the screen's edges. */
+  .sec,
+  .band,
+  .site-footer {
+    --gutter: clamp(0.75rem, 1.4vw, 1.25rem);
+  }
   .grid12 {
     display: grid;
     grid-template-columns: repeat(12, minmax(0, 1fr));

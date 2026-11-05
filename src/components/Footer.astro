@@ -7,7 +7,7 @@ const year = new Date().getFullYear();
 
 <footer class="site-footer">
   <div class="wrap">
-    <div class="colophon grid12">
+    <div class="colophon">
       <p class="colo-loc label">
         {site.name}<br />
         <span class="label-muted">{site.location}</span>
@@ -35,22 +35,20 @@ const year = new Date().getFullYear();
     margin-top: clamp(5rem, 12vw, 10rem);
   }
   .colophon {
-    row-gap: 1.75rem;
-    align-items: start;
-    padding-block: 1.5rem 2rem;
-  }
-  .colo-loc {
-    grid-column: 1 / -1;
-  }
-  .colo-nav {
-    grid-column: 1 / span 6;
+    display: grid;
+    justify-items: center;
+    gap: 0.75rem;
+    padding-block: 1rem 1.25rem;
+    text-align: center;
   }
   .colo-nav ul {
     list-style: none;
     margin: 0;
     padding: 0;
-    display: grid;
-    gap: 0.15rem;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0 1rem;
   }
   .colo-nav a {
     display: inline-block;
@@ -59,22 +57,5 @@ const year = new Date().getFullYear();
   .colo-nav a:hover {
     text-decoration: underline;
     text-underline-offset: 0.2em;
-  }
-  .colo-rights {
-    grid-column: 7 / -1;
-    align-self: end;
-  }
-
-  @media (min-width: 768px) {
-    .colo-loc {
-      grid-column: 1 / span 6;
-    }
-    .colo-nav {
-      grid-column: 7 / span 3;
-    }
-    .colo-rights {
-      grid-column: 10 / -1;
-      text-align: right;
-    }
   }
 </style>
