@@ -161,21 +161,24 @@ const people = about.sections ?? [];
   </section>
 
   <!-- 01 — About -->
-  <section id="about" class="sec wrap" aria-labelledby="about-title">
+  <section id="about" class="sec wrap" aria-labelledby={about.story ? 'story-title' : 'about-title'}>
+    {
+      about.story && (
+        <>
+          <SectionHead id="story-title" title={about.story.title} still />
+          <p class="about-text about-story">{about.story.body}</p>
+        </>
+      )
+    }
     <SectionHead id="about-title" title={about.section_title ?? about.title} still />
     {
       people.map((person) => (
         <article class="bio">
-          <h2 class="bio-name display d-lg">
-            {splitHeadline(person.heading).map((line) => (
-              <span class="line">{line}</span>
-            ))}
-          </h2>
-          <div class="bio-body">
-            {paragraphs(person.body).map((p) => (
-              <p>{p}</p>
-            ))}
-          </div>
+          {paragraphs(person.body).map((p, i) => (
+            <p class="about-text">
+              {i === 0 && <strong class="bio-name">{person.heading}:</strong>} {p}
+            </p>
+          ))}
         </article>
       ))
     }
@@ -733,24 +736,23 @@ const people = about.sections ?? [];
     scroll-margin-top: 4rem;
     text-align: center;
   }
-  /* About — the name above the bio. */
-  .bio {
-    display: grid;
-    gap: 0.75rem;
-  }
-  .bio + .bio {
-    margin-top: clamp(2.5rem, 5vw, 4.5rem);
-  }
-  .bio .bio-name {
-    margin: 0;
-  }
-  .bio-body p {
+  /* About — the story, then the founder with his name inline. */
+  .about-text {
     margin: 0 auto;
     max-width: 34em;
     font-size: clamp(1.125rem, 1.6vw, 1.625rem);
     font-weight: 450;
     line-height: 1.25;
     letter-spacing: -0.012em;
+  }
+  .about-story {
+    margin-bottom: clamp(2rem, 4vw, 3.5rem);
+  }
+  .bio + .bio {
+    margin-top: clamp(2.5rem, 5vw, 4.5rem);
+  }
+  .bio-name {
+    font-weight: 650;
   }
 
   /* Contact — one email link, in silver. */

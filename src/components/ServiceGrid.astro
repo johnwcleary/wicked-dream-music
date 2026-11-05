@@ -30,9 +30,6 @@ const pictures = await Promise.all(
             <h3 class="svc-title display" style={picture ? `--still: url('${picture.src}')` : undefined} data-reveal>
               {s.data.title}
             </h3>
-            <span class="svc-for display" data-reveal style="--i: 1">
-              {s.data.category}
-            </span>
             <span class="svc-icon" aria-hidden="true" />
           </summary>
           <ul class="svc-grid">
@@ -124,16 +121,6 @@ const pictures = await Promise.all(
       -webkit-background-clip: text;
       background-clip: text;
     }
-  }
-  .svc-for {
-    grid-area: 2 / 1 / auto / -1;
-    display: block;
-    margin: 0.6em 0 0;
-    color: var(--muted);
-    font-size: clamp(1rem, 1.15vw, 1.125rem);
-    font-weight: 450;
-    letter-spacing: -0.005em;
-    line-height: 1.2;
   }
   /* A row that isn't full centres its boxes. */
   .svc-grid {
