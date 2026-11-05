@@ -103,3 +103,12 @@ test('each service starts open on offerings with an icon and a definition', asyn
   await expect(rows.first().locator('.svc-def').first()).toBeVisible();
   await expect(page.locator('a[href^="mailto:"]').first()).toHaveAttribute('href', /wickeddreammusic@gmail\.com/);
 });
+
+test('about sits above services and has no video behind it', async ({ page }) => {
+  await page.goto('/');
+  const order = await page.locator('main section[id]').evaluateAll((els) => els.map((el) => el.id));
+  expect(order.indexOf('about')).toBeLessThan(order.indexOf('services'));
+  await expect(page.locator('#about video')).toHaveCount(0);
+  await page.evaluate(() => document.getElementById('about')!.scrollIntoView({ behavior: 'instant' }));
+  await expect(page.locator('#site-menu a[aria-current]')).toHaveAttribute('data-section', 'about');
+});

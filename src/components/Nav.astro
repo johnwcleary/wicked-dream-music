@@ -278,13 +278,20 @@ const site = await getSite();
         else a.removeAttribute('aria-current');
       });
     const seen = new Map<string, boolean>();
+    // The last section may be too short to reach the line, so the foot of the page marks it.
+    const mark = () => {
+      const atFoot = innerHeight + scrollY >= document.documentElement.scrollHeight - 2;
+      const current = atFoot ? sections[sections.length - 1] : sections.find((el) => seen.get(el.id));
+      if (current) setCurrent(current.id);
+    };
+    addEventListener('scroll', mark, { passive: true });
     const io = new IntersectionObserver(
       (entries) => {
         entries.forEach((e) => seen.set(e.target.id, e.isIntersecting));
-        const current = sections.find((el) => seen.get(el.id));
-        if (current) setCurrent(current.id);
+        mark();
       },
-      { rootMargin: '-45% 0px -50% 0px' },
+      // High on the screen, so a short section is marked once it has been scrolled to.
+      { rootMargin: '-30% 0px -65% 0px' },
     );
     sections.forEach((el) => io.observe(el));
   }

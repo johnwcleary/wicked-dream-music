@@ -160,7 +160,28 @@ const people = about.sections ?? [];
     </div>
   </section>
 
-  <!-- 01 — Services -->
+  <!-- 01 — About -->
+  <section id="about" class="sec wrap" aria-labelledby="about-title">
+    <SectionHead id="about-title" title={about.section_title ?? about.title} still />
+    {
+      people.map((person) => (
+        <article class="bio">
+          <h2 class="bio-name display d-lg">
+            {splitHeadline(person.heading).map((line) => (
+              <span class="line">{line}</span>
+            ))}
+          </h2>
+          <div class="bio-body">
+            {paragraphs(person.body).map((p) => (
+              <p>{p}</p>
+            ))}
+          </div>
+        </article>
+      ))
+    }
+  </section>
+
+  <!-- 02 — Services -->
   <section id="services" class="sec wrap" aria-labelledby="services-title">
     <SectionHead id="services-title" title={servicesPage.headline} />
     <ServiceGrid items={services} stills={[video?.poster, films[0]?.poster]} />
@@ -171,65 +192,6 @@ const people = about.sections ?? [];
         </p>
       )
     }
-  </section>
-
-
-  <!-- 02 — About -->
-  <section id="about" class="founder" aria-labelledby="about-title" data-founder>
-    {
-      video && (
-        <div class="founder-media" aria-hidden="true">
-          <Image
-            src={video.poster}
-            alt=""
-            widths={[640, 960, 1280, 1920].filter((w) => w <= video.poster.width)}
-            width={Math.min(1920, video.poster.width)}
-            sizes="100vw"
-            loading="lazy"
-            decoding="async"
-            quality={62}
-            class="founder-poster"
-          />
-          <video class="founder-video" muted loop playsinline preload="none" disablepictureinpicture data-founder-video>
-            {video.mobile_mp4 && <source src={video.mobile_mp4} type="video/mp4" media="(max-width: 767px)" />}
-            <source src={video.mp4} type="video/mp4" />
-          </video>
-          <span class="founder-shade" />
-        </div>
-      )
-    }
-    <div class="wrap founder-inner">
-      <SectionHead id="about-title" title={about.section_title ?? about.title} still />
-      {
-        people.map((person) => (
-          <article class="bio">
-            <h2 class="bio-name display d-lg">
-              {splitHeadline(person.heading).map((line) => (
-                <span class="line">{line}</span>
-              ))}
-            </h2>
-            <div class="bio-body">
-              {paragraphs(person.body).map((p) => (
-                <p>{p}</p>
-              ))}
-            </div>
-          </article>
-        ))
-      }
-      {
-        video && (
-          <button
-            type="button"
-            class="hero-credit label founder-pause"
-            data-hero-toggle
-            data-play={site.ui.play_video}
-            data-pause={site.ui.pause_video}
-          >
-            {site.ui.pause_video}
-          </button>
-        )
-      }
-    </div>
   </section>
 
   <!-- 03 — Selected work: one Spotify playlist -->
@@ -708,7 +670,7 @@ const people = about.sections ?? [];
     margin-top: 1.25rem;
   }
   /* Lands right after the last film, with room for the header. */
-  #services {
+  #about {
     padding-top: calc(var(--header-h) + 1.25rem);
     scroll-margin-top: 0;
   }
@@ -745,49 +707,7 @@ const people = about.sections ?? [];
     padding-block: clamp(1.75rem, 3.5vw, 3.25rem);
     scroll-margin-top: 4rem;
   }
-  /* About — the name right beside the bio, in light type over the footage. A neutral 65%
-     shade keeps the bio at 5.3:1 or better over white footage. */
-  .founder {
-    position: relative;
-    isolation: isolate;
-    overflow: clip;
-    color: var(--on-shade);
-    scroll-margin-top: 0;
-  }
-  .founder :global(:focus-visible) {
-    outline-color: var(--on-shade);
-  }
-  .founder-media {
-    position: absolute;
-    inset: 0;
-    z-index: -1;
-    background: var(--shade);
-  }
-  .founder-media :global(.founder-poster),
-  .founder-video {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-  .founder-media :global(.founder-poster) {
-    z-index: 1;
-    transition: opacity 1.2s var(--ease-out);
-  }
-  .founder.is-playing :global(.founder-poster) {
-    opacity: 0;
-  }
-  /* Above the poster too, so the bio stays legible while a video hasn't started. */
-  .founder-shade {
-    position: absolute;
-    inset: 0;
-    z-index: 2;
-    background: color-mix(in srgb, var(--scrim) 65%, transparent);
-  }
-  .founder-inner {
-    padding-block: calc(var(--header-h) + 0.75rem) clamp(1.25rem, 2.5vw, 2rem);
-  }
+  /* About — the name right beside the bio. */
   .bio {
     display: grid;
     gap: 0.75rem clamp(1.5rem, 3vw, 3rem);
@@ -806,12 +726,8 @@ const people = about.sections ?? [];
     line-height: 1.25;
     letter-spacing: -0.012em;
   }
-  .founder-pause {
-    display: block;
-    margin: clamp(1.25rem, 2.5vw, 2rem) 0 0 auto;
-  }
 
-  /* Contact — one giant email link, in silver. */
+  /* Contact — one email link, in silver. */
   .band-cta {
     --soft: color-mix(in srgb, var(--ink) 74%, transparent);
   }
@@ -837,7 +753,7 @@ const people = about.sections ?? [];
     margin-top: clamp(1.5rem, 4vw, 3rem);
     flex-wrap: wrap;
     max-width: 100%;
-    font-size: clamp(1.5rem, 6vw, 4rem);
+    font-size: clamp(1.25rem, 4.5vw, 2.5rem);
     line-height: 1.05;
   }
   .cta-mail-text {
@@ -867,7 +783,7 @@ const people = about.sections ?? [];
       grid-column: 1 / span 6;
     }
     .cta-mail {
-      font-size: clamp(2.25rem, 4vw, 4.75rem);
+      font-size: clamp(1.75rem, 2.6vw, 3rem);
     }
   }
 </style>
@@ -875,11 +791,11 @@ const people = about.sections ?? [];
 <script>
   // The loops: they start after the page has loaded (so they never compete with the
   // poster image), pause off-screen and never autoplay under reduced motion. The small
-  // pause controls, in the hero's footer row and the founder section, work on all of them
+  // pause control in the hero's footer row works on all of them
   // (WCAG 2.2.2). Some phones block autoplay, in Low Power Mode for example: the posters stay
   // up, the controls offer play, and the next tap anywhere starts the videos.
   // Sound belongs to the work section: each film's music plays while it is at the middle of
-  // the screen, and the opening and founder loops stay silent. Browsers only allow sound once
+  // the screen, and the opening loop stays silent. Browsers only allow sound once
   // the visitor has tapped, clicked or pressed a key on the page, so the first of those
   // switches it on. Until then the films play silently and the speaker offers sound.
   const hero = document.getElementById('top');
@@ -891,9 +807,6 @@ const people = about.sections ?? [];
       const clip = host.querySelector<HTMLVideoElement>('[data-film-video]');
       if (clip) clips.push({ video: clip, host, seen: false, film: true });
     });
-    const founderHost = document.querySelector<HTMLElement>('[data-founder]');
-    const founderVideo = document.querySelector<HTMLVideoElement>('[data-founder-video]');
-    if (founderHost && founderVideo) clips.push({ video: founderVideo, host: founderHost, seen: false, film: false });
 
     let wanted = !matchMedia('(prefers-reduced-motion: reduce)').matches; // play unless paused or reduced motion
     let started = false;
@@ -1073,7 +986,6 @@ const people = about.sections ?? [];
   // Hero sequence. While the stage is pinned the headline's last word stays still, its other
   // words leave, and the closing line's arrive around it. Past the sheet, the reel's line shrinks away so the films can be watched.
   const frame = document.querySelector<HTMLElement>('[data-hero-frame]');
-  const founder = document.querySelector<HTMLElement>('[data-founder]');
   const track = document.querySelector<HTMLElement>('[data-hero-track]');
   const soundWord = document.querySelector<HTMLElement>('[data-sound-word]');
   const soundSlot = document.querySelector<HTMLElement>('[data-sound-slot]');
@@ -1093,8 +1005,6 @@ const people = about.sections ?? [];
     let reelEnd = 0;
     let titleLift = 0;
     let titleScale = 1;
-    let founderTop = 0;
-    let founderEnd = 0;
     let trackTop = 0;
     let trackSpan = 0;
 
@@ -1129,11 +1039,6 @@ const people = about.sections ?? [];
           closingNote.style.translate = `${document.documentElement.clientWidth / 2 - (note.left + note.width / 2)}px`;
         }
       }
-      if (founder) {
-        const f = founder.getBoundingClientRect();
-        founderTop = f.top + scrollY;
-        founderEnd = f.bottom + scrollY;
-      }
     };
 
     const render = (y: number) => {
@@ -1163,10 +1068,9 @@ const people = about.sections ?? [];
         const inReel = y >= reelTop - innerHeight + 50 && y <= reelEnd;
         hero.classList.toggle('in-reel', inReel);
       }
-      // The header turns light over the films and the founder section.
+      // The header turns light over the films.
       const overFilm = reel ? y >= reelTop - 40 && y <= reelEnd - 40 : false;
-      const overFounder = founder ? y + 40 >= founderTop && y + 40 <= founderEnd : false;
-      document.documentElement.classList.toggle('on-reel', overFilm || overFounder);
+      document.documentElement.classList.toggle('on-reel', overFilm);
     };
 
     let now = scrollY;

@@ -274,4 +274,6 @@ html[data-palette='purple'] #services::before {
   inset: 0 calc(50% - 50vw);
   z-index: -1;
   background: radial-gradient(farthest-corner at 90% 8%, #46304f 0, #1c1024 55%, var(--plum) 100%);
+  /* Fades in and out above and below the titles, so the page gradient runs on without a seam. */
+  mask-image: linear-gradient(transparent, #000 5rem, #000 calc(100% - 5rem), transparent);
 }
