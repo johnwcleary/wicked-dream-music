@@ -83,7 +83,7 @@ Chosen from an in-page audition of 6 palettes × 5 type pairings. The comparison
 
 Everything below the films, from the about section through the footer, has tighter margins than the hero. Everything there is centred, and the service boxes and the playlist share one narrower width. About and services each fill at least the screen with their content centred up and down. A band above and below services shows the opening's footage held still behind the page; tapping one pauses the loops.
 
-**Sync brands.** Nickelodeon, AMC, NFL and Discovery Channel logos sit under sync licensing (`services/sync-licensing.md`, `brands`), from files John supplied, cropped and with their white backgrounds removed (`src/assets/brand/sync/`). Confirm the rights to name and show each brand. The sync definitions are drafts for John and David to check.
+**Sync brands.** Netflix, Hulu, Paramount, MTV, Nickelodeon, AMC, NFL and Discovery Channel logos sit under sync licensing (`services/sync-licensing.md`, `brands`), from files John supplied, cropped and with their white backgrounds removed (`src/assets/brand/sync/`). Confirm the rights to name and show each brand. The sync definitions are drafts for John and David to check.
 
 **Favicon.** The WD mark from John's logo, white on the site's near-black (`public/favicon.svg`, with PNGs for browsers and phones that don't use the SVG).
 
