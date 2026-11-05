@@ -126,6 +126,8 @@ const services = defineCollection({
         }),
       )
       .optional(),
+    // Brands shown under the offerings: the logo if there's a file, otherwise the name.
+    brands: z.array(z.object({ name: z.string(), logo: image().optional() })).optional(),
   }),
 });
 
