@@ -3,7 +3,7 @@ title: Home
 eyebrow: "Independent music creative company / New York"
 headline: "Artist development starts with sound"
 lede: "We develop artists, write and produce their songs, and help labels and publishers find and grow new talent."
-cta: { label: "Three decades of Artist Development and A&R Consulting", href: "/services" }
+cta: { label: "Providing Artist Development and A&R Consulting Services", href: "/services" }
 strapline: "Artist Development / A&R Consulting"
 hero_closing:
   line: "your sound is your brand"
