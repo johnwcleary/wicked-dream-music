@@ -54,6 +54,10 @@ const site = await getSite();
       transparent 100%
     );
   }
+  /* Over the opening the light parts are white, to match the logo. */
+  :global(html.on-intro:not(.menu-open)) .site-header {
+    --on-shade: #fff;
+  }
   /* Over the full-screen films the header turns light, on a neutral scrim. */
   :global(html:is(.on-reel, .on-intro):not(.menu-open)) .site-header {
     color: var(--on-shade);
