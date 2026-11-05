@@ -88,3 +88,15 @@ test('the pause control stops every loop and starts them again', async ({ page }
   await expect(toggle).toHaveText('Pause video');
   await expect.poll(playing).toBeGreaterThan(0);
 });
+
+test('each service opens to offerings with an icon and a definition', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await page.goto('/');
+  const rows = page.locator('details.svc');
+  await expect(rows).toHaveCount(2);
+  await expect(page.locator('.svc-item')).toHaveCount(11);
+  await expect(page.locator('.svc-item svg')).toHaveCount(11);
+  await expect(page.locator('.svc-item .svc-def').first()).toBeHidden();
+  await rows.first().locator('summary').click();
+  await expect(rows.first().locator('.svc-def').first()).toBeVisible();
+});
