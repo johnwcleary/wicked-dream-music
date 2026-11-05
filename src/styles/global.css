@@ -36,6 +36,7 @@
   --lift: 50%;
   --sheet: var(--paper);
   --sheet-type: #000;
+  --sound-type: var(--sheet-type);
   --sheet-blend: lighten;
   --foot-ground: var(--paper);
   --card: #fff;
@@ -215,22 +216,23 @@
    Color audition. Remove the one not chosen, and the picker in BaseLayout.
 ------------------------------------------------------------------- */
 
-/* 1. Black: the site's own colors in :root, near-black on beige, with a little of the logo's
-   lavender rising from the screen's bottom right corner. The hero covers it, so it starts at
-   the about section. At its strongest the muted text keeps 4.6:1, and the deeper type windows
-   keep 3.1:1. */
+/* 1. Black: the site's own colors in :root, near-black on beige, with deep purple in the word
+   "sound" and a little of the logo's lavender rising from the page's bottom right corner.
+   "Lighten" keeps the higher of the purple and the footage, so the footage still shows in the
+   word, at 3:1 or better. At its strongest the lavender leaves the muted text 4.6:1. */
 html[data-palette='black'] {
-  --lift: 58%;
+  --sound-type: #5a2ca0;
 }
 html[data-palette='black'] body {
+  position: relative;
   background: transparent;
 }
 html[data-palette='black'] body::before {
   content: '';
-  position: fixed;
-  inset: 0 0 auto;
+  position: absolute;
+  inset: auto 0 0;
   z-index: -1;
-  height: 100lvh;
+  height: 70vmax;
   background: radial-gradient(
     90vmax 70vmax at 100% 100%,
     color-mix(in srgb, var(--wdm-lavender) 55%, transparent) 0,
