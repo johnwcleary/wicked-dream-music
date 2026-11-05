@@ -136,7 +136,7 @@ const pictures = await Promise.all(
   }
   .svc-grid {
     display: grid;
-    gap: clamp(1.25rem, 2vw, 1.75rem) clamp(1.5rem, 3vw, 3rem);
+    gap: clamp(0.625rem, 1vw, 1rem);
     margin: 0;
     padding: clamp(1.25rem, 2.5vw, 2rem) 0 clamp(0.75rem, 1.5vw, 1.25rem);
     list-style: none;
@@ -146,6 +146,10 @@ const pictures = await Promise.all(
     grid-template-columns: auto minmax(0, 1fr);
     gap: 0.75rem;
     align-items: start;
+    padding: clamp(1rem, 1.5vw, 1.5rem);
+    border-radius: 1.25rem;
+    background: var(--card);
+    color: var(--on-card);
   }
   .svc-name {
     margin: 0;
@@ -156,8 +160,7 @@ const pictures = await Promise.all(
   }
   .svc-def {
     margin: 0.3rem 0 0;
-    max-width: 38ch;
-    color: var(--muted);
+    color: var(--on-card-muted);
     font-size: 0.9375rem;
     line-height: 1.35;
   }
@@ -203,14 +206,17 @@ const pictures = await Promise.all(
       font-size: clamp(3rem, 5.8vw, 6.25rem);
     }
   }
+  /* The boxes sit toward the right, under and past the end of the title. */
   @media (min-width: 700px) {
     .svc-grid {
       grid-template-columns: repeat(2, minmax(0, 1fr));
+      margin-left: 12%;
     }
   }
   @media (min-width: 1100px) {
     .svc-grid {
       grid-template-columns: repeat(3, minmax(0, 1fr));
+      margin-left: 22%;
     }
   }
 </style>

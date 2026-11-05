@@ -38,6 +38,9 @@
   --sheet-type: #000;
   --sheet-blend: lighten;
   --foot-ground: var(--paper);
+  --card: #fff;
+  --on-card: var(--ink);
+  --on-card-muted: var(--muted);
 
   --header-h: 5rem;
   --gutter: clamp(1rem, 2.2vw, 2rem);
@@ -244,6 +247,8 @@ html[data-palette='purple'] {
   --sheet-type: #fff;
   --sheet-blend: darken;
   --foot-ground: transparent;
+  --on-card: var(--plum);
+  --on-card-muted: var(--deep);
 }
 /* The lower sections share one gradient, fixed to the screen, so it runs behind them without
    seams. It never gets brighter than dusk, where white is 5.9:1 and the muted text 5:1. */
