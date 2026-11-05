@@ -215,14 +215,7 @@
    Color audition. Remove the one not chosen, and the picker in BaseLayout.
 ------------------------------------------------------------------- */
 
-/* 1. Blue: the logo PDF's blue replaces every dark color. Footage stays untinted except
-   inside type. Blue is lighter than the old ink, so the type windows run deeper to keep
-   3.2:1 at 60%. */
-html[data-palette='blue'] {
-  --ink: #1d17ff;
-  --muted: #4c46f9;
-  --lift: 60%;
-}
+/* 1. Black: the site's own colors in :root, near-black on beige, with no overrides. */
 
 /* 2. Purple: the logo PDF's radial gradient, plum edge to lilac heart, on a dark site.
    Footage stays untinted except inside type.

@@ -44,14 +44,14 @@ const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url).href;
       var h = document.documentElement;
       h.classList.add('js');
       if (intro) h.classList.add('on-hero', 'on-intro', 'intro-foot');
-      // Color audition: ?color=blue or ?color=purple, kept for the visit. Remove once one is chosen.
+      // Color audition: ?color=black or ?color=purple, kept for the visit. Links sent with blue get black. Remove once one is chosen.
       var color = new URLSearchParams(location.search).get('color');
-      if (color !== 'blue' && color !== 'purple') {
+      if (color !== 'black' && color !== 'blue' && color !== 'purple') {
         try {
           color = sessionStorage.getItem('wdm-color');
         } catch (e) {}
       }
-      h.dataset.palette = color === 'purple' ? 'purple' : 'blue';
+      h.dataset.palette = color === 'purple' ? 'purple' : 'black';
       if (h.dataset.palette === 'purple') document.querySelector('meta[name="theme-color"]').content = '#0d0616';
     </script>
   </head>
@@ -64,7 +64,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url).href;
     <Footer />
     <!-- Color audition only. Remove once one is chosen. -->
     <div class="palette-pick" role="group" aria-label="Color audition" data-palette-pick hidden>
-      <button type="button" data-palette-option="blue">blue</button>
+      <button type="button" data-palette-option="black">black</button>
       <button type="button" data-palette-option="purple">purple</button>
     </div>
     <script>
@@ -76,7 +76,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url).href;
         const show = () => options.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.paletteOption === root.dataset.palette)));
         options.forEach((b) =>
           b.addEventListener('click', () => {
-            const color = b.dataset.paletteOption ?? 'blue';
+            const color = b.dataset.paletteOption ?? 'black';
             root.dataset.palette = color;
             document.querySelector('meta[name="theme-color"]')?.setAttribute('content', color === 'purple' ? '#0d0616' : '#f4eee3');
             try {
