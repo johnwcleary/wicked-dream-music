@@ -117,3 +117,18 @@ test('each film in the work section is credited', async ({ page }) => {
   await page.goto('/');
   await expect(page.locator('[data-reel-film] .film-credit')).toHaveText([/imin/i, /torri wolff - colours/i, /alice - all my girls/i]);
 });
+
+test('the sliver between about and services shows footage and pauses the loops', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await page.goto('/');
+  const order = await page.locator('main > *').evaluateAll((els) => els.map((el) => el.id || el.className));
+  const sliver = order.findIndex((name) => name.includes('sliver'));
+  expect(order[sliver - 1]).toBe('about');
+  expect(order[sliver + 1]).toBe('services');
+  const toggle = page.locator('.sliver-toggle');
+  await toggle.scrollIntoViewIfNeeded();
+  await expect.poll(() => page.locator('[data-sliver-video]').evaluate((v: HTMLVideoElement) => v.paused)).toBe(false);
+  await toggle.click();
+  await expect(toggle).toHaveText('Play video');
+  await expect.poll(() => page.locator('[data-sliver-video]').evaluate((v: HTMLVideoElement) => v.paused)).toBe(true);
+});

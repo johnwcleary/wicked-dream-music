@@ -185,6 +185,35 @@ const people = about.sections ?? [];
     }
   </section>
 
+  <!-- A thin gap in the page, showing the opening's footage held still behind it. Tapping it
+       pauses the loops, since the footer row's control has scrolled away by here. -->
+  {
+    video && (
+      <div class="sliver" data-sliver>
+        <div class="sliver-media" aria-hidden="true">
+          <Image
+            src={video.poster}
+            alt=""
+            widths={[640, 960, 1280, 1920].filter((w) => w <= video.poster.width)}
+            width={Math.min(1920, video.poster.width)}
+            sizes="100vw"
+            loading="lazy"
+            decoding="async"
+            quality={62}
+            class="sliver-poster"
+          />
+          <video class="sliver-video" muted loop playsinline preload="none" disablepictureinpicture data-sliver-video>
+            {video.mobile_mp4 && <source src={video.mobile_mp4} type="video/mp4" media="(max-width: 767px)" />}
+            <source src={video.mp4} type="video/mp4" />
+          </video>
+        </div>
+        <button type="button" class="sliver-toggle" data-hero-toggle data-play={site.ui.play_video} data-pause={site.ui.pause_video}>
+          {site.ui.pause_video}
+        </button>
+      </div>
+    )
+  }
+
   <!-- 02 — Services -->
   <section id="services" class="sec wrap" aria-labelledby="services-title">
     <SectionHead id="services-title" title={servicesPage.headline} />
@@ -690,6 +719,47 @@ const people = about.sections ?? [];
     padding-block: clamp(1.25rem, 2.5vw, 2.25rem);
     scroll-margin-top: 4rem;
   }
+  /* The clip keeps the fixed footage to this band, so the page appears to scroll over it. */
+  .sliver {
+    position: relative;
+    height: clamp(1.5rem, 2.5vw, 2.5rem);
+    clip-path: inset(0);
+    background: var(--shade);
+  }
+  .sliver-media {
+    position: fixed;
+    inset: 0 0 auto;
+    height: 100lvh;
+  }
+  .sliver-media :global(.sliver-poster),
+  .sliver-video {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .sliver-media :global(.sliver-poster) {
+    z-index: 1;
+    transition: opacity 0.8s var(--ease-out);
+  }
+  .sliver.is-playing :global(.sliver-poster) {
+    opacity: 0;
+  }
+  /* The whole band is the control. Its label is for screen readers. */
+  .sliver-toggle {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    border: 0;
+    background: none;
+    font-size: 0;
+    cursor: pointer;
+  }
+  .sliver-toggle:focus-visible {
+    outline-color: #fff;
+    outline-offset: -3px;
+  }
   .sec-foot {
     display: inline-block;
     margin: 1.25rem 0 0 var(--text-left);
@@ -790,7 +860,7 @@ const people = about.sections ?? [];
 <script>
   // The loops: they start after the page has loaded (so they never compete with the
   // poster image), pause off-screen and never autoplay under reduced motion. The small
-  // pause control in the hero's footer row works on all of them
+  // pause controls, in the hero's footer row and the sliver between about and services, work on all of them
   // (WCAG 2.2.2). Some phones block autoplay, in Low Power Mode for example: the posters stay
   // up, the controls offer play, and the next tap anywhere starts the videos.
   // Sound belongs to the work section: each film's music plays while it is at the middle of
@@ -806,6 +876,10 @@ const people = about.sections ?? [];
       const clip = host.querySelector<HTMLVideoElement>('[data-film-video]');
       if (clip) clips.push({ video: clip, host, seen: false, film: true });
     });
+
+    const sliverHost = document.querySelector<HTMLElement>('[data-sliver]');
+    const sliverVideo = document.querySelector<HTMLVideoElement>('[data-sliver-video]');
+    if (sliverHost && sliverVideo) clips.push({ video: sliverVideo, host: sliverHost, seen: false, film: false });
 
     let wanted = !matchMedia('(prefers-reduced-motion: reduce)').matches; // play unless paused or reduced motion
     let started = false;
