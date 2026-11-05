@@ -58,6 +58,8 @@ Photos are grayscale and high contrast, multiplied over the gradient, with the b
 
 **Type.** One typeface, Inter Tight (`@fontsource-variable/inter-tight`, OFL, preloaded): large type at weight 500–600 with very tight spacing, small type at normal spacing. All text is lowercase through CSS (`text-transform`), so the content files, metadata and screen-reader text keep their normal capitals. Only "sound" and "brand" are italic. The direction takes its restraint from a neutral, lowercase portfolio reference John supplied.
 
+**Color audition.** Archive currently runs two palettes from one build, switched with `?color=blue` or `?color=purple` or the small picker at the bottom left: blue (`#1d17ff`) replacing every dark color on the beige page, and purple, the logo PDF's plum-to-lilac radial gradient across a dark site. Once John chooses, the other palette and the picker come out.
+
 **Palette.** Near-black `#0F0F10` type on light beige `#F4EEE3` (16.6:1), `#5E5A54` for small text (5.9:1). The wordmark, font and colour are set out in `docs/brand/wdm/`.
 - The hero loop and the IMIN loop are in full color; the footage shows through the type on the beige sheet (`mix-blend-mode: lighten`), shaded 50% so the brightest frames keep 3.1:1 (large text).
 - "our work" and the header over the films sit on dark shades instead (3.4:1 or better).
