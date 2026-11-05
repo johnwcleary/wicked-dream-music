@@ -964,7 +964,9 @@ const people = about.sections ?? [];
         const playing = !clip.video.paused;
         clip.video.muted = !audible;
         if (!audible || !playing) continue;
-        clip.video.play().catch(() => {
+        clip.video.play().catch((error: unknown) => {
+          // Only a refusal: a pause or a reload interrupting this play() says nothing about sound.
+          if ((error as Error)?.name !== 'NotAllowedError') return;
           granted = false;
           clip.video.muted = true;
           renderSound();
