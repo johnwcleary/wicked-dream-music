@@ -81,7 +81,7 @@ Chosen from an in-page audition of 6 palettes × 5 type pairings. The comparison
 - A small "pause video" control in the hero's footer row pauses and plays both loops, which WCAG 2.2.2 requires for video that keeps moving.
 - The poster is the LCP image.
 
-Everything below the films, from the about section through the footer, has tighter margins than the hero. The service boxes and the playlist share one narrower width, and all the text left-aligns with their left edge. About fills the screen with its text centred up and down. A band between about and services shows the opening's footage held still behind the page; tapping it pauses the loops.
+Everything below the films, from the about section through the footer, has tighter margins than the hero. Everything there is centred, and the service boxes and the playlist share one narrower width. About fills the screen with its text centred up and down. A band between about and services shows the opening's footage held still behind the page; tapping it pauses the loops.
 
 **Favicon.** The WD mark from John's logo, white on the site's near-black (`public/favicon.svg`, with PNGs for browsers and phones that don't use the SVG).
 
