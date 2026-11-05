@@ -187,16 +187,18 @@ const pictures = await Promise.all(
 </style>
 
 <script>
-  // Mousing over the + opens the row until the mouse leaves it; a click keeps it open.
-  // Keyboard and touch use the summary as normal.
+  // Mousing over a row's words or + opens it until the mouse leaves the row; a click keeps it
+  // open. Keyboard and touch use the summary as normal.
   if (matchMedia('(hover: hover)').matches) {
     document.querySelectorAll<HTMLDetailsElement>('details.svc').forEach((row) => {
       let byHover = false;
-      row.querySelector('.svc-icon')?.addEventListener('pointerenter', () => {
-        if (row.open) return;
-        row.open = true;
-        byHover = true;
-      });
+      row.querySelectorAll('.svc-title, .svc-for, .svc-icon').forEach((part) =>
+        part.addEventListener('pointerenter', () => {
+          if (row.open) return;
+          row.open = true;
+          byHover = true;
+        }),
+      );
       row.querySelector('summary')?.addEventListener('click', (e) => {
         if (!byHover) return;
         e.preventDefault();

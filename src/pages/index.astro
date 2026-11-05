@@ -1,7 +1,6 @@
 ---
 import { Image } from 'astro:assets';
 import BaseLayout from '../layouts/BaseLayout.astro';
-import Lines from '../components/Lines.astro';
 import SectionHead from '../components/SectionHead.astro';
 import ServiceGrid from '../components/ServiceGrid.astro';
 import { getPage, getServices, getSite, paragraphs, splitHeadline, toSection } from '../lib/content';
@@ -194,12 +193,16 @@ const people = about.sections ?? [];
       )
     }
     <div class="wrap founder-inner">
-      <SectionHead id="about-title" title={about.section_title ?? about.title} />
+      <SectionHead id="about-title" title={about.section_title ?? about.title} still />
       {
         people.map((person) => (
           <article class="bio">
-            <Lines as="h2" class="bio-name display d-lg" lines={splitHeadline(person.heading)} />
-            <div class="bio-body" data-reveal>
+            <h2 class="bio-name display d-lg">
+              {splitHeadline(person.heading).map((line) => (
+                <span class="line">{line}</span>
+              ))}
+            </h2>
+            <div class="bio-body">
               {paragraphs(person.body).map((p) => (
                 <p>{p}</p>
               ))}
@@ -247,9 +250,13 @@ const people = about.sections ?? [];
   <!-- 04 — Contact: one big email call to action -->
   <section id="contact" class="band band-cta" aria-labelledby="contact-title">
     <div class="wrap grid12 cta">
-      <Lines as="h2" id="contact-title" class="cta-title display d-lg" lines={splitHeadline(contact.headline)} />
-      <p class="cta-lede body-lg" data-reveal style="--i: 2">{contact.lede} {contact.intro}</p>
-      <a class="cta-mail display" href={`mailto:${site.email}`} data-reveal style="--i: 3">
+      <h2 id="contact-title" class="cta-title display d-lg">
+        {splitHeadline(contact.headline).map((line) => (
+          <span class="line">{line}</span>
+        ))}
+      </h2>
+      <p class="cta-lede body-lg">{contact.lede} {contact.intro}</p>
+      <a class="cta-mail display" href={`mailto:${site.email}`}>
         <span class="cta-mail-text">{site.email.split('@')[0]}@<wbr />{site.email.split('@')[1]}</span>
         <span class="cta-mail-arrow" aria-hidden="true">↗</span>
       </a>
@@ -625,6 +632,9 @@ const people = about.sections ?? [];
   }
 
   /* ---------- Sections ---------- */
+  .line {
+    display: block;
+  }
   .sec {
     padding-block: clamp(1.75rem, 3.5vw, 3.25rem);
     scroll-margin-top: 4rem;
@@ -719,7 +729,7 @@ const people = about.sections ?? [];
   .bio + .bio {
     margin-top: clamp(2.5rem, 5vw, 4.5rem);
   }
-  .bio :global(.bio-name) {
+  .bio .bio-name {
     margin: 0;
   }
   .bio-body p {
@@ -742,7 +752,7 @@ const people = about.sections ?? [];
   .cta {
     row-gap: 1.5rem;
   }
-  .cta :global(.cta-title) {
+  .cta .cta-title {
     grid-column: 1 / -1;
     margin: 0;
   }
