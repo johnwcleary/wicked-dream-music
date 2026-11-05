@@ -110,11 +110,22 @@
     margin-inline: auto;
     padding-inline: var(--gutter);
   }
-  /* Everything below the films sits closer to the screen's edges. */
+  /* Everything below the films sits closer to the screen's edges, with its text on one left
+     line near the middle of the page: half of "artist development", the longest title, to the
+     left of centre. That title is 7.744em wide. */
   .sec,
   .band,
   .site-footer {
     --gutter: clamp(0.75rem, 1.4vw, 1.25rem);
+    --svc-title-size: calc((100vw - 2 * var(--gutter) - 3rem) / 8.4);
+    --text-left: calc(50% - 3.872 * var(--svc-title-size));
+  }
+  @media (min-width: 768px) {
+    .sec,
+    .band,
+    .site-footer {
+      --svc-title-size: clamp(3rem, 5.8vw, 6.25rem);
+    }
   }
   .grid12 {
     display: grid;

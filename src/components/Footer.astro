@@ -36,10 +36,10 @@ const year = new Date().getFullYear();
   }
   .colophon {
     display: grid;
-    justify-items: center;
+    justify-items: start;
     gap: 0.75rem;
+    margin-left: var(--text-left);
     padding-block: 1rem 1.25rem;
-    text-align: center;
   }
   .colo-nav ul {
     list-style: none;
@@ -47,7 +47,6 @@ const year = new Date().getFullYear();
     padding: 0;
     display: flex;
     flex-wrap: wrap;
-    justify-content: center;
     gap: 0 1rem;
   }
   .colo-nav a {
