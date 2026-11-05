@@ -133,6 +133,10 @@ const pictures = await Promise.all(
     padding: clamp(1.25rem, 2.5vw, 2rem) 0 clamp(0.75rem, 1.5vw, 1.25rem);
     list-style: none;
   }
+  /* The section's own padding is what sits below the last boxes, matching the space above. */
+  .svc:last-child .svc-grid {
+    padding-bottom: 0;
+  }
   .svc-item {
     flex: 0 0 100%;
     display: grid;

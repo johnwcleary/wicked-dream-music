@@ -118,17 +118,20 @@ test('each film in the work section is credited', async ({ page }) => {
   await expect(page.locator('[data-reel-film] .film-credit')).toHaveText([/imin/i, /torri wolff - colours/i, /alice - all my girls/i]);
 });
 
-test('the sliver between about and services shows footage and pauses the loops', async ({ page }) => {
+test('video gaps sit either side of services and pause the loops', async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 800 });
   await page.goto('/');
   const order = await page.locator('main > *').evaluateAll((els) => els.map((el) => el.id || el.className));
-  const sliver = order.findIndex((name) => name.includes('sliver'));
-  expect(order[sliver - 1]).toBe('about');
-  expect(order[sliver + 1]).toBe('services');
-  const toggle = page.locator('.sliver-toggle');
+  const services = order.indexOf('services');
+  expect(order[services - 2]).toBe('about');
+  expect(order[services - 1]).toContain('sliver');
+  expect(order[services + 1]).toContain('sliver');
+  expect(order[services + 2]).toBe('work');
+  const toggle = page.locator('.sliver-toggle').last();
+  const video = page.locator('[data-sliver-video]').last();
   await toggle.scrollIntoViewIfNeeded();
-  await expect.poll(() => page.locator('[data-sliver-video]').evaluate((v: HTMLVideoElement) => v.paused)).toBe(false);
+  await expect.poll(() => video.evaluate((v: HTMLVideoElement) => v.paused)).toBe(false);
   await toggle.click();
   await expect(toggle).toHaveText('Play video');
-  await expect.poll(() => page.locator('[data-sliver-video]').evaluate((v: HTMLVideoElement) => v.paused)).toBe(true);
+  await expect.poll(() => video.evaluate((v: HTMLVideoElement) => v.paused)).toBe(true);
 });
