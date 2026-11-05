@@ -762,7 +762,7 @@ const people = about.sections ?? [];
   }
   .sec-foot {
     display: inline-block;
-    margin: 1.25rem 0 0 var(--text-left);
+    margin-top: 1.25rem;
   }
   /* Lands right after the last film, filling the screen with its text centred up and down.
      The same padding above and below clears the header and keeps it on the screen's middle. */
@@ -776,7 +776,7 @@ const people = about.sections ?? [];
   }
   /* Who the company has worked for, directly under the last service. */
   .customers {
-    margin: 0.5rem 0 0 var(--text-left);
+    margin: 0.5rem 0 0;
     font-size: clamp(1rem, 1.15vw, 1.125rem);
     font-weight: 450;
     letter-spacing: -0.005em;
@@ -805,7 +805,7 @@ const people = about.sections ?? [];
   }
   /* About — the story, then the founder with his name inline. */
   .about-text {
-    margin: 0 0 0 var(--text-left);
+    margin: 0 auto;
     max-width: 34em;
     font-size: clamp(1.125rem, 1.6vw, 1.625rem);
     font-weight: 450;
@@ -828,11 +828,11 @@ const people = about.sections ?? [];
   }
   .cta .cta-title {
     grid-column: 1 / -1;
-    margin: 0 0 0 var(--text-left);
+    margin: 0;
   }
   .cta-lede {
     grid-column: 1 / -1;
-    margin: 0 0 0 var(--text-left);
+    margin: 0 auto;
     max-width: 24em;
     white-space: pre-line; /* the content file sets the line break */
     font-size: clamp(1.375rem, 2.2vw, 2.25rem);
@@ -842,11 +842,11 @@ const people = about.sections ?? [];
   }
   .cta-mail {
     grid-column: 1 / -1;
-    justify-self: start;
+    justify-self: center;
     display: inline-flex;
     align-items: center;
     gap: 0.75rem;
-    margin: clamp(0.5rem, 1.5vw, 1.25rem) 0 0 var(--text-left);
+    margin-top: clamp(0.5rem, 1.5vw, 1.25rem);
     padding: clamp(1rem, 1.5vw, 1.5rem) clamp(1.5rem, 2.5vw, 2.25rem);
     border-radius: 1.25rem;
     background: var(--card);

@@ -38,13 +38,13 @@ const year = new Date().getFullYear();
   }
   .colophon {
     display: grid;
-    grid-template-columns: max-content minmax(0, 1fr);
-    justify-items: start;
+    grid-template-columns: max-content minmax(0, max-content);
+    justify-content: center;
+    justify-items: center;
     gap: 0.75rem clamp(1rem, 2vw, 2rem);
-    margin-left: var(--text-left);
     padding-block: 1rem 1.25rem;
   }
-  /* On the left line, beside the text. The white logo as a mask, in the page's own text color. */
+  /* Beside the text, the two centred together. The white logo as a mask, in the page's own text color. */
   .colo-logo {
     grid-row: 1 / span 3;
     display: block;
@@ -66,6 +66,7 @@ const year = new Date().getFullYear();
     padding: 0;
     display: flex;
     flex-wrap: wrap;
+    justify-content: center;
     gap: 0 1rem;
   }
   .colo-nav a {

@@ -135,15 +135,15 @@
     margin-inline: auto;
     padding-inline: var(--gutter);
   }
-  /* Everything below the films sits closer to the screen's edges. The service boxes and the
-     playlist share one width, and all the text starts on their left edge. */
+  /* Everything below the films is centred and sits closer to the screen's edges. The service
+     boxes and the playlist share one width. */
   .sec,
   .band,
   .site-footer {
     --gutter: clamp(0.75rem, 1.4vw, 1.25rem);
     --svc-title-size: calc((100vw - 2 * var(--gutter) - 3rem) / 8.4);
     --block-width: 100%;
-    --text-left: calc((100% - var(--block-width)) / 2);
+    text-align: center;
   }
   @media (min-width: 700px) {
     .sec,
