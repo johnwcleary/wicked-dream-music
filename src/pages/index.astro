@@ -722,7 +722,7 @@ const people = about.sections ?? [];
   /* The clip keeps the fixed footage to this band, so the page appears to scroll over it. */
   .sliver {
     position: relative;
-    height: clamp(1.5rem, 2.5vw, 2.5rem);
+    height: clamp(3.75rem, 6.25vw, 6.25rem);
     clip-path: inset(0);
     background: var(--shade);
   }
@@ -764,9 +764,14 @@ const people = about.sections ?? [];
     display: inline-block;
     margin: 1.25rem 0 0 var(--text-left);
   }
-  /* Lands right after the last film, with room for the header. */
+  /* Lands right after the last film, filling the screen with its text centred up and down.
+     The same padding above and below clears the header and keeps it on the screen's middle. */
   #about {
-    padding-top: calc(var(--header-h) + 1.25rem);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 100svh;
+    padding-block: calc(var(--header-h) + 1.25rem);
     scroll-margin-top: 0;
   }
   /* Who the company has worked for, directly under the last service. */
