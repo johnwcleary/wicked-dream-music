@@ -3,6 +3,7 @@ import { Image } from 'astro:assets';
 import logoUrl from '../assets/brand/wdm-lockup-white.webp?url';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import SectionHead from '../components/SectionHead.astro';
+import ServiceIcon from '../components/ServiceIcon.astro';
 import ServiceGrid from '../components/ServiceGrid.astro';
 import SoundToggle from '../components/SoundToggle.astro';
 import { getPage, getServices, getSite, paragraphs, splitHeadline, toSection } from '../lib/content';
@@ -218,18 +219,14 @@ const people = about.sections ?? [];
     }
   </section>
 
-  <!-- 04 — Contact: one big email call to action -->
-  <section id="contact" class="band band-cta" aria-labelledby="contact-title">
+  <!-- 04 — Contact: one email button -->
+  <section id="contact" class="band" aria-labelledby="contact-title">
     <div class="wrap grid12 cta">
-      <h2 id="contact-title" class="cta-title display d-lg">
-        {splitHeadline(contact.headline).map((line) => (
-          <span class="line">{line}</span>
-        ))}
-      </h2>
-      <p class="cta-lede body-lg">{contact.lede} {contact.intro}</p>
-      <a class="cta-mail display" href={`mailto:${site.email}`}>
-        <span class="cta-mail-text">{site.email.split('@')[0]}@<wbr />{site.email.split('@')[1]}</span>
-        <span class="cta-mail-arrow" aria-hidden="true">↗</span>
+      <h2 id="contact-title" class="cta-title display d-lg">{contact.headline}</h2>
+      <p class="cta-lede">{contact.lede}</p>
+      <a class="cta-mail" href={`mailto:${site.email}`}>
+        <ServiceIcon name="mail" />
+        {contact.email_button}
       </a>
     </div>
   </section>
@@ -689,9 +686,6 @@ const people = about.sections ?? [];
   }
 
   /* ---------- Sections ---------- */
-  .line {
-    display: block;
-  }
   .sec {
     padding-block: clamp(1.25rem, 2.5vw, 2.25rem);
     scroll-margin-top: 4rem;
@@ -758,10 +752,7 @@ const people = about.sections ?? [];
     font-weight: 650;
   }
 
-  /* Contact — one email link, in silver. */
-  .band-cta {
-    --soft: color-mix(in srgb, var(--ink) 74%, transparent);
-  }
+  /* Contact — one email button, in the style of the service boxes. */
   .cta {
     row-gap: 1.5rem;
   }
@@ -771,46 +762,33 @@ const people = about.sections ?? [];
   }
   .cta-lede {
     grid-column: 1 / -1;
-    margin: 0.5rem 0 0 var(--text-left);
-    max-width: 44ch;
-    color: var(--soft);
+    margin: 0 0 0 var(--text-left);
+    max-width: 24em;
+    font-size: clamp(1.375rem, 2.2vw, 2.25rem);
+    font-weight: 450;
+    letter-spacing: -0.015em;
+    line-height: 1.15;
   }
   .cta-mail {
     grid-column: 1 / -1;
     justify-self: start;
     display: inline-flex;
-    align-items: baseline;
-    gap: 0.25em;
-    margin: clamp(1rem, 2.5vw, 2rem) 0 0 var(--text-left);
-    flex-wrap: wrap;
-    max-width: 100%;
-    font-size: clamp(1.25rem, 4.5vw, 2.5rem);
-    line-height: 1.05;
+    align-items: center;
+    gap: 0.75rem;
+    margin: clamp(0.5rem, 1.5vw, 1.25rem) 0 0 var(--text-left);
+    padding: clamp(1rem, 1.5vw, 1.5rem) clamp(1.5rem, 2.5vw, 2.25rem);
+    border-radius: 1.25rem;
+    background: var(--card);
+    color: var(--on-card);
+    font-size: clamp(1.125rem, 1.6vw, 1.5rem);
+    font-weight: 550;
+    letter-spacing: -0.012em;
+    transition: transform 0.4s var(--ease-out);
   }
-  .cta-mail-text {
-    background-image: linear-gradient(currentColor, currentColor);
-    background-size: 0 0.04em;
-    background-position: 0 100%;
-    background-repeat: no-repeat;
-    padding-bottom: 0.06em;
-    transition: background-size 0.5s var(--ease-out);
-  }
-  .cta-mail:hover .cta-mail-text {
-    background-size: 100% 0.04em;
-  }
-  .cta-mail-arrow {
-    font-size: 0.6em;
-    transition: transform 0.5s var(--ease-out);
-  }
-  .cta-mail:hover .cta-mail-arrow {
-    transform: translate(0.12em, -0.12em);
+  .cta-mail:hover {
+    transform: translateY(2px);
   }
 
-  @media (min-width: 900px) {
-    .cta-mail {
-      font-size: clamp(1.75rem, 2.6vw, 3rem);
-    }
-  }
 </style>
 
 <script>

@@ -1,5 +1,6 @@
 ---
 import { getSite, toSection } from '../lib/content';
+import logoUrl from '../assets/brand/wdm-lockup-white.webp?url';
 
 const site = await getSite();
 const year = new Date().getFullYear();
@@ -26,6 +27,7 @@ const year = new Date().getFullYear();
         </ul>
       </nav>
       <p class="colo-rights label label-muted">© {year} {site.name}. {site.ui.rights}</p>
+      <span class="colo-logo" role="img" aria-label={site.name} style={`--logo-url: url(${logoUrl})`}></span>
     </div>
   </div>
 </footer>
@@ -40,6 +42,16 @@ const year = new Date().getFullYear();
     gap: 0.75rem;
     margin-left: var(--text-left);
     padding-block: 1rem 1.25rem;
+  }
+  /* The white logo as a mask, in the page's own text color. */
+  .colo-logo {
+    display: block;
+    width: clamp(7rem, 11vw, 10rem);
+    aspect-ratio: 2000 / 1286;
+    margin-top: 0.75rem;
+    background: currentColor;
+    -webkit-mask: var(--logo-url) center / contain no-repeat;
+    mask: var(--logo-url) center / contain no-repeat;
   }
   .colo-nav ul {
     list-style: none;
