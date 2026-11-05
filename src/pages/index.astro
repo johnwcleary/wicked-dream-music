@@ -25,7 +25,7 @@ const [closeBefore = '', closeAfter = ''] = closing ? closing.line.split(headLas
 const closeRest = closeAfter.split(' ');
 const closeLast = closeRest.pop();
 const video = page.hero_video;
-const film = page.hero_film;
+const films = page.hero_films ?? [];
 
 const people = about.sections ?? [];
 ---
@@ -101,7 +101,7 @@ const people = about.sections ?? [];
             </div>
           </div>
           <div class="reel-one" data-reel-one />
-          {film && (
+          {films.map((film) => (
             <div class="reel-film" data-reel-film aria-hidden="true">
               <div class="reel-stage">
                 <Image
@@ -123,7 +123,7 @@ const people = about.sections ?? [];
                 </video>
               </div>
             </div>
-          )}
+          ))}
         </div>
       )
     }
@@ -156,7 +156,7 @@ const people = about.sections ?? [];
   <!-- 01 — Services -->
   <section id="services" class="sec wrap" aria-labelledby="services-title">
     <SectionHead id="services-title" title={servicesPage.headline} />
-    <ServiceGrid items={services} stills={[video?.poster, film?.poster]} />
+    <ServiceGrid items={services} stills={[video?.poster, films[0]?.poster]} />
     {
       customers && (
         <p class="customers" data-reveal>
@@ -315,6 +315,7 @@ const people = about.sections ?? [];
   .hero-cut {
     position: relative;
     background: var(--paper);
+    padding-bottom: 18svh;
     color: #000;
     mix-blend-mode: lighten;
   }
@@ -357,7 +358,7 @@ const people = about.sections ?? [];
   /* Large text for AA (24px or more), since it's also a window onto the footage. */
   .closing-note {
     display: block;
-    margin-top: 1.4em;
+    margin-top: 1.9em;
     text-align: center;
     font-size: clamp(1.5rem, 3.2vw, 3.25rem);
     font-weight: 600;
@@ -558,8 +559,12 @@ const people = about.sections ?? [];
 
     /* A pinned stage: the word stays put while the script changes the words around it.
        Both copies of the word share a box shape, so they line up exactly. */
+    /* The stage starts low, in the bottom third, and rises until the word reaches its place,
+       where it pins. */
     :global(html.js) .hero-track {
-      height: 190svh;
+      --rise: 36svh;
+      height: calc(225svh + var(--rise));
+      padding-top: var(--rise);
     }
     /* Sits above centre, leaving room under the word for the lines that arrive. */
     :global(html.js) .hero-stage {
@@ -568,7 +573,7 @@ const people = about.sections ?? [];
       justify-content: center;
       height: 100svh;
       min-height: 0;
-      padding-bottom: 24svh;
+      padding-bottom: 30svh;
     }
     :global(html.js) .run-old,
     :global(html.js) .closing-seg:not(.closing-rest) {
@@ -800,10 +805,11 @@ const people = about.sections ?? [];
   const video = document.querySelector<HTMLVideoElement>('[data-hero-video]');
   const toggles = Array.from(document.querySelectorAll<HTMLButtonElement>('[data-hero-toggle]'));
   if (hero && video && toggles.length) {
-    const filmHost = document.querySelector<HTMLElement>('[data-reel-film]');
-    const filmVideo = document.querySelector<HTMLVideoElement>('[data-film-video]');
     const clips = [{ video, host: hero, seen: true }];
-    if (filmHost && filmVideo) clips.push({ video: filmVideo, host: filmHost, seen: false });
+    document.querySelectorAll<HTMLElement>('[data-reel-film]').forEach((host) => {
+      const clip = host.querySelector<HTMLVideoElement>('[data-film-video]');
+      if (clip) clips.push({ video: clip, host, seen: false });
+    });
     const founderHost = document.querySelector<HTMLElement>('[data-founder]');
     const founderVideo = document.querySelector<HTMLVideoElement>('[data-founder-video]');
     if (founderHost && founderVideo) clips.push({ video: founderVideo, host: founderHost, seen: false });
@@ -823,6 +829,24 @@ const people = about.sections ?? [];
         } else clip.video.pause();
       }
     };
+    // The logo plays while the hero or founder section is on screen, where a pause control is
+    // within reach, and rests on its still everywhere else.
+    const markVideo = document.querySelector<HTMLVideoElement>('[data-mark-video]');
+    const markHost = markVideo?.closest<HTMLElement>('.mark');
+    if (markVideo && markHost) {
+      const markClip = { video: markVideo, host: markHost, seen: true };
+      clips.push(markClip);
+      const areas = new Set<Element>();
+      const areaWatch = new IntersectionObserver((entries) => {
+        for (const e of entries) {
+          if (e.isIntersecting) areas.add(e.target);
+          else areas.delete(e.target);
+        }
+        markClip.seen = areas.size > 0;
+        sync();
+      });
+      [hero, founderHost].forEach((el) => el && areaWatch.observe(el));
+    }
     for (const clip of clips) clip.video.addEventListener('playing', () => clip.host.classList.add('is-playing'));
     for (const toggle of toggles) {
       toggle.addEventListener('click', () => {
@@ -844,7 +868,7 @@ const people = about.sections ?? [];
       sync();
     });
     cover.forEach((el) => firstWatch.observe(el));
-    for (const clip of clips.slice(1)) {
+    for (const clip of clips.slice(1).filter((c) => c.host !== markHost)) {
       new IntersectionObserver(
         ([e]) => {
           clip.seen = !!e?.isIntersecting;
@@ -907,8 +931,9 @@ const people = about.sections ?? [];
         titleScale = 28 / parseFloat(getComputedStyle(reelText).fontSize);
       }
       if (track) {
-        trackTop = track.getBoundingClientRect().top + scrollY;
-        trackSpan = track.offsetHeight - innerHeight;
+        const rise = parseFloat(getComputedStyle(track).paddingTop) || 0;
+        trackTop = track.getBoundingClientRect().top + scrollY + rise;
+        trackSpan = track.offsetHeight - rise - innerHeight;
       }
       if (soundWord && soundSlot && closingLine) {
         // Lay the closing line over the headline so its gap sits exactly on the word.
@@ -927,8 +952,8 @@ const people = about.sections ?? [];
     const render = (y: number) => {
       const smooth = (t: number) => t * t * (3 - 2 * t);
       const p = trackSpan > 0 ? seg(y, trackTop, trackTop + trackSpan) : 0;
-      const out = smooth(seg(p, 0.03, 0.42));
-      const arrive = smooth(seg(p, 0.32, 0.72));
+      const out = smooth(seg(p, 0.02, 0.3));
+      const arrive = smooth(seg(p, 0.23, 0.52));
       for (const el of oldWords) {
         el.style.opacity = String(1 - out);
         el.style.transform = out > 0 ? `translate3d(0, ${out * -38}%, 0)` : '';
@@ -937,7 +962,7 @@ const people = about.sections ?? [];
         el.style.opacity = String(arrive);
         el.style.transform = `translate3d(0, ${(1 - arrive) * 38}%, 0)`;
       }
-      if (closingNote) closingNote.style.opacity = String(smooth(seg(p, 0.55, 0.88)));
+      if (closingNote) closingNote.style.opacity = String(smooth(seg(p, 0.4, 0.63)));
       // Over the first screen of the reel the line shrinks to the top and the shade clears.
       const clear = reel ? seg(y, reelTop, reelTop + innerHeight * 0.7) : 0;
       const ease = clear * clear * (3 - 2 * clear);

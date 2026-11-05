@@ -66,11 +66,15 @@ const pictures = await Promise.all(
     display: none;
   }
   /* Sits right beside the title, level with its lowercase letters. */
+  /* The padding is a larger target for the mouse, without moving the mark. */
   .svc-icon {
     grid-area: 1 / 2;
     position: relative;
+    box-sizing: content-box;
     width: clamp(1.25rem, 2vw, 1.75rem);
     aspect-ratio: 1;
+    margin: -0.75rem;
+    padding: 0.75rem;
     translate: 0 0.15em;
   }
   .svc-icon::before,
@@ -78,8 +82,8 @@ const pictures = await Promise.all(
     content: '';
     position: absolute;
     top: 50%;
-    left: 0;
-    width: 100%;
+    left: 0.75rem;
+    right: 0.75rem;
     height: 1.5px;
     background: var(--ink);
     transition: transform 0.5s var(--ease-out);
@@ -181,3 +185,28 @@ const pictures = await Promise.all(
     }
   }
 </style>
+
+<script>
+  // Mousing over the + opens the row until the mouse leaves it; a click keeps it open.
+  // Keyboard and touch use the summary as normal.
+  if (matchMedia('(hover: hover)').matches) {
+    document.querySelectorAll<HTMLDetailsElement>('details.svc').forEach((row) => {
+      let byHover = false;
+      row.querySelector('.svc-icon')?.addEventListener('pointerenter', () => {
+        if (row.open) return;
+        row.open = true;
+        byHover = true;
+      });
+      row.querySelector('summary')?.addEventListener('click', (e) => {
+        if (!byHover) return;
+        e.preventDefault();
+        byHover = false;
+      });
+      row.addEventListener('pointerleave', () => {
+        if (!byHover) return;
+        row.open = false;
+        byHover = false;
+      });
+    });
+  }
+</script>
