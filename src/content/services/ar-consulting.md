@@ -6,8 +6,7 @@ summary: "Talent scouting, song selection, and development for your roster, back
 bullets:
   - "Artist development services for your roster"
   - "Talent discovery and evaluation"
-  - "Song selection and repertoire strategy"
-  - "Artist and collaborator management"
+  - "Roster and repertoire strategy"
 offerings:
   - name: "Artist development services for your roster"
     icon: "people"
@@ -15,10 +14,7 @@ offerings:
   - name: "Talent discovery and evaluation"
     icon: "listen"
     definition: "We listen for a voice or point of view that is already unmistakable, then tell you honestly how far we think it can go."
-  - name: "Song selection and repertoire strategy"
+  - name: "Roster and repertoire strategy"
     icon: "setlist"
-    definition: "Every song an artist releases teaches listeners what to expect from them. We choose repertoire that sharpens that picture, release by release."
-  - name: "Artist and collaborator management"
-    icon: "network"
-    definition: "Who an artist works with ends up in how they sound. We match writers and producers to the sound we're building, and keep those relationships on track."
+    definition: "Every signing and every song teaches listeners what to expect. We shape the roster and its repertoire to sharpen that picture, release by release."
 ---

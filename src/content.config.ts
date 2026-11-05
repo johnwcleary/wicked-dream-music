@@ -65,6 +65,8 @@ const pages = defineCollection({
         mobile_mp4: z.string().optional(),
       })
       .optional(),
+    // A short section above the page's content on the home page.
+    story: z.object({ title: z.string(), body: z.string() }).optional(),
     // A short title over the page's content when it's shown as a home page section.
     section_title: z.string().optional(),
     // Who the company has worked for: a lead-in, then the names as a sentence.
@@ -119,7 +121,7 @@ const services = defineCollection({
         z.object({
           name: z.string(),
           definition: z.string(),
-          icon: z.enum(['compass', 'pencil', 'faders', 'microphone', 'ticket', 'waveform', 'disc', 'people', 'listen', 'setlist', 'network']),
+          icon: z.enum(['compass', 'faders', 'microphone', 'ticket', 'waveform', 'disc', 'people', 'listen', 'setlist']),
         }),
       )
       .optional(),

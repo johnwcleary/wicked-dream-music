@@ -3,6 +3,9 @@ title: About
 headline: "Creative by nature."
 lede: "We're an independent company that works worldwide, and we think the strongest music comes from artists who know who they are."
 eyebrow: "New York / Worldwide"
+story:
+  title: "Our story"
+  body: "Wicked Dream Music is a founder-led artist development company serving independent artists and labels. We believe how an artist sounds is the most important part of their brand. We connect the craft of production and songwriting to an artist's expression and emotion, helping them become the best version of themselves."
 section_title: "Our founder"
 sections:
   - heading: "David Kim"
