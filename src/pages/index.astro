@@ -415,7 +415,6 @@ const people = about.sections ?? [];
     font-style: italic;
   }
   .closing {
-    width: fit-content;
     margin: 1.5rem 0 0;
     font-size: var(--run-size);
     line-height: 0.95;
@@ -970,6 +969,12 @@ const people = about.sections ?? [];
         const word = soundWord.getBoundingClientRect();
         const slot = soundSlot.getBoundingClientRect();
         closingLine.style.transform = `translate3d(${word.left - slot.left}px, ${word.top - slot.top}px, 0)`;
+        // The note centres on the page, wherever that leaves the lines above it.
+        if (closingNote) {
+          closingNote.style.translate = '';
+          const note = closingNote.getBoundingClientRect();
+          closingNote.style.translate = `${document.documentElement.clientWidth / 2 - (note.left + note.width / 2)}px`;
+        }
       }
       if (founder) {
         const f = founder.getBoundingClientRect();
