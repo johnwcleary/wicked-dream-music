@@ -81,7 +81,7 @@ Chosen from an in-page audition of 6 palettes × 5 type pairings. The comparison
 - A small "pause video" control in the hero's footer row pauses and plays both loops, which WCAG 2.2.2 requires for video that keeps moving.
 - The poster is the LCP image.
 
-Everything below the films, from the about section through the footer, has tighter margins than the hero and left-aligns its text on one line near the middle of the page, where "artist development" starts when centred. The service boxes and the playlist keep the full width.
+Everything below the films, from the about section through the footer, has tighter margins than the hero and left-aligns its text on one line near the middle of the page, where "artist development" starts. The two service titles are centred, and the service boxes and the playlist share one narrower width.
 
 **Old routes.** `/about`, `/services`, `/work` and `/contact` redirect to their sections (static meta-refresh pages; Phase 2 should replace these with real 301s in the host's redirect config).
 
