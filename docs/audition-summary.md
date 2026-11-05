@@ -83,6 +83,8 @@ Chosen from an in-page audition of 6 palettes × 5 type pairings. The comparison
 
 Everything below the films, from the about section through the footer, has tighter margins than the hero and left-aligns its text on one line near the middle of the page, where "artist development" starts. The two service titles are centred, and the service boxes and the playlist share one narrower width.
 
+**Favicon.** The WD mark from John's logo, white on the site's near-black (`public/favicon.svg`, with PNGs for browsers and phones that don't use the SVG).
+
 **Old routes.** `/about`, `/services`, `/work` and `/contact` redirect to their sections (static meta-refresh pages; Phase 2 should replace these with real 301s in the host's redirect config).
 
 **Motion** (all off under reduced motion):
