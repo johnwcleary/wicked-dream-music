@@ -89,14 +89,17 @@ test('the pause control stops every loop and starts them again', async ({ page }
   await expect.poll(playing).toBeGreaterThan(0);
 });
 
-test('each service opens to offerings with an icon and a definition', async ({ page }) => {
+test('each service starts open on offerings with an icon and a definition', async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 800 });
   await page.goto('/');
   const rows = page.locator('details.svc');
   await expect(rows).toHaveCount(2);
   await expect(page.locator('.svc-item')).toHaveCount(11);
   await expect(page.locator('.svc-item svg')).toHaveCount(11);
-  await expect(page.locator('.svc-item .svc-def').first()).toBeHidden();
+  for (const row of await rows.all()) await expect(row.locator('.svc-def').first()).toBeVisible();
+  await rows.first().locator('summary').click();
+  await expect(rows.first().locator('.svc-def').first()).toBeHidden();
   await rows.first().locator('summary').click();
   await expect(rows.first().locator('.svc-def').first()).toBeVisible();
+  await expect(page.locator('a[href^="mailto:"]').first()).toHaveAttribute('href', /wickeddreammusic@gmail\.com/);
 });

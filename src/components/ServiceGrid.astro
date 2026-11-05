@@ -1,8 +1,8 @@
 ---
 /**
  * The services, one under the other. Each title is a window onto a still from the
- * films, which drifts as the page scrolls, and opens (native <details>) to its offerings,
- * each with an icon and a definition.
+ * films, which drifts as the page scrolls, and starts open (native <details>) on its
+ * offerings, each with an icon and a definition.
  */
 import type { ImageMetadata } from 'astro';
 import { getImage } from 'astro:assets';
@@ -25,7 +25,7 @@ const pictures = await Promise.all(
     items.map((s, i) => {
       const picture = pictures[i % Math.max(pictures.length, 1)];
       return (
-        <details class="svc" id={`services-${anchor(s.id)}`}>
+        <details class="svc" id={`services-${anchor(s.id)}`} open>
           <summary class="svc-head">
             <h3 class="svc-title display" style={picture ? `--still: url('${picture.src}')` : undefined} data-reveal>
               {s.data.title}
@@ -214,30 +214,3 @@ const pictures = await Promise.all(
     }
   }
 </style>
-
-<script>
-  // Mousing over a row's words or + opens it until the mouse leaves the row; a click keeps it
-  // open. Keyboard and touch use the summary as normal.
-  if (matchMedia('(hover: hover)').matches) {
-    document.querySelectorAll<HTMLDetailsElement>('details.svc').forEach((row) => {
-      let byHover = false;
-      row.querySelectorAll('.svc-title, .svc-for, .svc-icon').forEach((part) =>
-        part.addEventListener('pointerenter', () => {
-          if (row.open) return;
-          row.open = true;
-          byHover = true;
-        }),
-      );
-      row.querySelector('summary')?.addEventListener('click', (e) => {
-        if (!byHover) return;
-        e.preventDefault();
-        byHover = false;
-      });
-      row.addEventListener('pointerleave', () => {
-        if (!byHover) return;
-        row.open = false;
-        byHover = false;
-      });
-    });
-  }
-</script>

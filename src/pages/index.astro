@@ -1,6 +1,6 @@
 ---
 import { Image } from 'astro:assets';
-import logoUrl from '../assets/brand/wdm-lockup-white.svg?url';
+import logoUrl from '../assets/brand/wdm-lockup-white.webp?url';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import SectionHead from '../components/SectionHead.astro';
 import ServiceGrid from '../components/ServiceGrid.astro';
@@ -332,7 +332,7 @@ const people = about.sections ?? [];
   .opening-logo {
     display: block;
     width: min(clamp(14rem, 34vw, 30rem), 80svh);
-    aspect-ratio: 324 / 208.3;
+    aspect-ratio: 2000 / 1286;
     background: #fff;
     -webkit-mask: var(--logo-url) center / contain no-repeat;
     mask: var(--logo-url) center / contain no-repeat;
