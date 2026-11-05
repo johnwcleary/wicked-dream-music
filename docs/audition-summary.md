@@ -69,8 +69,8 @@ Chosen from an in-page audition of 6 palettes × 5 type pairings. The comparison
 
 **Page order.**
 1. **Hero.** The page opens on the ALL MY GIRLS loop at full screen, with the white Wicked Dream Music logo centred (`src/assets/brand/wdm-lockup-white.webp`, John's own clean export at 2000px, larger than the hero ever draws it), an "artist development and a&r consulting" pill and the nav centred at the top, drawing on AWAL's opening. A beige sheet then scrolls up over the footage, with the type as a window onto it. "artist development starts with *sound*" pins, and "sound" stays exactly where it is while the other words leave and "your … is your *brand*" arrives around it, then "let's develop it together", centred on the page beneath them. "sound" and "brand" share a left edge, with "your" and "is your" set against it; on phones all four stack on that edge. Next, "our work" sits over the IMIN film and shrinks to the top, followed by a loop from Torri Wolff's "Colours", then the ALICE loop last, all full screen. The words and films are in `pages/home.md` (`headline`, `hero_closing`, `hero_video`, `hero_films`); the closing line must contain the headline's last word. With reduced motion or no JS the type is still and stacked, over the posters.
-2. **About** (`#about`). "our founder", then David Kim's name with his bio right beside it, straight after the last film, on the page's own background so it flows into services. Both are in `pages/about.md`.
-3. **Services** (`#services`). An "our services" title, then artist development (for artists) with a&r consulting (for music companies) under it. Each title is filled with a still from one of the films, drifting as you scroll, and starts open on a compact grid of its offerings, which the + closes. "customers include: …" sits small and left-aligned under a&r consulting, set in `pages/services.md` (`customers`); John supplied the names, so confirm they can be named.
+2. **About** (`#about`). "our founder", then David Kim's name with his bio under it, straight after the last film, on the page's own background so it flows into services. Both are in `pages/about.md`.
+3. **Services** (`#services`). An "our services" title, then artist development (for artists) with a&r consulting (for music companies) under it. Each title is filled with a still from one of the films, drifting as you scroll, and starts open on a compact grid of its offerings, which the + closes. "customers include: …" sits small under a&r consulting, set in `pages/services.md` (`customers`); John supplied the names, so confirm they can be named.
 4. **Selected works** (`#work`). A large centred title over one embedded Spotify playlist, set in `pages/work.md` (`playlist`). **The current playlist is a placeholder from John.** The iframe loads lazily as it nears the screen, and Spotify may set cookies once it loads, so check that against the privacy policy.
 5. **Contact** (`#contact`). The headline, intro and one giant `mailto:` link. **The form was removed at John's request.** Phase 2 needs no form backend for this direction.
 
@@ -80,6 +80,8 @@ Chosen from an in-page audition of 6 palettes × 5 type pairings. The comparison
 - The loop starts after the page has loaded, pauses off-screen, and never autoplays for visitors with reduced motion turned on.
 - A small "pause video" control in the hero's footer row pauses and plays both loops, which WCAG 2.2.2 requires for video that keeps moving.
 - The poster is the LCP image.
+
+Everything below the films, from the about section through the footer, is centred, with tighter margins than the hero.
 
 **Old routes.** `/about`, `/services`, `/work` and `/contact` redirect to their sections (static meta-refresh pages; Phase 2 should replace these with real 301s in the host's redirect config).
 
