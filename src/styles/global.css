@@ -119,12 +119,27 @@
     --gutter: clamp(0.75rem, 1.4vw, 1.25rem);
     --svc-title-size: calc((100vw - 2 * var(--gutter) - 3rem) / 8.4);
     --text-left: calc(50% - 3.872 * var(--svc-title-size));
+    --block-width: 100%; /* the service boxes and the playlist */
+  }
+  @media (min-width: 700px) {
+    .sec,
+    .band,
+    .site-footer {
+      --block-width: 92%;
+    }
   }
   @media (min-width: 768px) {
     .sec,
     .band,
     .site-footer {
       --svc-title-size: clamp(3rem, 5.8vw, 6.25rem);
+    }
+  }
+  @media (min-width: 1100px) {
+    .sec,
+    .band,
+    .site-footer {
+      --block-width: min(82%, 78rem);
     }
   }
   .grid12 {
