@@ -215,7 +215,30 @@
    Color audition. Remove the one not chosen, and the picker in BaseLayout.
 ------------------------------------------------------------------- */
 
-/* 1. Black: the site's own colors in :root, near-black on beige, with no overrides. */
+/* 1. Black: the site's own colors in :root, near-black on beige, with a little of the logo's
+   lavender rising from the screen's bottom right corner. The hero covers it, so it starts at
+   the about section. At its strongest the muted text keeps 4.6:1, and the deeper type windows
+   keep 3.1:1. */
+html[data-palette='black'] {
+  --lift: 58%;
+}
+html[data-palette='black'] body {
+  background: transparent;
+}
+html[data-palette='black'] body::before {
+  content: '';
+  position: fixed;
+  inset: 0 0 auto;
+  z-index: -1;
+  height: 100lvh;
+  background: radial-gradient(
+    90vmax 70vmax at 100% 100%,
+    color-mix(in srgb, var(--wdm-lavender) 55%, transparent) 0,
+    color-mix(in srgb, var(--wdm-lavender) 20%, transparent) 40%,
+    color-mix(in srgb, var(--wdm-lavender) 6%, transparent) 70%,
+    transparent 100%
+  );
+}
 
 /* 2. Purple: the logo PDF's radial gradient, plum edge to lilac heart, on a dark site.
    Footage stays untinted except inside type.
