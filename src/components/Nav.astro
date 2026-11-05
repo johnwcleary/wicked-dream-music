@@ -54,15 +54,15 @@ const site = await getSite();
       transparent 100%
     );
   }
-  /* Over the full-screen films the header turns light, on a dark scrim. */
+  /* Over the full-screen films the header turns light, on a neutral scrim. */
   :global(html:is(.on-reel, .on-intro):not(.menu-open)) .site-header {
     color: var(--on-shade);
   }
   :global(html:is(.on-reel, .on-intro):not(.menu-open)) .site-header::before {
     background: linear-gradient(
       to bottom,
-      color-mix(in srgb, var(--shade) 85%, transparent) 0%,
-      color-mix(in srgb, var(--shade) 70%, transparent) 45%,
+      color-mix(in srgb, var(--scrim) 70%, transparent) 0%,
+      color-mix(in srgb, var(--scrim) 55%, transparent) 45%,
       transparent 100%
     );
   }

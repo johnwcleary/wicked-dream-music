@@ -106,8 +106,8 @@ const people = about.sections ?? [];
       closing?.outro && (
         <div class="reel" data-reel>
           <div class="reel-top">
-            <span class="reel-wash" data-reel-wash />
             <span class="reel-edge" data-reel-edge />
+            <span class="reel-foot" />
             <div class="reel-title" data-reel-title>
               <p class="reel-text display" data-reel-text>
                 {closing.outro}
@@ -318,8 +318,8 @@ const people = about.sections ?? [];
   .hero.is-playing .hero-frame :global(.hero-poster) {
     opacity: 0;
   }
-  /* The opening: a light shade over the footage, deeper behind the footer row to keep its
-     small text AA, with the logo centred and one pill beneath it. */
+  /* The opening: the footage untouched, with a neutral fade only behind the footer row to
+     keep its small text AA, the logo centred and one pill beneath it. */
   .opening {
     position: relative;
     display: grid;
@@ -329,14 +329,7 @@ const people = about.sections ?? [];
     gap: clamp(1.5rem, 3vw, 2.5rem);
     height: 100svh;
     padding: var(--header-h) var(--gutter) 3.5rem;
-    background: var(
-      --opening-ground,
-      linear-gradient(
-        to bottom,
-        color-mix(in srgb, var(--shade) 30%, transparent) calc(100% - 9rem),
-        color-mix(in srgb, var(--shade) 80%, transparent) calc(100% - 3rem)
-      )
-    );
+    background: linear-gradient(to bottom, transparent calc(100% - 7rem), color-mix(in srgb, var(--scrim) 70%, transparent) calc(100% - 1rem));
     color: var(--on-shade);
   }
   .opening-logo {
@@ -485,24 +478,27 @@ const people = about.sections ?? [];
     text-align: center;
     pointer-events: none;
   }
-  .reel-wash,
-  .reel-edge {
+  .reel-edge,
+  .reel-foot {
     position: absolute;
     inset: 0;
   }
-  .reel-wash {
-    background: var(--wash-ground, color-mix(in srgb, var(--shade) var(--wash), transparent));
-  }
-  /* Once the line has shrunk: enough shade behind it and the footer row to stay AA. */
+  /* The films run untouched. A neutral fade sits only behind the small text: the shrunken
+     line, once it has shrunk, and the footer row. */
   .reel-edge {
     opacity: 0;
     background: linear-gradient(
       to bottom,
-      color-mix(in srgb, var(--shade) var(--edge), transparent) 0,
-      color-mix(in srgb, var(--shade) var(--edge), transparent) 8.5rem,
-      transparent 17rem,
-      transparent calc(100svh - 11rem),
-      color-mix(in srgb, var(--shade) 80%, transparent) calc(100svh - 3rem)
+      color-mix(in srgb, var(--scrim) 55%, transparent) 0,
+      color-mix(in srgb, var(--scrim) 55%, transparent) 8rem,
+      transparent 13rem
+    );
+  }
+  .reel-foot {
+    background: linear-gradient(
+      to bottom,
+      transparent calc(100svh - 7rem),
+      color-mix(in srgb, var(--scrim) 70%, transparent) calc(100svh - 1rem)
     );
   }
   .reel-title {
@@ -512,6 +508,10 @@ const people = about.sections ?? [];
     margin: 0;
     font-size: min(24svh, 19vw);
     white-space: nowrap;
+    /* No shade behind the big line, so a soft shadow holds it over bright footage. */
+    text-shadow:
+      0 0 0.12em color-mix(in srgb, var(--scrim) 45%, transparent),
+      0 0 0.5em color-mix(in srgb, var(--scrim) 45%, transparent);
   }
   .reel-film {
     position: relative;
@@ -735,8 +735,8 @@ const people = about.sections ?? [];
     padding-block: clamp(1.75rem, 3.5vw, 3.25rem);
     scroll-margin-top: 4rem;
   }
-  /* About — the name right beside the bio, in light type over the footage. The 65% ink
-     keeps the bio at 5.2:1 over white footage. */
+  /* About — the name right beside the bio, in light type over the footage. A neutral 65%
+     shade keeps the bio at 5.3:1 or better over white footage. */
   .founder {
     position: relative;
     isolation: isolate;
@@ -773,8 +773,7 @@ const people = about.sections ?? [];
     position: absolute;
     inset: 0;
     z-index: 2;
-    background: var(--founder-ground, color-mix(in srgb, var(--shade) 65%, transparent));
-    mix-blend-mode: var(--founder-blend, normal);
+    background: color-mix(in srgb, var(--scrim) 65%, transparent);
   }
   .founder-inner {
     padding-block: calc(var(--header-h) + 0.75rem) clamp(1.25rem, 2.5vw, 2rem);
@@ -1063,7 +1062,6 @@ const people = about.sections ?? [];
   const reel = document.querySelector<HTMLElement>('[data-reel]');
   const reelTitle = document.querySelector<HTMLElement>('[data-reel-title]');
   const reelText = document.querySelector<HTMLElement>('[data-reel-text]');
-  const reelWash = document.querySelector<HTMLElement>('[data-reel-wash]');
   const reelEdge = document.querySelector<HTMLElement>('[data-reel-edge]');
   if (hero && matchMedia('(prefers-reduced-motion: no-preference)').matches) {
     const seg = (v: number, from: number, to: number) => Math.min(1, Math.max(0, (v - from) / (to - from)));
@@ -1135,7 +1133,6 @@ const people = about.sections ?? [];
       const ease = clear * clear * (3 - 2 * clear);
       if (frame) frame.style.transform = `scale(${1 + seg(y, heroTop, reelTop || heroTop + 1) * 0.16 * (1 - ease)})`;
       if (reelTitle) reelTitle.style.transform = `translate3d(0, ${-titleLift * ease}px, 0) scale(${1 + (titleScale - 1) * ease})`;
-      if (reelWash) reelWash.style.opacity = String(1 - ease);
       if (reelEdge) reelEdge.style.opacity = String(ease);
       if (reel) {
         // The line arrives once the sheet has lifted about halfway off the footage.
