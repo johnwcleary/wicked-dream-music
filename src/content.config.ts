@@ -110,7 +110,7 @@ const pages = defineCollection({
 
 const services = defineCollection({
   loader: glob({ pattern: '*.md', base: './src/content/services' }),
-  schema: z.object({
+  schema: ({ image }) => z.object({
     order: z.number().int(),
     category: z.string(),
     title: z.string(),
@@ -122,7 +122,7 @@ const services = defineCollection({
         z.object({
           name: z.string(),
           definition: z.string(),
-          icon: z.enum(['compass', 'faders', 'microphone', 'ticket', 'waveform', 'disc', 'people', 'listen', 'setlist']),
+          icon: z.enum(['compass', 'faders', 'microphone', 'ticket', 'waveform', 'disc', 'people', 'listen', 'setlist', 'film', 'send', 'pencil']),
         }),
       )
       .optional(),
