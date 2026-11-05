@@ -86,12 +86,12 @@ const pages = defineCollection({
     hero_films: z
       .array(
         z.object({
-            title: z.string(),
-            poster: image(),
-            mp4: z.string(),
-            webm: z.string().optional(),
-            mobile_mp4: z.string().optional(),
-            mobile_webm: z.string().optional(),
+          title: z.string(),
+          poster: image(),
+          mp4: z.string(),
+          webm: z.string().optional(),
+          mobile_mp4: z.string().optional(),
+          mobile_webm: z.string().optional(),
         }),
       )
       .optional(),
