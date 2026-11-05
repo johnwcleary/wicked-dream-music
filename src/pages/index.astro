@@ -54,9 +54,7 @@ const people = about.sections ?? [];
               class="hero-poster"
             />
             <video class="hero-video" muted loop playsinline preload="none" disablepictureinpicture data-hero-video>
-              {video.mobile_webm && <source src={video.mobile_webm} type="video/webm" media="(max-width: 767px)" />}
               {video.mobile_mp4 && <source src={video.mobile_mp4} type="video/mp4" media="(max-width: 767px)" />}
-              {video.webm && <source src={video.webm} type="video/webm" />}
               <source src={video.mp4} type="video/mp4" />
             </video>
           </div>
@@ -130,9 +128,7 @@ const people = about.sections ?? [];
                   class="film-poster"
                 />
                 <video class="film-video" muted loop playsinline preload="none" disablepictureinpicture data-film-video>
-                  {film.mobile_webm && <source src={film.mobile_webm} type="video/webm" media="(max-width: 767px)" />}
                   {film.mobile_mp4 && <source src={film.mobile_mp4} type="video/mp4" media="(max-width: 767px)" />}
-                  {film.webm && <source src={film.webm} type="video/webm" />}
                   <source src={film.mp4} type="video/mp4" />
                 </video>
               </div>
@@ -191,9 +187,7 @@ const people = about.sections ?? [];
             class="founder-poster"
           />
           <video class="founder-video" muted loop playsinline preload="none" disablepictureinpicture data-founder-video>
-            {video.mobile_webm && <source src={video.mobile_webm} type="video/webm" media="(max-width: 767px)" />}
             {video.mobile_mp4 && <source src={video.mobile_mp4} type="video/mp4" media="(max-width: 767px)" />}
-            {video.webm && <source src={video.webm} type="video/webm" />}
             <source src={video.mp4} type="video/mp4" />
           </video>
           <span class="founder-shade" />
@@ -287,11 +281,13 @@ const people = about.sections ?? [];
   /* Media stack: optimised poster (the LCP image) and the loop over it once it
      plays. The grade is baked into the footage and poster, so nothing is filtered
      per frame. */
+  /* The large viewport height, so footage reaches the foot of the screen on phones when
+     the browser's toolbar collapses. */
   .hero-media {
     position: sticky;
     top: 0;
-    height: 100svh;
-    margin-bottom: -100svh;
+    height: 100lvh;
+    margin-bottom: -100lvh;
     overflow: clip;
   }
   .hero-frame {
@@ -306,12 +302,14 @@ const people = about.sections ?? [];
     height: 100%;
     object-fit: cover;
   }
-  .hero-video {
-    opacity: 0;
+  /* The poster sits over the video and fades once it plays. A video with no opacity stays
+     eligible to play on iPhones, which can hold back video they consider hidden. */
+  .hero-frame :global(.hero-poster) {
+    z-index: 1;
     transition: opacity 1.2s var(--ease-out);
   }
-  .hero.is-playing .hero-video {
-    opacity: 1;
+  .hero.is-playing .hero-frame :global(.hero-poster) {
+    opacity: 0;
   }
   /* The opening: a light shade over the footage, deeper behind the footer row to keep its
      small text AA, with the logo centred and one pill beneath it. */
@@ -462,7 +460,7 @@ const people = about.sections ?? [];
     z-index: 3;
     display: grid;
     place-items: center;
-    height: 100svh;
+    height: 100lvh;
     overflow: clip;
     color: var(--paper);
     text-align: center;
@@ -484,8 +482,8 @@ const people = about.sections ?? [];
       color-mix(in srgb, var(--ink) 55%, transparent) 0,
       color-mix(in srgb, var(--ink) 55%, transparent) 8.5rem,
       transparent 17rem,
-      transparent calc(100% - 11rem),
-      color-mix(in srgb, var(--ink) 80%, transparent) calc(100% - 3rem)
+      transparent calc(100svh - 11rem),
+      color-mix(in srgb, var(--ink) 80%, transparent) calc(100svh - 3rem)
     );
   }
   .reel-title {
@@ -503,7 +501,7 @@ const people = about.sections ?? [];
   }
   .reel-stage {
     position: relative;
-    height: 100svh;
+    height: 100lvh;
     overflow: clip;
   }
   .reel-stage :global(.film-poster),
@@ -514,12 +512,12 @@ const people = about.sections ?? [];
     height: 100%;
     object-fit: cover;
   }
-  .film-video {
-    opacity: 0;
+  .reel-stage :global(.film-poster) {
+    z-index: 1;
     transition: opacity 0.8s var(--ease-out);
   }
-  .reel-film.is-playing .film-video {
-    opacity: 1;
+  .reel-film.is-playing :global(.film-poster) {
+    opacity: 0;
   }
 
   .hero-bar {
@@ -570,7 +568,7 @@ const people = about.sections ?? [];
     :global(html.js) .reel-top {
       position: sticky;
       top: 0;
-      margin-bottom: -100svh;
+      margin-bottom: -100lvh;
     }
     :global(html.js) .reel-title {
       will-change: transform;
@@ -744,12 +742,12 @@ const people = about.sections ?? [];
     height: 100%;
     object-fit: cover;
   }
-  .founder-video {
-    opacity: 0;
+  .founder-media :global(.founder-poster) {
+    z-index: 1;
     transition: opacity 1.2s var(--ease-out);
   }
-  .founder.is-playing .founder-video {
-    opacity: 1;
+  .founder.is-playing :global(.founder-poster) {
+    opacity: 0;
   }
   .founder-shade {
     position: absolute;
@@ -847,7 +845,8 @@ const people = about.sections ?? [];
   // The loops: they start after the page has loaded (so they never compete with the
   // poster image), pause off-screen and never autoplay under reduced motion. The small
   // pause controls, in the hero's footer row and the founder section, work on all of them
-  // (WCAG 2.2.2).
+  // (WCAG 2.2.2). Some phones block autoplay, in Low Power Mode for example: the posters stay
+  // up, the controls offer play, and the next tap anywhere starts the videos.
   const hero = document.getElementById('top');
   const video = document.querySelector<HTMLVideoElement>('[data-hero-video]');
   const toggles = Array.from(document.querySelectorAll<HTMLButtonElement>('[data-hero-toggle]'));
@@ -864,21 +863,54 @@ const people = about.sections ?? [];
     let wanted = !matchMedia('(prefers-reduced-motion: reduce)').matches; // play unless paused or reduced motion
     let started = false;
 
+    let blocked = false;
+    let armed = false;
+    let unblockedAt = 0;
     const render = () => {
-      for (const toggle of toggles) toggle.textContent = (wanted ? toggle.dataset.pause : toggle.dataset.play) ?? '';
+      for (const toggle of toggles) toggle.textContent = (wanted && !blocked ? toggle.dataset.pause : toggle.dataset.play) ?? '';
+    };
+    const onBlocked = (error: unknown) => {
+      if ((error as Error)?.name !== 'NotAllowedError') return;
+      blocked = true;
+      render();
+      if (armed) return;
+      armed = true;
+      document.addEventListener('click', unblock, { capture: true });
+      document.addEventListener('touchend', unblock, { capture: true, passive: true });
+    };
+    // Inside a tap the browser allows play(), and a video started once can play from then on.
+    const unblock = () => {
+      armed = false;
+      unblockedAt = Date.now();
+      document.removeEventListener('click', unblock, { capture: true });
+      document.removeEventListener('touchend', unblock, { capture: true });
+      blocked = false;
+      render();
+      if (!wanted) return;
+      for (const clip of clips) {
+        clip.video.preload = 'auto';
+        clip.video
+          .play()
+          .then(() => {
+            if (!clip.seen) clip.video.pause();
+          })
+          .catch(onBlocked);
+      }
     };
     const sync = () => {
       if (!started) return;
       for (const clip of clips) {
         if (wanted && clip.seen) {
           clip.video.preload = 'auto';
-          clip.video.play().catch(() => {});
+          clip.video.play().catch(onBlocked);
         } else clip.video.pause();
       }
     };
     for (const clip of clips) clip.video.addEventListener('playing', () => clip.host.classList.add('is-playing'));
     for (const toggle of toggles) {
       toggle.addEventListener('click', () => {
+        // The tap that unblocked the videos has already started them.
+        if (blocked || Date.now() - unblockedAt < 800) return;
         wanted = !wanted;
         render();
         sync();
@@ -956,7 +988,8 @@ const people = about.sections ?? [];
         reelEnd = r.bottom + scrollY;
         // The line ends just under the header, small enough to watch the film beneath it.
         const header = document.querySelector<HTMLElement>('.site-header')?.offsetHeight ?? 0;
-        titleLift = innerHeight / 2 - (header + 36);
+        const reelFrame = reelText.closest<HTMLElement>('.reel-top');
+        titleLift = (reelFrame?.offsetHeight ?? innerHeight) / 2 - (header + 36);
         titleScale = 28 / parseFloat(getComputedStyle(reelText).fontSize);
       }
       if (track) {
