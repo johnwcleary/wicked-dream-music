@@ -46,7 +46,7 @@ const pictures = await Promise.all(
           {s.data.brands && (
             <ul class="svc-brands" aria-label="Brands">
               {s.data.brands.map((brand) => (
-                <li>{brand.logo ? <Image src={brand.logo} alt={brand.name} height={40} class="svc-brand-logo" /> : brand.name}</li>
+                <li>{brand.logo ? <Image src={brand.logo} alt={brand.name} height={144} class="svc-brand-logo" /> : brand.name}</li>
               ))}
             </ul>
           )}
@@ -140,14 +140,14 @@ const pictures = await Promise.all(
     padding: clamp(1.25rem, 2.5vw, 2rem) 0 clamp(0.75rem, 1.5vw, 1.25rem);
     list-style: none;
   }
-  /* Names until logo files are supplied. */
+  /* A brand without a logo file shows its name. */
   .svc-brands {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
     align-items: center;
-    gap: 0.5rem clamp(1.5rem, 4vw, 3.5rem);
-    margin: clamp(0.5rem, 1.5vw, 1rem) 0 0;
+    gap: 1rem clamp(1.5rem, 4vw, 3.5rem);
+    margin: clamp(1rem, 2vw, 1.75rem) 0 0;
     padding: 0;
     list-style: none;
     font-size: clamp(1.125rem, 1.6vw, 1.5rem);
@@ -156,7 +156,7 @@ const pictures = await Promise.all(
   }
   .svc-brands :global(.svc-brand-logo) {
     width: auto;
-    height: clamp(1.75rem, 2.5vw, 2.5rem);
+    height: clamp(3rem, 5vw, 4.5rem);
   }
   /* The section's own padding is what sits below the last boxes, matching the space above. */
   .svc:last-child .svc-grid {

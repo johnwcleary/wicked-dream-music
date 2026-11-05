@@ -96,7 +96,8 @@ test('each service starts open on offerings with an icon and a definition', asyn
   await expect(rows).toHaveCount(3);
   await expect(page.locator('.svc-item')).toHaveCount(12);
   await expect(page.locator('.svc-item svg')).toHaveCount(12);
-  await expect(page.locator('.svc-brands li')).toHaveText(['Nickelodeon', 'AMC', 'NFL', 'Discovery Channel']);
+  const logos = await page.locator('.svc-brands img').evaluateAll((els) => els.map((el) => el.getAttribute('alt')));
+  expect(logos).toEqual(['Nickelodeon', 'AMC', 'NFL', 'Discovery Channel']);
   for (const row of await rows.all()) await expect(row.locator('.svc-def').first()).toBeVisible();
   await rows.first().locator('summary').click();
   await expect(rows.first().locator('.svc-def').first()).toBeHidden();
