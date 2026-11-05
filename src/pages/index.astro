@@ -107,7 +107,6 @@ const people = about.sections ?? [];
         <div class="reel" data-reel>
           <div class="reel-top">
             <span class="reel-edge" data-reel-edge />
-            <span class="reel-foot" />
             <div class="reel-title" data-reel-title>
               <p class="reel-text display" data-reel-text>
                 {closing.outro}
@@ -115,7 +114,7 @@ const people = about.sections ?? [];
             </div>
           </div>
           {films.map((film, i) => (
-            <div class:list={['reel-film', { 'is-first': i === 0 }]} data-reel-film aria-hidden="true">
+            <div class:list={['reel-film', { 'is-first': i === 0 }]} data-reel-film>
               <div class="reel-stage">
                 <Image
                   src={film.poster}
@@ -128,10 +127,11 @@ const people = about.sections ?? [];
                   quality={62}
                   class="film-poster"
                 />
-                <video class="film-video" muted loop playsinline preload="none" disablepictureinpicture data-film-video>
+                <video class="film-video" muted loop playsinline preload="none" disablepictureinpicture aria-hidden="true" data-film-video>
                   {film.mobile_mp4 && <source src={film.mobile_mp4} type="video/mp4" media="(max-width: 767px)" />}
                   <source src={film.mp4} type="video/mp4" />
                 </video>
+                <p class="film-credit">{film.title}</p>
               </div>
             </div>
           ))}
@@ -441,13 +441,12 @@ const people = about.sections ?? [];
     text-align: center;
     pointer-events: none;
   }
-  .reel-edge,
-  .reel-foot {
+  .reel-edge {
     position: absolute;
     inset: 0;
   }
   /* The films run untouched. A neutral fade sits only behind the small text: the shrunken
-     line, once it has shrunk, and the footer row. */
+     line, once it has shrunk, and each film's credit and the footer row. */
   .reel-edge {
     opacity: 0;
     background: linear-gradient(
@@ -457,13 +456,6 @@ const people = about.sections ?? [];
       color-mix(in srgb, var(--scrim) 22%, transparent) 11rem,
       color-mix(in srgb, var(--scrim) 7%, transparent) 13.5rem,
       transparent 16rem
-    );
-  }
-  .reel-foot {
-    background: linear-gradient(
-      to bottom,
-      transparent calc(100svh - 7rem),
-      color-mix(in srgb, var(--scrim) 70%, transparent) calc(100svh - 1rem)
     );
   }
   .reel-title {
@@ -502,6 +494,34 @@ const people = about.sections ?? [];
   }
   .reel-film.is-playing :global(.film-poster) {
     opacity: 0;
+  }
+  .reel-stage::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    background: linear-gradient(
+      to bottom,
+      transparent calc(100svh - 11rem),
+      color-mix(in srgb, var(--scrim) 12%, transparent) calc(100svh - 9.25rem),
+      color-mix(in srgb, var(--scrim) 42%, transparent) calc(100svh - 7rem),
+      color-mix(in srgb, var(--scrim) 65%, transparent) calc(100svh - 5.25rem),
+      color-mix(in srgb, var(--scrim) 70%, transparent) calc(100svh - 1rem)
+    );
+  }
+  /* Above the footer row, in the svh so a phone's toolbar doesn't hide it. 5:1 or better over
+     white footage. */
+  .film-credit {
+    position: absolute;
+    top: calc(100svh - 5rem);
+    right: var(--gutter);
+    z-index: 3;
+    margin: 0;
+    color: var(--on-shade);
+    font-size: clamp(0.9375rem, 1.1vw, 1.0625rem);
+    font-weight: 500;
+    line-height: 1.2;
+    text-align: right;
   }
 
   .hero-bar {

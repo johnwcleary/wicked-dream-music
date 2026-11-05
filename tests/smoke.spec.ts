@@ -112,3 +112,8 @@ test('about sits above services and has no video behind it', async ({ page }) =>
   await page.evaluate(() => document.getElementById('about')!.scrollIntoView({ behavior: 'instant' }));
   await expect(page.locator('#site-menu a[aria-current]')).toHaveAttribute('data-section', 'about');
 });
+
+test('each film in the work section is credited', async ({ page }) => {
+  await page.goto('/');
+  await expect(page.locator('[data-reel-film] .film-credit')).toHaveText([/imin/i, /torri wolff - colours/i, /alice - all my girls/i]);
+});
