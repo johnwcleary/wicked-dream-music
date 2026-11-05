@@ -119,7 +119,7 @@ const services = defineCollection({
         z.object({
           name: z.string(),
           definition: z.string(),
-          icon: z.enum(['compass', 'pencil', 'faders', 'microphone', 'spotlight', 'waveform', 'disc', 'people', 'listen', 'setlist', 'network']),
+          icon: z.enum(['compass', 'pencil', 'faders', 'microphone', 'ticket', 'waveform', 'disc', 'people', 'listen', 'setlist', 'network']),
         }),
       )
       .optional(),

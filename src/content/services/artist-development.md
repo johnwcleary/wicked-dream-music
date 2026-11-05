@@ -25,7 +25,7 @@ offerings:
     icon: "microphone"
     definition: "Your voice and presence carry your sound from the record to the room. We work on both until you sound most like yourself under pressure."
   - name: "Live performance development"
-    icon: "spotlight"
+    icon: "ticket"
     definition: "The stage is where people decide they believe you. We shape sets and arrangements so your sound grows bigger in the room without losing what makes it yours."
   - name: "Sonic development"
     icon: "waveform"
