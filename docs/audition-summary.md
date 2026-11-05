@@ -15,7 +15,7 @@ Screenshots are local and gitignored. Regenerate with `npm run screenshots` on a
 
 ## A — `design/signal` · Poster / loud accent
 
-**Pitch.** A title sequence, then the whole company on one scroll. It opens with the headline cut out of a beige sheet, so the ALL MY GIRLS loop plays inside the letters. "your *sound* is your *brand*" then holds a full screen of its own. The sheet lifts to show the video at full screen under "our work", then the IMIN film, and short sections follow, ending in one big email call to action.
+**Pitch.** A title sequence, then the whole company on one scroll. It opens with the headline cut out of a beige sheet, so the ALL MY GIRLS loop plays inside the letters. As you scroll, "sound" holds still and the words around it change to "your *sound* is your *brand*". The sheet lifts to show the video at full screen under "our work", then the IMIN film, and short sections follow, ending in one big email call to action.
 
 **Type.** Anton (display, `@fontsource/anton`, preloaded) + Instrument Sans Variable (body/labels, `@fontsource-variable/instrument-sans`). Anton's tall, heavy condensed caps sit closest to the wordmark.
 
@@ -66,7 +66,7 @@ Photos are grayscale and high contrast, multiplied over the gradient, with the b
 Chosen from an in-page audition of 6 palettes × 5 type pairings. The comparison sheets are in `screenshots/design/archive/audition/` (local).
 
 **Page order.**
-1. **Hero.** "wdm." with the name nested under it, top left. The footage stays pinned while a beige sheet scrolls over it, with the type as a window onto it. "artist development starts with *sound*" fits one screen, anchored bottom left. "your *sound* is your *brand*" scrolls up as the headline leaves, at full width on one line, with "let's develop it together" beneath it, and holds briefly. The headline's "sound" travels across and becomes the "sound" in that line. Past the sheet, "our work" sits over the full-screen video, then shrinks to the top as the shade clears so the film can be watched. The IMIN loop scrolls in next, also full screen. The words and films are in `pages/home.md` (`headline`, `hero_closing`, `hero_video`, `hero_film`). With reduced motion or no JS the type is still and stacked, over the posters.
+1. **Hero.** "wdm." with the name nested under it, top left. The footage stays pinned while a beige sheet scrolls over it, with the type as a window onto it. "artist development starts with *sound*" sits on a pinned stage; as you scroll, "sound" stays exactly where it is while the other words leave and "your … is your *brand*" arrives around it, then "let's develop it together". The closing line is on one line from tablet width up, and stacks on phones to keep the word in place. Past the sheet, "our work" sits over the full-screen video, then shrinks to the top as the shade clears so the film can be watched. The IMIN loop scrolls in next, also full screen. The words and films are in `pages/home.md` (`headline`, `hero_closing`, `hero_video`, `hero_film`); the closing line must contain the headline's last word. With reduced motion or no JS the type is still and stacked, over the posters.
 2. **Services** (`#services`). An "our services" title, then artist development (for artists) with a&r consulting (for music companies) under it. Each title is filled with a still from one of the films, drifting as you scroll, and opens on click to a compact grid of its offerings. "customers include: …" sits small and left-aligned under a&r consulting, set in `pages/services.md` (`customers`); John supplied the names, so confirm they can be named.
 3. **About** (`#about`). "our founder", then David Kim's name with his bio right beside it, in paper type over the ALL MY GIRLS loop, shaded 65% so the text keeps 5.2:1 over white footage. It has its own pause control. Both are in `pages/about.md`. He isn't in this footage, so a film of his own work or a portrait would suit it better.
 4. **Selected works** (`#work`). A large centred title over one embedded Spotify playlist, set in `pages/work.md` (`playlist`). **The current playlist is a placeholder from John.** The iframe loads lazily as it nears the screen, and Spotify may set cookies once it loads, so check that against the privacy policy.
@@ -82,7 +82,7 @@ Chosen from an in-page audition of 6 palettes × 5 type pairings. The comparison
 **Old routes.** `/about`, `/services`, `/work` and `/contact` redirect to their sections (static meta-refresh pages; Phase 2 should replace these with real 301s in the host's redirect config).
 
 **Motion** (all off under reduced motion):
-- Masked line reveals; section titles fade up. The closing line simply scrolls up as the headline leaves, then holds.
+- Masked line reveals; section titles fade up; the hero's words change around "sound" with the scroll.
 - The video pushes in slowly through the hero sequence.
 
 **Push further.** A portrait of David Kim beside his bio.
