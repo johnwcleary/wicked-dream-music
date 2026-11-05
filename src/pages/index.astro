@@ -273,7 +273,7 @@ const people = about.sections ?? [];
 <style>
   /* ---------- Hero: the type is a window onto the footage ---------- */
   .hero {
-    --run-size: 15vw;
+    --run-size: 11.5vw;
     --ease-soft: cubic-bezier(0.16, 1, 0.3, 1);
     position: relative;
     isolation: isolate;
@@ -447,14 +447,14 @@ const people = about.sections ?? [];
     display: block;
     margin-top: 1.9em;
     text-align: center;
-    font-size: clamp(1.5rem, 3.2vw, 3.25rem);
+    font-size: clamp(1.5rem, 2.4vw, 2.5rem);
     font-weight: 600;
     letter-spacing: -0.02em;
     line-height: 1.2;
   }
   @media (min-width: 768px) {
     .hero {
-      --run-size: min(22svh, 9.4vw);
+      --run-size: min(16svh, 6.8vw);
     }
   }
 
@@ -635,7 +635,7 @@ const people = about.sections ?? [];
     /* A pinned stage: the word stays put while the script changes the words around it.
        Both copies of the word share a box shape, so they line up exactly. */
     :global(html.js) .hero-track {
-      height: 225svh;
+      height: 185svh;
     }
     /* Sits above centre, leaving room under the word for the lines that arrive. */
     :global(html.js) .hero-stage {
@@ -644,7 +644,7 @@ const people = about.sections ?? [];
       justify-content: center;
       height: 100svh;
       min-height: 0;
-      padding-bottom: 30svh;
+      padding-bottom: 36svh;
     }
     :global(html.js) .run-old {
       display: inline-block;
@@ -677,9 +677,20 @@ const people = about.sections ?? [];
     :global(html.js) .closing-note {
       will-change: opacity;
     }
+    /* The closing lines stack around the word, so the headline sits where they end up
+       centred: over the note on larger screens, and from the left edge on phones. */
     @media (min-width: 768px) {
       :global(html.js) .run {
+        width: fit-content;
+        margin-inline: auto;
+        translate: -0.5em;
         white-space: nowrap;
+      }
+    }
+    @media (max-width: 767px) {
+      :global(html.js) [data-sound-word] {
+        display: block;
+        width: fit-content;
       }
     }
   }
