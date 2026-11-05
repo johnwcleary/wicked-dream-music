@@ -20,7 +20,7 @@
   --accent-gradient: linear-gradient(180deg, var(--accent), var(--accent-2));
   --plate: #1c1c1e;               /* empty image ground */
 
-  /* Type: one tight neo-grotesk, Inter Tight, all lowercase. Large type runs very tight;
+  /* Type: one tight neo-grotesk, Inter Tight. Large type runs very tight;
      small type sits at normal spacing. */
   --font-sans: "Inter Tight Variable", "Helvetica Neue", Helvetica, Arial, sans-serif;
   --font-display: var(--font-sans);
@@ -78,7 +78,6 @@
     font-size: 1rem;
     line-height: 1.4;
     font-feature-settings: "kern";
-    text-transform: lowercase;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     overflow-x: clip;
@@ -118,9 +117,6 @@
   main:focus {
     outline: none;
   }
-  button {
-    text-transform: inherit;
-  }
   img {
     display: block;
     max-width: 100%;
@@ -141,7 +137,7 @@
   .band,
   .site-footer {
     --gutter: clamp(0.75rem, 1.4vw, 1.25rem);
-    --svc-title-size: calc((100vw - 2 * var(--gutter) - 3rem) / 8.4);
+    --svc-title-size: calc((100vw - 2 * var(--gutter) - 3rem) / 8.7);
     --block-width: 100%;
     text-align: center;
   }
