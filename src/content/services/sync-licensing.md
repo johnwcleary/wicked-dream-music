@@ -17,10 +17,13 @@ offerings:
   - name: "Co-writing"
     icon: "pencil"
     definition: "We write with you toward specific briefs, so the song serves the picture and still sounds like you."
-# To show a logo instead of the name, add logo: "../../assets/brand/<file>" to the brand.
 brands:
   - name: "Nickelodeon"
+    logo: "../../assets/brand/sync/nickelodeon.png"
   - name: "AMC"
+    logo: "../../assets/brand/sync/amc.png"
   - name: "NFL"
+    logo: "../../assets/brand/sync/nfl.png"
   - name: "Discovery Channel"
+    logo: "../../assets/brand/sync/discovery.png"
 ---
