@@ -44,15 +44,6 @@ const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url).href;
       var h = document.documentElement;
       h.classList.add('js');
       if (intro) h.classList.add('on-hero', 'on-intro', 'intro-foot');
-      // Color audition: ?color=black or ?color=purple, kept for the visit. Links sent with blue get black. Remove once one is chosen.
-      var color = new URLSearchParams(location.search).get('color');
-      if (color !== 'black' && color !== 'blue' && color !== 'purple') {
-        try {
-          color = sessionStorage.getItem('wdm-color');
-        } catch (e) {}
-      }
-      h.dataset.palette = color === 'purple' ? 'purple' : 'black';
-      if (h.dataset.palette === 'purple') document.querySelector('meta[name="theme-color"]').content = '#0d0616';
     </script>
   </head>
   <body>
@@ -62,35 +53,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url).href;
       <slot />
     </main>
     <Footer />
-    <!-- Color audition only. Remove once one is chosen. -->
-    <div class="palette-pick" role="group" aria-label="Color audition" data-palette-pick hidden>
-      <button type="button" data-palette-option="black">black</button>
-      <button type="button" data-palette-option="purple">purple</button>
-    </div>
     <script>
-      // Color audition: switch palette in place and keep it in the address for sharing.
-      const pick = document.querySelector<HTMLElement>('[data-palette-pick]');
-      if (pick) {
-        const root = document.documentElement;
-        const options = pick.querySelectorAll<HTMLButtonElement>('[data-palette-option]');
-        const show = () => options.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.paletteOption === root.dataset.palette)));
-        options.forEach((b) =>
-          b.addEventListener('click', () => {
-            const color = b.dataset.paletteOption ?? 'black';
-            root.dataset.palette = color;
-            document.querySelector('meta[name="theme-color"]')?.setAttribute('content', color === 'purple' ? '#0d0616' : '#f4eee3');
-            try {
-              sessionStorage.setItem('wdm-color', color);
-            } catch {}
-            const url = new URL(location.href);
-            url.searchParams.set('color', color);
-            history.replaceState(null, '', url);
-            show();
-          }),
-        );
-        pick.hidden = false;
-        show();
-      }
       // Scroll reveals: mark [data-reveal] elements as they enter the viewport.
       const items = document.querySelectorAll<HTMLElement>('[data-reveal]');
       if (matchMedia('(prefers-reduced-motion: reduce)').matches || !('IntersectionObserver' in window)) {
@@ -123,37 +86,6 @@ const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url).href;
     color: var(--paper);
     font-size: 0.8125rem;
     transform: translateY(-200%);
-  }
-  .palette-pick {
-    position: fixed;
-    left: var(--gutter);
-    bottom: 0.75rem;
-    z-index: 60;
-    display: flex;
-    gap: 2px;
-    padding: 2px;
-    border-radius: 999px;
-    background: #111;
-    font-size: 0.8125rem;
-  }
-  .palette-pick[hidden] {
-    display: none;
-  }
-  .palette-pick button {
-    min-height: 1.75rem;
-    padding: 0.2rem 0.7rem;
-    border: 0;
-    border-radius: 999px;
-    background: none;
-    color: #fff;
-    cursor: pointer;
-  }
-  .palette-pick button[aria-pressed='true'] {
-    background: #fff;
-    color: #111;
-  }
-  .palette-pick button:focus-visible {
-    outline-color: #fff;
   }
   .skip:focus,
   .skip:focus-visible {
