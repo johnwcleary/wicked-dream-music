@@ -192,7 +192,7 @@ The strip's progress bar uses CSS scroll-driven animation, no JS.
 8. **Hero video (archive).**
    - The loop behind archive's hero is cut from John's "Alice Vid.mp4" (the ALL MY GIRLS music video).
    - It uses six shots, about 10.5 seconds in all, with no sound, graded black and white for archive's chrome palette. The strobe-like stretch at 47–50s is deliberately left out.
-   - There are two encodes in `public/media/hero/`: a 1280×720 landscape cut and a 720×1280 portrait crop for phones, each as MP4 and WebM (1.2–2 MB each).
+   - There are two encodes in `public/media/hero/`: a 1280×720 landscape cut and a 720×1280 portrait crop for phones, each as MP4 (1–2.6 MB each; iPhones play MP4 most reliably).
    - It is set in `pages/home.md` under `hero_video`, so it can be swapped later.
    - The source files in `src/assets/videos/` are gitignored. Confirm the client may use this footage.
    - The loops were cut with `ffmpeg-static`, a dev dependency.

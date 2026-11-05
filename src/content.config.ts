@@ -60,9 +60,7 @@ const pages = defineCollection({
         title: z.string(),
         poster: image(),
         mp4: z.string(),
-        webm: z.string().optional(),
         mobile_mp4: z.string().optional(),
-        mobile_webm: z.string().optional(),
       })
       .optional(),
     // A short title over the page's content when it's shown as a home page section.
@@ -89,9 +87,7 @@ const pages = defineCollection({
           title: z.string(),
           poster: image(),
           mp4: z.string(),
-          webm: z.string().optional(),
           mobile_mp4: z.string().optional(),
-          mobile_webm: z.string().optional(),
         }),
       )
       .optional(),
