@@ -15,7 +15,7 @@ Screenshots are local and gitignored. Regenerate with `npm run screenshots` on a
 
 ## A — `design/signal` · Poster / loud accent
 
-**Pitch.** A title sequence, then the whole company on one scroll. It opens on full-screen footage with the WDM logo centred. The footage then plays inside the letters of a headline on a beige sheet; "sound" holds still and the words around it change to "your *sound* is your *brand*". "our work" and three full-screen films follow, then short sections, ending in one big email call to action.
+**Pitch.** A title sequence, then the whole company on one scroll. It opens on full-screen footage with the WDM logo centred. The footage then plays inside the letters of a headline on a beige sheet; "sound" holds still and the words around it change to "your *sound* is your *brand*". "our work" and three full-screen films follow, then short sections, ending in one email button and the logo.
 
 **Type.** Anton (display, `@fontsource/anton`, preloaded) + Instrument Sans Variable (body/labels, `@fontsource-variable/instrument-sans`). Anton's tall, heavy condensed caps sit closest to the wordmark.
 

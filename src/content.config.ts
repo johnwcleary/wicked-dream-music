@@ -55,6 +55,7 @@ const pages = defineCollection({
     form_fields: z.array(formField).optional(),
     submit_label: z.string().optional(),
     email_label: z.string().optional(),
+    email_button: z.string().optional(),
     // A muted background loop. Video files live in public/ (served as-is); the
     // poster is an optimised image. The mobile cut is optional (below 768px).
     hero_video: z

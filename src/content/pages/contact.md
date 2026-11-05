@@ -1,6 +1,6 @@
 ---
 title: Contact
-headline: "Let's make something great."
+headline: "Let's talk"
 lede: "Tell us what you're working on and where you want to take it."
 intro_heading: "Get in touch."
 intro: "We work with artists, managers, labels, publishers, and creative companies. A few lines about your project are enough to get started."
@@ -12,4 +12,5 @@ form_fields:
   - { name: "message", label: "Tell us about your project", type: "textarea", required: true }
 submit_label: "Send message"
 email_label: "Prefer email?"
+email_button: "Email us"
 ---
