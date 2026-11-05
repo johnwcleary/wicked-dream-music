@@ -58,12 +58,12 @@ Photos are grayscale and high contrast, multiplied over the gradient, with the b
 
 **Type.** One typeface, Inter Tight (`@fontsource-variable/inter-tight`, OFL, preloaded): large type at weight 500–600 with very tight spacing, small type at normal spacing. All text is lowercase through CSS (`text-transform`), so the content files, metadata and screen-reader text keep their normal capitals. Only "sound" and "brand" are italic. The direction takes its restraint from a neutral, lowercase portfolio reference John supplied.
 
-**Color audition.** Archive currently runs two palettes from one build, switched with `?color=black` or `?color=purple` or the small picker at the bottom left: black type on the beige page, with deep purple in the word "sound" and a little of the logo's lavender rising from the page's bottom right corner, and purple, the logo PDF's plum-to-lilac radial gradient across a dark site. In both, the films run untinted: color only appears over footage inside the type, and a neutral fade or shade sits behind small text on footage to keep it AA. Over the opening, the nav and buttons are white to match the logo. Once John chooses, the other palette and the picker come out.
+**Color.** John chose black over the blue and purple auditioned here: black type on the beige page, with deep purple in the word "sound" and a little of the logo's lavender rising from the page's bottom right corner. The films run untinted: color only appears over footage inside the type, and a neutral fade or shade sits behind small text on footage to keep it AA. Over the opening, the nav and buttons are white to match the logo.
 
 **Palette.** Near-black `#0F0F10` type on light beige `#F4EEE3` (16.6:1), `#5E5A54` for small text (5.9:1). The wordmark, font and colour are set out in `docs/brand/wdm/`.
 - The hero loop and the IMIN loop are in full color; the footage shows through the type on the beige sheet (`mix-blend-mode: lighten`), shaded 50% so the brightest frames keep 3.1:1 (large text).
 - "our work" and the header over the films sit on dark shades instead (3.4:1 or better).
-- The brand lavender and pink remain the client's logo colours in `--wdm-*`, but this direction doesn't use them.
+- The brand lavender and pink remain the client's logo colours in `--wdm-*`. This direction only uses the lavender, in the corner at the foot of the page.
 
 Chosen from an in-page audition of 6 palettes × 5 type pairings. The comparison sheets are in `screenshots/design/archive/audition/` (local).
 
