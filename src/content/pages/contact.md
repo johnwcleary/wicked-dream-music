@@ -1,7 +1,7 @@
 ---
 title: Contact
 headline: "Let's talk"
-lede: "Tell us what you're working on and where you want to take it."
+lede: "Tell us what you're working on and\nwhere you want to take it."
 intro_heading: "Get in touch."
 intro: "We work with artists, managers, labels, publishers, and creative companies. A few lines about your project are enough to get started."
 form_fields:
