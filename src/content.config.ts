@@ -113,6 +113,16 @@ const services = defineCollection({
     title: z.string(),
     summary: z.string(),
     bullets: z.array(z.string()),
+    // The same services with a definition and an icon, where a design has room for them.
+    offerings: z
+      .array(
+        z.object({
+          name: z.string(),
+          definition: z.string(),
+          icon: z.enum(['compass', 'pencil', 'faders', 'microphone', 'spotlight', 'waveform', 'disc', 'people', 'listen', 'setlist', 'network']),
+        }),
+      )
+      .optional(),
   }),
 });
 
