@@ -28,6 +28,18 @@
   --display-tracking: -0.04em;
   --display-leading: 0.92;
 
+  /* Roles that can part ways from the page's own colors. */
+  --shade: var(--ink);            /* over footage */
+  --on-shade: var(--paper);
+  --lift-color: var(--ink);       /* over footage shown through type */
+  --lift: 50%;
+  --wash: 50%;
+  --edge: 55%;
+  --sheet: var(--paper);
+  --sheet-type: #000;
+  --sheet-blend: lighten;
+  --foot-ground: var(--paper);
+
   --header-h: 5rem;
   --gutter: clamp(1rem, 2.2vw, 2rem);
   --col-gap: clamp(0.75rem, 1.6vw, 1.5rem);
@@ -195,4 +207,75 @@
     transition: none !important;
     scroll-behavior: auto !important;
   }
+}
+
+/* ------------------------------------------------------------------
+   Color audition. Remove the one not chosen, and the picker in BaseLayout.
+------------------------------------------------------------------- */
+
+/* 1. Blue: the logo PDF's blue replaces every dark color. Blue is lighter than the old ink,
+   so the shades run deeper to keep the same contrast: type windows 3.2:1 at 60%. Multiply
+   turns white footage into a blue that still gives the bio 5.7:1. */
+html[data-palette='blue'] {
+  --ink: #1d17ff;
+  --muted: #4c46f9;
+  --lift: 60%;
+  --wash: 60%;
+  --edge: 65%;
+  --founder-ground: color-mix(in srgb, var(--shade) 85%, #fff);
+  --founder-blend: multiply;
+}
+
+/* 2. Purple: the logo PDF's radial gradient, plum edge to lilac heart, on a dark site.
+   "Darken" keeps the lower of sheet and footage. The lilac lift holds the footage above the
+   sheet's brightest color, so the sheet stays exact and the footage shows only in the type,
+   at 3.1:1 or better. */
+html[data-palette='purple'] {
+  color-scheme: dark;
+  --plum: #0d0616;
+  --deep: #38293f;
+  --dusk: #795e7b;
+  --lilac: #e6b7e1;
+  --ink: #fff;
+  --paper: var(--plum);
+  --muted: #efe6f1;
+  --accent: #5b3f68;
+  --shade: var(--plum);
+  --on-shade: #fff;
+  --lift-color: var(--lilac);
+  --lift: 65%;
+  --sheet: radial-gradient(120vmax 90vmax at 50% 30%, #46304f 0, #1c1024 55%, var(--plum) 100%);
+  --sheet-type: #fff;
+  --sheet-blend: darken;
+  --foot-ground: transparent;
+  --opening-ground:
+    linear-gradient(to bottom, transparent calc(100% - 9rem), rgb(13 6 22 / 0.8) calc(100% - 3rem)),
+    radial-gradient(farthest-corner at 50% 45%, rgb(230 183 225 / 0.42) 0, rgb(121 94 123 / 0.4) 32%, rgb(13 6 22 / 0.9) 88%);
+  --wash-ground: radial-gradient(farthest-corner at 50% 50%, rgb(90 66 98 / 0.72) 0, rgb(13 6 22 / 0.88) 90%);
+  --founder-ground: radial-gradient(farthest-corner at 85% 15%, rgb(90 66 98 / 0.85) 0, rgb(28 16 36 / 0.88) 60%, rgb(13 6 22 / 0.92) 100%);
+}
+/* The lower sections share one gradient, fixed to the screen, so it runs behind them without
+   seams. It never gets brighter than dusk, where white is 5.9:1 and the muted text 5:1. */
+html[data-palette='purple'] body {
+  background: transparent;
+}
+html[data-palette='purple'] body::before {
+  content: '';
+  position: fixed;
+  inset: 0 0 auto;
+  z-index: -1;
+  height: 100lvh;
+  background: radial-gradient(farthest-corner at 82% 78%, var(--dusk) 0, #55405c 28%, var(--deep) 52%, var(--plum) 100%);
+}
+/* The service titles show lilac footage, so this one section stays dark behind them. */
+html[data-palette='purple'] #services {
+  position: relative;
+  isolation: isolate;
+}
+html[data-palette='purple'] #services::before {
+  content: '';
+  position: absolute;
+  inset: 0 calc(50% - 50vw);
+  z-index: -1;
+  background: radial-gradient(farthest-corner at 90% 8%, #46304f 0, #1c1024 55%, var(--plum) 100%);
 }

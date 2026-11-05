@@ -1,9 +1,10 @@
 ---
 import { Image } from 'astro:assets';
-import logoUrl from '../assets/brand/wdm-slant.svg?url';
+import logoUrl from '../assets/brand/wdm-lockup-white.svg?url';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import SectionHead from '../components/SectionHead.astro';
 import ServiceGrid from '../components/ServiceGrid.astro';
+import SoundToggle from '../components/SoundToggle.astro';
 import { getPage, getServices, getSite, paragraphs, splitHeadline, toSection } from '../lib/content';
 
 const site = await getSite();
@@ -141,15 +142,18 @@ const people = about.sections ?? [];
         <div class="wrap hero-foot">
           {
             video && (
-              <button
-                type="button"
-                class="hero-credit label"
-                data-hero-toggle
-                data-play={site.ui.play_video}
-                data-pause={site.ui.pause_video}
-              >
-                {site.ui.pause_video}
-              </button>
+              <>
+                <SoundToggle on={site.ui.sound_on} off={site.ui.sound_off} />
+                <button
+                  type="button"
+                  class="hero-credit label"
+                  data-hero-toggle
+                  data-play={site.ui.play_video}
+                  data-pause={site.ui.pause_video}
+                >
+                  {site.ui.pause_video}
+                </button>
+              </>
             )
           }
         </div>
@@ -214,15 +218,18 @@ const people = about.sections ?? [];
       }
       {
         video && (
-          <button
-            type="button"
-            class="hero-credit label founder-pause"
-            data-hero-toggle
-            data-play={site.ui.play_video}
-            data-pause={site.ui.pause_video}
-          >
-            {site.ui.pause_video}
-          </button>
+          <div class="founder-controls">
+            <SoundToggle on={site.ui.sound_on} off={site.ui.sound_off} />
+            <button
+              type="button"
+              class="hero-credit label"
+              data-hero-toggle
+              data-play={site.ui.play_video}
+              data-pause={site.ui.pause_video}
+            >
+              {site.ui.pause_video}
+            </button>
+          </div>
         )
       }
     </div>
@@ -316,23 +323,27 @@ const people = about.sections ?? [];
   .opening {
     position: relative;
     display: grid;
+    grid-template-columns: minmax(0, 1fr);
     place-content: center;
     justify-items: center;
     gap: clamp(1.5rem, 3vw, 2.5rem);
     height: 100svh;
     padding: var(--header-h) var(--gutter) 3.5rem;
-    background: linear-gradient(
-      to bottom,
-      color-mix(in srgb, var(--ink) 30%, transparent) calc(100% - 9rem),
-      color-mix(in srgb, var(--ink) 80%, transparent) calc(100% - 3rem)
+    background: var(
+      --opening-ground,
+      linear-gradient(
+        to bottom,
+        color-mix(in srgb, var(--shade) 30%, transparent) calc(100% - 9rem),
+        color-mix(in srgb, var(--shade) 80%, transparent) calc(100% - 3rem)
+      )
     );
-    color: var(--paper);
+    color: var(--on-shade);
   }
   .opening-logo {
     display: block;
-    width: clamp(16rem, 44vw, 38rem);
-    aspect-ratio: 2697 / 986;
-    background: var(--paper);
+    width: min(clamp(14rem, 34vw, 30rem), 80svh);
+    aspect-ratio: 324 / 208.3;
+    background: #fff;
     -webkit-mask: var(--logo-url) center / contain no-repeat;
     mask: var(--logo-url) center / contain no-repeat;
   }
@@ -341,17 +352,25 @@ const people = about.sections ?? [];
     gap: 0.5rem;
     padding: 0.55rem 1.1rem;
     border-radius: 999px;
-    background: var(--paper);
-    color: var(--ink);
+    background: var(--on-shade);
+    color: var(--shade);
     font-size: 0.9375rem;
     font-weight: 500;
+    text-align: center;
+    text-wrap: balance;
     transition: transform 0.4s var(--ease-out);
   }
   .opening-cta:hover {
     transform: translateY(2px);
   }
   .opening-cta:focus-visible {
-    outline-color: var(--paper);
+    outline-color: var(--on-shade);
+  }
+  @media (max-width: 480px) {
+    .opening-cta {
+      padding: 0.5rem 0.9rem;
+      font-size: 0.8125rem;
+    }
   }
   @media (prefers-reduced-motion: no-preference) {
     :global(html.js) .opening-logo,
@@ -378,17 +397,17 @@ const people = about.sections ?? [];
   .hero-lift {
     position: absolute;
     inset: 0;
-    background: color-mix(in srgb, var(--ink) 50%, transparent);
+    background: color-mix(in srgb, var(--lift-color) var(--lift), transparent);
   }
 
   /* The sheet: beige everywhere, black type. "Lighten" keeps the higher of sheet and
      footage, so the sheet stays exactly beige and the footage shows only in the type. */
   .hero-cut {
     position: relative;
-    background: var(--paper);
+    background: var(--sheet);
     padding-bottom: 18svh;
-    color: #000;
-    mix-blend-mode: lighten;
+    color: var(--sheet-type);
+    mix-blend-mode: var(--sheet-blend);
   }
   .run,
   .closing {
@@ -462,7 +481,7 @@ const people = about.sections ?? [];
     place-items: center;
     height: 100lvh;
     overflow: clip;
-    color: var(--paper);
+    color: var(--on-shade);
     text-align: center;
     pointer-events: none;
   }
@@ -472,18 +491,18 @@ const people = about.sections ?? [];
     inset: 0;
   }
   .reel-wash {
-    background: color-mix(in srgb, var(--ink) 50%, transparent);
+    background: var(--wash-ground, color-mix(in srgb, var(--shade) var(--wash), transparent));
   }
   /* Once the line has shrunk: enough shade behind it and the footer row to stay AA. */
   .reel-edge {
     opacity: 0;
     background: linear-gradient(
       to bottom,
-      color-mix(in srgb, var(--ink) 55%, transparent) 0,
-      color-mix(in srgb, var(--ink) 55%, transparent) 8.5rem,
+      color-mix(in srgb, var(--shade) var(--edge), transparent) 0,
+      color-mix(in srgb, var(--shade) var(--edge), transparent) 8.5rem,
       transparent 17rem,
       transparent calc(100svh - 11rem),
-      color-mix(in srgb, var(--ink) 80%, transparent) calc(100svh - 3rem)
+      color-mix(in srgb, var(--shade) 80%, transparent) calc(100svh - 3rem)
     );
   }
   .reel-title {
@@ -497,7 +516,7 @@ const people = about.sections ?? [];
   .reel-film {
     position: relative;
     z-index: 1;
-    background: var(--ink);
+    background: var(--shade);
   }
   .reel-stage {
     position: relative;
@@ -523,7 +542,7 @@ const people = about.sections ?? [];
   .hero-bar {
     position: relative;
     z-index: 4;
-    background: var(--paper);
+    background: var(--foot-ground);
     transition:
       background-color 0.4s,
       color 0.4s;
@@ -532,7 +551,7 @@ const people = about.sections ?? [];
   .hero.in-reel .hero-bar,
   :global(html.intro-foot) .hero-bar {
     background: transparent;
-    color: var(--paper);
+    color: var(--on-shade);
   }
   .hero-foot {
     display: flex;
@@ -556,7 +575,7 @@ const people = about.sections ?? [];
   }
   :global(html.intro-foot) .hero-bar :focus-visible,
   .hero.in-reel .hero-bar :focus-visible {
-    outline-color: var(--paper);
+    outline-color: var(--on-shade);
   }
 
   /* The sequence. The footage stays pinned for the whole hero while the sheet
@@ -607,7 +626,7 @@ const people = about.sections ?? [];
       position: absolute;
       inset: auto 0 0;
       max-width: none;
-      background: var(--paper);
+      background: var(--foot-ground);
       transition: background-color 0.4s;
     }
     :global(html.js) .hero.in-reel .hero-foot,
@@ -722,17 +741,17 @@ const people = about.sections ?? [];
     position: relative;
     isolation: isolate;
     overflow: clip;
-    color: var(--paper);
+    color: var(--on-shade);
     scroll-margin-top: 0;
   }
   .founder :global(:focus-visible) {
-    outline-color: var(--paper);
+    outline-color: var(--on-shade);
   }
   .founder-media {
     position: absolute;
     inset: 0;
     z-index: -1;
-    background: var(--ink);
+    background: var(--shade);
   }
   .founder-media :global(.founder-poster),
   .founder-video {
@@ -749,10 +768,13 @@ const people = about.sections ?? [];
   .founder.is-playing :global(.founder-poster) {
     opacity: 0;
   }
+  /* Above the poster too, so the bio stays legible while a video hasn't started. */
   .founder-shade {
     position: absolute;
     inset: 0;
-    background: color-mix(in srgb, var(--ink) 65%, transparent);
+    z-index: 2;
+    background: var(--founder-ground, color-mix(in srgb, var(--shade) 65%, transparent));
+    mix-blend-mode: var(--founder-blend, normal);
   }
   .founder-inner {
     padding-block: calc(var(--header-h) + 0.75rem) clamp(1.25rem, 2.5vw, 2rem);
@@ -775,9 +797,12 @@ const people = about.sections ?? [];
     line-height: 1.25;
     letter-spacing: -0.012em;
   }
-  .founder-pause {
-    display: block;
-    margin: clamp(1.25rem, 2.5vw, 2rem) 0 0 auto;
+  .founder-controls {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 1rem;
+    margin-top: clamp(1.25rem, 2.5vw, 2rem);
   }
 
   /* Contact — one giant email link, in silver. */
@@ -847,6 +872,8 @@ const people = about.sections ?? [];
   // pause controls, in the hero's footer row and the founder section, work on all of them
   // (WCAG 2.2.2). Some phones block autoplay, in Low Power Mode for example: the posters stay
   // up, the controls offer play, and the next tap anywhere starts the videos.
+  // Sound stays off until a speaker is pressed, then follows the clip at the middle of the
+  // screen; only that clip is ever unmuted.
   const hero = document.getElementById('top');
   const video = document.querySelector<HTMLVideoElement>('[data-hero-video]');
   const toggles = Array.from(document.querySelectorAll<HTMLButtonElement>('[data-hero-toggle]'));
@@ -907,6 +934,71 @@ const people = about.sections ?? [];
       }
     };
     for (const clip of clips) clip.video.addEventListener('playing', () => clip.host.classList.add('is-playing'));
+
+    const speakers = Array.from(document.querySelectorAll<HTMLButtonElement>('[data-sound-toggle]'));
+    let sound = false;
+    let granted = false;
+    let current: (typeof clips)[number] | null = null;
+    const renderSound = () => {
+      for (const speaker of speakers) {
+        speaker.classList.toggle('is-on', sound);
+        speaker.setAttribute('aria-label', (sound ? speaker.dataset.off : speaker.dataset.on) ?? '');
+      }
+    };
+    const applySound = () => {
+      for (const clip of clips) {
+        const audible = sound && clip === current;
+        if (clip.video.muted !== audible) continue;
+        clip.video.muted = !audible;
+        if (!audible || clip.video.paused) continue;
+        // iPhones can stop a video when it is unmuted: fall back to silent playback.
+        clip.video.play().catch(() => {
+          sound = false;
+          clip.video.muted = true;
+          renderSound();
+          sync();
+        });
+      }
+    };
+    for (const speaker of speakers) {
+      speaker.addEventListener('click', () => {
+        sound = !sound;
+        if (sound && !wanted) {
+          wanted = true;
+          render();
+          sync();
+        }
+        // iPhones only let a video be unmuted later if it was started unmuted inside a tap.
+        if (sound && !granted) {
+          granted = true;
+          for (const clip of clips) {
+            clip.video.muted = false;
+            clip.video.preload = 'auto';
+            clip.video
+              .play()
+              .then(() => {
+                if (!clip.seen) clip.video.pause();
+              })
+              .catch(onBlocked);
+          }
+          for (const clip of clips) clip.video.muted = clip !== current;
+        }
+        applySound();
+        renderSound();
+      });
+    }
+    const centred = new Map<Element, (typeof clips)[number]>();
+    const isCentred = (el: Element) => {
+      const box = el.getBoundingClientRect();
+      return box.top <= innerHeight / 2 && box.bottom >= innerHeight / 2;
+    };
+    const atCentre = new IntersectionObserver(
+      () => {
+        current = Array.from(centred).find(([el]) => isCentred(el))?.[1] ?? null;
+        applySound();
+      },
+      { rootMargin: '-50% 0px -50% 0px' },
+    );
     for (const toggle of toggles) {
       toggle.addEventListener('click', () => {
         // The tap that unblocked the videos has already started them.
@@ -928,7 +1020,15 @@ const people = about.sections ?? [];
       clips[0]!.seen = inView.size > 0;
       sync();
     });
-    cover.forEach((el) => firstWatch.observe(el));
+    cover.forEach((el) => {
+      firstWatch.observe(el);
+      centred.set(el, clips[0]!);
+      atCentre.observe(el);
+    });
+    for (const clip of clips.slice(1)) {
+      centred.set(clip.host, clip);
+      atCentre.observe(clip.host);
+    }
     for (const clip of clips.slice(1)) {
       new IntersectionObserver(
         ([e]) => {

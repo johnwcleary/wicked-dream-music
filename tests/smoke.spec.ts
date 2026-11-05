@@ -44,3 +44,17 @@ test('A&R renders correctly', async ({ page }) => {
   await expect(page.locator('body')).not.toContainText('A&R;');
   await expect(page.getByText('A&R Consulting').first()).toBeVisible();
 });
+
+test('the loops stay silent until a speaker is pressed', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await page.goto('/');
+  const speaker = page.locator('.hero-foot [data-sound-toggle]');
+  await expect(speaker).toHaveAttribute('aria-label', 'Turn sound on');
+  const audible = () => page.evaluate(() => Array.from(document.querySelectorAll('video')).filter((v) => !v.muted).length);
+  expect(await audible()).toBe(0);
+  await speaker.click();
+  await expect(speaker).toHaveAttribute('aria-label', 'Turn sound off');
+  expect(await audible()).toBe(1);
+  await speaker.click();
+  expect(await audible()).toBe(0);
+});

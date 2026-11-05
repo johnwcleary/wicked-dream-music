@@ -56,18 +56,18 @@ const site = await getSite();
   }
   /* Over the full-screen films the header turns light, on a dark scrim. */
   :global(html:is(.on-reel, .on-intro):not(.menu-open)) .site-header {
-    color: var(--paper);
+    color: var(--on-shade);
   }
   :global(html:is(.on-reel, .on-intro):not(.menu-open)) .site-header::before {
     background: linear-gradient(
       to bottom,
-      color-mix(in srgb, var(--ink) 85%, transparent) 0%,
-      color-mix(in srgb, var(--ink) 70%, transparent) 45%,
+      color-mix(in srgb, var(--shade) 85%, transparent) 0%,
+      color-mix(in srgb, var(--shade) 70%, transparent) 45%,
       transparent 100%
     );
   }
   :global(html:is(.on-reel, .on-intro):not(.menu-open)) .site-header :focus-visible {
-    outline-color: var(--paper);
+    outline-color: var(--on-shade);
   }
   .bar {
     display: flex;
@@ -126,11 +126,11 @@ const site = await getSite();
     color: var(--paper);
   }
   :global(html:is(.on-reel, .on-intro):not(.menu-open)) .menu-list a:hover {
-    background: color-mix(in srgb, var(--paper) 16%, transparent);
+    background: color-mix(in srgb, var(--on-shade) 16%, transparent);
   }
   :global(html:is(.on-reel, .on-intro):not(.menu-open)) .menu-list a[aria-current] {
-    background: var(--paper);
-    color: var(--ink);
+    background: var(--on-shade);
+    color: var(--shade);
   }
   .menu-meta {
     display: none;
