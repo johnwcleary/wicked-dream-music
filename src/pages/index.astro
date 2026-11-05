@@ -65,7 +65,7 @@ const people = about.sections ?? [];
         <div class="hero-stage">
           <h1 id="hero-title" class="run display">
             <span class="run-line">{headOne}</span>
-            <span class="run-line">{headRest} <em>{headLast}</em></span>
+            <span class="run-line">{headRest} <em data-sound-from>{headLast}</em></span>
           </h1>
         </div>
         {
@@ -75,7 +75,7 @@ const people = about.sections ?? [];
                 <span class="bloom-end-line">
                   {closing.line.split(' ').map((w) => (
                     <>
-                      {stressed.includes(w) ? <em>{w}</em> : w}{' '}
+                      {stressed.includes(w) ? <em data-sound-to={w === headLast ? '' : undefined}>{w}</em> : w}{' '}
                     </>
                   ))}
                 </span>
@@ -550,6 +550,17 @@ const people = about.sections ?? [];
       }
     }
 
+    /* The headline's last word travels into the closing line (see the script below).
+       Same line height on both, so their boxes line up when scaled. */
+    :global(html.js) [data-sound-from],
+    :global(html.js) [data-sound-to] {
+      display: inline-block;
+      line-height: 0.92;
+    }
+    :global(html.js) [data-sound-from] {
+      transform-origin: 0 0;
+      will-change: transform;
+    }
     /* The closing line scrolls up as the headline leaves, then holds for a moment. */
     :global(html.js) .bloom {
       height: 130svh;
@@ -813,9 +824,12 @@ const people = about.sections ?? [];
     else addEventListener('load', idle, { once: true });
   }
 
-  // Hero sequence. Past the sheet, the reel's line shrinks away so the films can be watched.
+  // Hero sequence. The headline's last word travels to its place in the closing line, arriving
+  // as that line pins, where the two swap so the rest is plain scrolling. Past the sheet, the reel's line shrinks away so the films can be watched.
   const frame = document.querySelector<HTMLElement>('[data-hero-frame]');
   const founder = document.querySelector<HTMLElement>('[data-founder]');
+  const soundFrom = document.querySelector<HTMLElement>('[data-sound-from]');
+  const soundTo = document.querySelector<HTMLElement>('[data-sound-to]');
   const reel = document.querySelector<HTMLElement>('[data-reel]');
   const reelTitle = document.querySelector<HTMLElement>('[data-reel-title]');
   const reelText = document.querySelector<HTMLElement>('[data-reel-text]');
@@ -831,6 +845,11 @@ const people = about.sections ?? [];
     let titleScale = 1;
     let founderTop = 0;
     let founderEnd = 0;
+    let soundStart = 0;
+    let soundEnd = 0;
+    let soundX = 0;
+    let soundY = 0;
+    let soundScale = 1;
 
     // Coordinates are the hero's own.
     const measure = () => {
@@ -845,6 +864,20 @@ const people = about.sections ?? [];
         titleLift = innerHeight / 2 - (header + 36);
         titleScale = 28 / parseFloat(getComputedStyle(reelText).fontSize);
       }
+      if (soundFrom && soundTo) {
+        // Readings taken at rest. The closing line's box is sticky, so its top in the page
+        // comes from its parent; the word's place inside that box doesn't change.
+        soundFrom.style.transform = '';
+        const from = soundFrom.getBoundingClientRect();
+        const to = soundTo.getBoundingClientRect();
+        const box = soundTo.closest('.bloom-end')!.getBoundingClientRect();
+        const pinAt = soundTo.closest('.bloom')!.getBoundingClientRect().top + scrollY;
+        soundStart = innerHeight * 0.02;
+        soundEnd = pinAt;
+        soundX = to.left - from.left;
+        soundY = pinAt + (to.top - box.top) - (from.top + scrollY);
+        soundScale = parseFloat(getComputedStyle(soundTo).fontSize) / parseFloat(getComputedStyle(soundFrom).fontSize);
+      }
       if (founder) {
         const f = founder.getBoundingClientRect();
         founderTop = f.top + scrollY;
@@ -853,6 +886,17 @@ const people = about.sections ?? [];
     };
 
     const render = (y: number) => {
+      if (soundFrom && soundTo) {
+        const t = seg(y, soundStart, soundEnd);
+        const p = t * t * (3 - 2 * t);
+        // Sideways it finishes early, so it drops into its gap without brushing the next word.
+        const tx = Math.min(1, t / 0.75);
+        const px = tx * tx * (3 - 2 * tx);
+        const landed = t >= 1;
+        soundFrom.style.transform = p > 0 ? `translate3d(${soundX * px}px, ${soundY * p}px, 0) scale(${1 + (soundScale - 1) * p})` : '';
+        soundFrom.style.opacity = landed ? '0' : '';
+        soundTo.style.opacity = landed ? '' : '0';
+      }
       // Over the first screen of the reel the line shrinks to the top and the shade clears.
       const clear = reel ? seg(y, reelTop, reelTop + innerHeight * 0.7) : 0;
       const ease = clear * clear * (3 - 2 * clear);
@@ -890,6 +934,8 @@ const people = about.sections ?? [];
     addEventListener('scroll', wake, { passive: true });
     addEventListener('resize', refresh);
     document.fonts?.ready.then(refresh);
+    // The headline's entrance moves it, so read the word's place again once that's done.
+    soundFrom?.closest('.run-line')?.addEventListener('animationend', refresh);
     refresh();
   }
 
