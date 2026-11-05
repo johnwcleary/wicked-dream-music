@@ -45,16 +45,46 @@ test('A&R renders correctly', async ({ page }) => {
   await expect(page.getByText('A&R Consulting').first()).toBeVisible();
 });
 
-test('the loops stay silent until a speaker is pressed', async ({ page }) => {
+test('music plays only in the work section, after a tap, and the speaker stops it', async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 800 });
   await page.goto('/');
   const speaker = page.locator('.hero-foot [data-sound-toggle]');
-  await expect(speaker).toHaveAttribute('aria-label', 'Turn sound on');
   const audible = () => page.evaluate(() => Array.from(document.querySelectorAll('video')).filter((v) => !v.muted).length);
+  const scrollTo = async (selector: string) => {
+    await page.evaluate((s) => {
+      const top = document.querySelector(s)!.getBoundingClientRect().top + scrollY;
+      window.scrollTo({ top, behavior: 'instant' });
+    }, selector);
+    await page.waitForTimeout(300);
+  };
+  await expect(speaker).toBeHidden();
+  await page.mouse.click(5, 400);
+  expect(await audible()).toBe(0);
+
+  await scrollTo('[data-reel-film]');
+  await expect(speaker).toBeVisible();
+  await expect.poll(audible).toBe(1);
+  await speaker.click();
+  await expect(speaker).toHaveAttribute('aria-label', 'Turn sound on');
   expect(await audible()).toBe(0);
   await speaker.click();
-  await expect(speaker).toHaveAttribute('aria-label', 'Turn sound off');
-  expect(await audible()).toBe(1);
-  await speaker.click();
-  expect(await audible()).toBe(0);
+  await expect.poll(audible).toBe(1);
+
+  await scrollTo('#about');
+  await expect.poll(audible).toBe(0);
+  await expect(speaker).toBeHidden();
+});
+
+test('the pause control stops every loop and starts them again', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await page.goto('/');
+  const toggle = page.locator('.hero-foot [data-hero-toggle]');
+  const playing = () => page.evaluate(() => Array.from(document.querySelectorAll('video')).filter((v) => !v.paused).length);
+  await expect.poll(playing).toBeGreaterThan(0);
+  await toggle.click();
+  await expect(toggle).toHaveText('Play video');
+  await expect.poll(playing).toBe(0);
+  await toggle.click();
+  await expect(toggle).toHaveText('Pause video');
+  await expect.poll(playing).toBeGreaterThan(0);
 });

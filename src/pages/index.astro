@@ -218,18 +218,15 @@ const people = about.sections ?? [];
       }
       {
         video && (
-          <div class="founder-controls">
-            <SoundToggle on={site.ui.sound_on} off={site.ui.sound_off} />
-            <button
-              type="button"
-              class="hero-credit label"
-              data-hero-toggle
-              data-play={site.ui.play_video}
-              data-pause={site.ui.pause_video}
-            >
-              {site.ui.pause_video}
-            </button>
-          </div>
+          <button
+            type="button"
+            class="hero-credit label founder-pause"
+            data-hero-toggle
+            data-play={site.ui.play_video}
+            data-pause={site.ui.pause_video}
+          >
+            {site.ui.pause_video}
+          </button>
         )
       }
     </div>
@@ -798,12 +795,9 @@ const people = about.sections ?? [];
     line-height: 1.25;
     letter-spacing: -0.012em;
   }
-  .founder-controls {
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-    gap: 1rem;
-    margin-top: clamp(1.25rem, 2.5vw, 2rem);
+  .founder-pause {
+    display: block;
+    margin: clamp(1.25rem, 2.5vw, 2rem) 0 0 auto;
   }
 
   /* Contact — one giant email link, in silver. */
@@ -873,20 +867,22 @@ const people = about.sections ?? [];
   // pause controls, in the hero's footer row and the founder section, work on all of them
   // (WCAG 2.2.2). Some phones block autoplay, in Low Power Mode for example: the posters stay
   // up, the controls offer play, and the next tap anywhere starts the videos.
-  // Sound stays off until a speaker is pressed, then follows the clip at the middle of the
-  // screen; only that clip is ever unmuted.
+  // Sound belongs to the work section: each film's music plays while it is at the middle of
+  // the screen, and the opening and founder loops stay silent. Browsers only allow sound once
+  // the visitor has tapped, clicked or pressed a key on the page, so the first of those
+  // switches it on. Until then the films play silently and the speaker offers sound.
   const hero = document.getElementById('top');
   const video = document.querySelector<HTMLVideoElement>('[data-hero-video]');
   const toggles = Array.from(document.querySelectorAll<HTMLButtonElement>('[data-hero-toggle]'));
   if (hero && video && toggles.length) {
-    const clips = [{ video, host: hero, seen: true }];
+    const clips = [{ video, host: hero, seen: true, film: false }];
     document.querySelectorAll<HTMLElement>('[data-reel-film]').forEach((host) => {
       const clip = host.querySelector<HTMLVideoElement>('[data-film-video]');
-      if (clip) clips.push({ video: clip, host, seen: false });
+      if (clip) clips.push({ video: clip, host, seen: false, film: true });
     });
     const founderHost = document.querySelector<HTMLElement>('[data-founder]');
     const founderVideo = document.querySelector<HTMLVideoElement>('[data-founder-video]');
-    if (founderHost && founderVideo) clips.push({ video: founderVideo, host: founderHost, seen: false });
+    if (founderHost && founderVideo) clips.push({ video: founderVideo, host: founderHost, seen: false, film: false });
 
     let wanted = !matchMedia('(prefers-reduced-motion: reduce)').matches; // play unless paused or reduced motion
     let started = false;
@@ -936,70 +932,89 @@ const people = about.sections ?? [];
     };
     for (const clip of clips) clip.video.addEventListener('playing', () => clip.host.classList.add('is-playing'));
 
+    const films = clips.filter((clip) => clip.film);
     const speakers = Array.from(document.querySelectorAll<HTMLButtonElement>('[data-sound-toggle]'));
-    let sound = false;
-    let granted = false;
+    let sound = true; // unless the visitor turns it off
+    let granted = false; // the browser has allowed sound
     let current: (typeof clips)[number] | null = null;
     const renderSound = () => {
       for (const speaker of speakers) {
-        speaker.classList.toggle('is-on', sound);
-        speaker.setAttribute('aria-label', (sound ? speaker.dataset.off : speaker.dataset.on) ?? '');
+        const on = sound && granted;
+        speaker.hidden = !current;
+        speaker.classList.toggle('is-on', on);
+        speaker.setAttribute('aria-label', (on ? speaker.dataset.off : speaker.dataset.on) ?? '');
       }
     };
     const applySound = () => {
-      for (const clip of clips) {
-        const audible = sound && clip === current;
+      for (const clip of films) {
+        const audible = sound && granted && clip === current;
         if (clip.video.muted !== audible) continue;
+        // A refused video stops the moment it is unmuted, so note whether it was playing first.
+        const playing = !clip.video.paused;
         clip.video.muted = !audible;
-        if (!audible || clip.video.paused) continue;
-        // iPhones can stop a video when it is unmuted: fall back to silent playback.
+        if (!audible || !playing) continue;
         clip.video.play().catch(() => {
-          sound = false;
+          granted = false;
           clip.video.muted = true;
           renderSound();
           sync();
         });
       }
+      renderSound();
     };
+    const grant = () => {
+      if (granted) return;
+      granted = true;
+      // iPhones only let a video be unmuted later if it was started unmuted inside a tap.
+      for (const clip of films) {
+        clip.video.muted = false;
+        clip.video.preload = 'auto';
+        clip.video
+          .play()
+          .then(() => {
+            if (!clip.seen || !wanted) clip.video.pause();
+          })
+          .catch(() => {});
+      }
+      for (const clip of films) clip.video.muted = true;
+      applySound();
+    };
+    const onGesture = (event: Event) => {
+      if (event.target instanceof Element && event.target.closest('[data-sound-toggle]')) return;
+      // The end of a scroll on a phone isn't a tap, and sound would be refused.
+      if ('userActivation' in navigator && !navigator.userActivation.isActive) return;
+      grant();
+    };
+    document.addEventListener('click', onGesture, { capture: true });
+    document.addEventListener('keydown', onGesture, { capture: true });
+    document.addEventListener('touchend', onGesture, { capture: true, passive: true });
     for (const speaker of speakers) {
       speaker.addEventListener('click', () => {
-        sound = !sound;
-        if (sound && !wanted) {
-          wanted = true;
-          render();
-          sync();
-        }
-        // iPhones only let a video be unmuted later if it was started unmuted inside a tap.
-        if (sound && !granted) {
-          granted = true;
-          for (const clip of clips) {
-            clip.video.muted = false;
-            clip.video.preload = 'auto';
-            clip.video
-              .play()
-              .then(() => {
-                if (!clip.seen) clip.video.pause();
-              })
-              .catch(onBlocked);
+        sound = !(sound && granted);
+        if (sound) {
+          if (!wanted) {
+            wanted = true;
+            render();
+            sync();
           }
-          for (const clip of clips) clip.video.muted = clip !== current;
+          grant();
         }
         applySound();
-        renderSound();
       });
     }
-    const centred = new Map<Element, (typeof clips)[number]>();
     const isCentred = (el: Element) => {
       const box = el.getBoundingClientRect();
       return box.top <= innerHeight / 2 && box.bottom >= innerHeight / 2;
     };
     const atCentre = new IntersectionObserver(
       () => {
-        current = Array.from(centred).find(([el]) => isCentred(el))?.[1] ?? null;
+        current = films.find((clip) => isCentred(clip.host)) ?? null;
         applySound();
       },
       { rootMargin: '-50% 0px -50% 0px' },
     );
+    for (const clip of films) atCentre.observe(clip.host);
+
     for (const toggle of toggles) {
       toggle.addEventListener('click', () => {
         // The tap that unblocked the videos has already started them.
@@ -1021,15 +1036,7 @@ const people = about.sections ?? [];
       clips[0]!.seen = inView.size > 0;
       sync();
     });
-    cover.forEach((el) => {
-      firstWatch.observe(el);
-      centred.set(el, clips[0]!);
-      atCentre.observe(el);
-    });
-    for (const clip of clips.slice(1)) {
-      centred.set(clip.host, clip);
-      atCentre.observe(clip.host);
-    }
+    cover.forEach((el) => firstWatch.observe(el));
     for (const clip of clips.slice(1)) {
       new IntersectionObserver(
         ([e]) => {
