@@ -24,6 +24,8 @@ const site = defineCollection({
       rights: z.string(),
       play_video: z.string(),
       pause_video: z.string(),
+      sound_on: z.string(),
+      sound_off: z.string(),
     }),
   }),
 });

@@ -21,6 +21,8 @@
     "footer_nav_label": "Footer",
     "rights": "All rights reserved.",
     "play_video": "Play video",
-    "pause_video": "Pause video"
+    "pause_video": "Pause video",
+    "sound_on": "Turn sound on",
+    "sound_off": "Turn sound off"
   }
 }
