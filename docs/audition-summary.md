@@ -56,7 +56,7 @@ Photos are grayscale and high contrast, multiplied over the gradient, with the b
 
 **Pitch.** A title sequence, then the whole company on one scroll. It opens with the headline cut out of a dark sheet, so the ALL MY GIRLS loop plays inside the letters; thin lines draw from "sound" to the words below it, then close on "your sound is your brand". The sheet lifts to show the video at full screen under "Our work", and numbered, expandable sections follow, ending in one big email call to action.
 
-**Type.** One typeface, Inter Tight (`@fontsource-variable/inter-tight`, OFL, preloaded): large type at weight 500–600 with very tight spacing, small type at normal spacing. All text is lowercase through CSS (`text-transform`), so the content files, metadata and screen-reader text keep their normal capitals. Only "sound" and "brand" are italic. The direction takes its restraint from a neutral, lowercase portfolio reference John supplied.
+**Type.** One typeface, Inter Tight (`@fontsource-variable/inter-tight`, OFL, preloaded): large type at weight 500–600 with very tight spacing, small type at normal spacing. Text uses standard capitalization, as written in the content files. Only "sound" and "brand" are italic. The direction takes its restraint from a neutral portfolio reference John supplied.
 
 **Color.** John chose black over the blue and purple auditioned here: black type on the beige page, with deep purple in the word "sound" and a little of the logo's lavender rising from the page's bottom right corner. The films run untinted: color only appears over footage inside the type, and a neutral fade or shade sits behind small text on footage to keep it AA. Over the opening, the nav and buttons are white to match the logo.
 

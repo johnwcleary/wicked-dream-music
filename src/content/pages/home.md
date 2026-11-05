@@ -6,8 +6,8 @@ lede: "We develop artists, write and produce their songs, and help labels and pu
 cta: { label: "Artist Development and A&R Consulting", href: "/services" }
 strapline: "Artist Development / A&R Consulting"
 hero_closing:
-  line: "your sound is your brand"
-  note: "let's develop it together"
+  line: "Your sound is your brand"
+  note: "Let's develop it together"
   outro: "Our work"
 hero_films:
   - title: "IMIN"
