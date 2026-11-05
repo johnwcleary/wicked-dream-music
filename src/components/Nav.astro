@@ -59,10 +59,14 @@ const site = await getSite();
     color: var(--on-shade);
   }
   :global(html:is(.on-reel, .on-intro):not(.menu-open)) .site-header::before {
+    inset: 0 0 -5rem;
     background: linear-gradient(
       to bottom,
       color-mix(in srgb, var(--scrim) 70%, transparent) 0%,
-      color-mix(in srgb, var(--scrim) 55%, transparent) 45%,
+      color-mix(in srgb, var(--scrim) 64%, transparent) 30%,
+      color-mix(in srgb, var(--scrim) 38%, transparent) 50%,
+      color-mix(in srgb, var(--scrim) 16%, transparent) 70%,
+      color-mix(in srgb, var(--scrim) 5%, transparent) 85%,
       transparent 100%
     );
   }
