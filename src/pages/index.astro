@@ -1059,11 +1059,19 @@ const people = about.sections ?? [];
         const word = soundWord.getBoundingClientRect();
         const slot = soundSlot.getBoundingClientRect();
         closingLine.style.transform = `translate3d(${word.left - slot.left}px, ${word.top - slot.top}px, 0)`;
-        // The note centres on the page, wherever that leaves the lines above it.
+        // The note centres on the page, and in the space between the lines above it and the
+        // sheet's bottom edge. Measured from the stage, since the stage is pinned while the sheet moves.
         if (closingNote) {
           closingNote.style.translate = '';
           const note = closingNote.getBoundingClientRect();
-          closingNote.style.translate = `${document.documentElement.clientWidth / 2 - (note.left + note.width / 2)}px`;
+          const x = document.documentElement.clientWidth / 2 - (note.left + note.width / 2);
+          const stage = closingNote.closest('.hero-stage')?.getBoundingClientRect();
+          const lines = closingLine.querySelector('.closing-line')?.getBoundingClientRect();
+          const below = (closingNote.closest('.hero-cut')?.getBoundingClientRect().bottom ?? 0) - (track?.getBoundingClientRect().bottom ?? 0);
+          // On a short screen it stops above the footer row, which it would otherwise touch while pinned.
+          const foot = document.querySelector<HTMLElement>('.hero-foot')?.offsetHeight ?? 0;
+          const y = stage && lines ? Math.min((lines.bottom - stage.top + stage.height + below) / 2 - (note.top + note.height / 2 - stage.top), stage.height - foot - (note.bottom - stage.top)) : 0;
+          closingNote.style.translate = `${x}px ${y}px`;
         }
       }
     };
