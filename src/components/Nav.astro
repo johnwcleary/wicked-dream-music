@@ -42,9 +42,9 @@ const site = await getSite();
     top: 0;
     z-index: 50;
   }
-  /* A soft scrim that fades out under the bar, everywhere on the page, so the logo and
-     links stay legible as content passes beneath them. On a pseudo-element so it can
-     run past the header's own height. */
+  /* Solid behind the logo and links, then fading out under the bar, so the black boxes
+     don't show through them as they pass beneath. On a pseudo-element so it can run past
+     the header's own height. */
   .site-header::before {
     content: '';
     position: absolute;
@@ -53,8 +53,8 @@ const site = await getSite();
     pointer-events: none;
     background: linear-gradient(
       to bottom,
-      color-mix(in srgb, var(--paper) 92%, transparent) 0%,
-      color-mix(in srgb, var(--paper) 78%, transparent) 45%,
+      var(--paper) 0%,
+      var(--paper) 62%,
       transparent 100%
     );
   }
