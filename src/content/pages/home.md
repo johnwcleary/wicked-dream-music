@@ -1,12 +1,13 @@
 ---
 title: Home
 eyebrow: "Independent music creative company / New York"
-headline: "Artist development starts with sound"
+headline: "Artist development begins with vision"
 lede: "We develop artists, write and produce their songs, and help labels and publishers find and grow new talent."
 cta: { label: "Artist Development and A&R Consulting", href: "/services" }
 strapline: "Artist Development / A&R Consulting"
 hero_closing:
-  line: "Your sound is your brand"
+  middle: "Vision shapes your sound"
+  line: "Your sound defines your brand"
   note: "Let's develop it together"
   outro: "Our work"
 hero_films:

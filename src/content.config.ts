@@ -96,10 +96,12 @@ const pages = defineCollection({
         }),
       )
       .optional(),
-    // The line after the headline, a small note under it, and the short line shown
-    // over the video after that.
+    // The lines after the headline, a small note under them, and the short line shown
+    // over the video after that. Each line keeps a word of the one before: `middle` opens on
+    // the headline's last word and ends on a word that `line` also has.
     hero_closing: z
       .object({
+        middle: z.string(),
         line: z.string(),
         note: z.string().optional(),
         outro: z.string().optional(),
