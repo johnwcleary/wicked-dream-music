@@ -41,9 +41,9 @@
   --sound-type: #5a2ca0;
   --sheet-blend: lighten;
   --foot-ground: var(--paper);
-  --card: var(--ink);
-  --on-card: #fff;
-  --on-card-muted: #fff;
+  --card: #fff;
+  --on-card: var(--ink);
+  --on-card-muted: var(--ink);
 
   --header-h: 5rem;
   --gutter: clamp(1rem, 2.2vw, 2rem);

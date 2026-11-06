@@ -184,6 +184,13 @@ test('the header logo appears once the opening has been scrolled past, and goes 
   await page.evaluate(() => window.scrollTo({ top: innerHeight * 1.2, behavior: 'instant' }));
   await expect(logo).toBeVisible();
   await expect(logo).toHaveAttribute('aria-label', 'Wicked Dream Music');
+  await page.waitForTimeout(600);
+  const box = (await logo.boundingBox())!;
+  const home = (await page.locator('#site-menu a').first().boundingBox())!;
+  expect(box.height).toBeCloseTo(home.height, 0);
+  expect(box.width).toBeCloseTo(box.height, 0);
+  expect(box.y).toBeCloseTo(home.y, 0);
+  expect(box.x).toBeLessThan(home.x);
   await page.evaluate(() => window.scrollTo({ top: document.documentElement.scrollHeight, behavior: 'instant' }));
   await expect(logo).toBeVisible();
   await logo.click();

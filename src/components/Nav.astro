@@ -1,5 +1,5 @@
 ---
-import logoUrl from '../assets/brand/wdm-lockup-white.webp?url';
+import markUrl from '../assets/brand/wd-mark.webp?url';
 import { getSite, sectionId, toSection } from '../lib/content';
 
 const site = await getSite();
@@ -8,7 +8,7 @@ const site = await getSite();
 <header class="site-header">
   <div class="bar wrap">
     <a class="bar-logo" href={toSection('/')} aria-label={site.name}>
-      <span class="bar-logo-mark" style={`--logo-url: url(${logoUrl})`}></span>
+      <span class="bar-logo-mark" style={`--logo-url: url(${markUrl})`}></span>
     </a>
     <button type="button" class="menu-btn label" aria-expanded="false" aria-controls="site-menu" data-open={site.ui.menu_open} data-close={site.ui.menu_close}>
       <span class="menu-btn-text">{site.ui.menu_open}</span>
@@ -86,18 +86,26 @@ const site = await getSite();
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: var(--col-gap);
+    gap: var(--bar-gap);
     min-height: var(--header-h);
+    --bar-gap: 0.25rem;
+    --option-h: 1.85rem;
   }
-  /* Top left, and in the header's own color, once the opening with its large logo has gone. */
+  /* First in the row and as tall as the links, in the header's own color. It opens out once
+     the opening with its large logo has gone, so the row stays centred before and after. */
   .bar-logo {
-    position: absolute;
-    top: 50%;
-    left: var(--gutter);
-    translate: 0 -50%;
+    flex: none;
+    width: var(--option-h);
+    border-radius: 50%;
     transition:
+      width 0.4s var(--ease-out),
+      margin 0.4s var(--ease-out),
       opacity 0.4s,
       visibility 0.4s;
+  }
+  :global(html.on-intro) .bar-logo {
+    width: 0;
+    margin-right: calc(var(--bar-gap) * -1);
   }
   :global(html:is(.on-intro, .menu-open)) .bar-logo {
     opacity: 0;
@@ -105,8 +113,7 @@ const site = await getSite();
   }
   .bar-logo-mark {
     display: block;
-    height: clamp(2.75rem, 4vw, 3.25rem);
-    aspect-ratio: 2000 / 1286;
+    height: var(--option-h);
     background: currentColor;
     -webkit-mask: var(--logo-url) center / contain no-repeat;
     mask: var(--logo-url) center / contain no-repeat;
@@ -145,6 +152,7 @@ const site = await getSite();
   .menu-list a {
     display: inline-flex;
     align-items: center;
+    min-height: var(--option-h);
     padding: 0.3rem 0.8rem;
     border-radius: 999px;
     font-size: 0.875rem;
@@ -172,6 +180,9 @@ const site = await getSite();
   }
 
   @media (max-width: 767px) {
+    .bar {
+      --bar-gap: 0.75rem;
+    }
     :global(html:not(.js)) .bar {
       flex-wrap: wrap;
       padding-bottom: 0.75rem;
