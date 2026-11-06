@@ -88,7 +88,7 @@ const site = await getSite();
     align-items: center;
     gap: var(--bar-gap);
     min-height: var(--header-h);
-    --bar-gap: 0.25rem;
+    --bar-gap: 0.75rem;
     --option-h: 1.85rem;
   }
   /* First in the row and as tall as the links, in the header's own color. It opens out once
@@ -180,9 +180,6 @@ const site = await getSite();
   }
 
   @media (max-width: 767px) {
-    .bar {
-      --bar-gap: 0.75rem;
-    }
     :global(html:not(.js)) .bar {
       flex-wrap: wrap;
       padding-bottom: 0.75rem;
