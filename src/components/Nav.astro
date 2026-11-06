@@ -1,4 +1,5 @@
 ---
+import logoUrl from '../assets/brand/wdm-lockup-white.webp?url';
 import { getSite, sectionId, toSection } from '../lib/content';
 
 const site = await getSite();
@@ -6,6 +7,9 @@ const site = await getSite();
 
 <header class="site-header">
   <div class="bar wrap">
+    <a class="bar-logo" href={toSection('/')} aria-label={site.name}>
+      <span class="bar-logo-mark" style={`--logo-url: url(${logoUrl})`}></span>
+    </a>
     <button type="button" class="menu-btn label" aria-expanded="false" aria-controls="site-menu" data-open={site.ui.menu_open} data-close={site.ui.menu_close}>
       <span class="menu-btn-text">{site.ui.menu_open}</span>
       <span class="menu-btn-icon" aria-hidden="true"></span>
@@ -78,11 +82,34 @@ const site = await getSite();
     outline-color: var(--on-shade);
   }
   .bar {
+    position: relative;
     display: flex;
     justify-content: center;
     align-items: center;
     gap: var(--col-gap);
     min-height: var(--header-h);
+  }
+  /* Top left, and in the header's own color, once the opening with its large logo has gone. */
+  .bar-logo {
+    position: absolute;
+    top: 50%;
+    left: var(--gutter);
+    translate: 0 -50%;
+    transition:
+      opacity 0.4s,
+      visibility 0.4s;
+  }
+  :global(html:is(.on-intro, .menu-open)) .bar-logo {
+    opacity: 0;
+    visibility: hidden;
+  }
+  .bar-logo-mark {
+    display: block;
+    height: clamp(2.75rem, 4vw, 3.25rem);
+    aspect-ratio: 2000 / 1286;
+    background: currentColor;
+    -webkit-mask: var(--logo-url) center / contain no-repeat;
+    mask: var(--logo-url) center / contain no-repeat;
   }
   .menu-btn {
     display: none;

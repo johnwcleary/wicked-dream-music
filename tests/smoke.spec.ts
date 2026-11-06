@@ -175,3 +175,18 @@ test('the hero keeps vision, then sound, as its three lines change', async ({ pa
   expect(third.sound).toEqual(second.sound);
   expect(third.brand.opacity).toBe(1);
 });
+
+test('the header logo appears once the opening has been scrolled past, and goes home', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await page.goto('/');
+  const logo = page.locator('.bar-logo');
+  await expect(logo).toBeHidden();
+  await page.evaluate(() => window.scrollTo({ top: innerHeight * 1.2, behavior: 'instant' }));
+  await expect(logo).toBeVisible();
+  await expect(logo).toHaveAttribute('aria-label', 'Wicked Dream Music');
+  await page.evaluate(() => window.scrollTo({ top: document.documentElement.scrollHeight, behavior: 'instant' }));
+  await expect(logo).toBeVisible();
+  await logo.click();
+  await expect.poll(() => page.evaluate(() => scrollY)).toBeLessThan(5);
+  await expect(logo).toBeHidden();
+});
