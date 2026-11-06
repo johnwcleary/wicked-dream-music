@@ -25,10 +25,6 @@
   --font-sans: "Inter Tight Variable", "Helvetica Neue", Helvetica, Arial, sans-serif;
   --font-display: var(--font-sans);
   --display-weight: 500;
-  --display-heavy: 600;           /* the hero and the service titles */
-  --display-scale: 1;             /* evens out how large each font looks at the same size */
-  --display-stretch: 100%;
-  --em-style: italic;
   --display-tracking: -0.04em;
   --display-leading: 0.92;
 
@@ -185,7 +181,6 @@
   .display {
     font-family: var(--font-display);
     font-weight: var(--display-weight);
-    font-stretch: var(--display-stretch);
     letter-spacing: var(--display-tracking);
     line-height: var(--display-leading);
   }

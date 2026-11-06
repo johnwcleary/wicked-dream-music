@@ -386,7 +386,7 @@ const people = about.sections ?? [];
   }
   .run,
   .closing {
-    font-weight: var(--display-heavy);
+    font-weight: 600;
   }
   .hero-stage {
     display: flex;
@@ -397,31 +397,29 @@ const people = about.sections ?? [];
   }
   .run {
     margin: 0;
-    font-size: calc(var(--run-size) * var(--display-scale));
+    font-size: var(--run-size);
   }
   .step-lead-top {
     display: block;
   }
   .run em,
   .closing em {
-    font-style: var(--em-style);
+    font-style: italic;
   }
   .step-kept {
     color: var(--sound-type);
   }
   .closing {
     margin: 1.5rem 0 0;
-    font-size: calc(var(--run-size) * var(--display-scale));
+    font-size: var(--run-size);
     line-height: 0.95;
   }
   /* Large text for AA (24px or more), since it's also a window onto the footage. */
   .closing-note {
     margin: 1.9em 0 0;
     text-align: center;
-    font-family: var(--font-display);
-    font-stretch: var(--display-stretch);
     font-size: clamp(1.5rem, 2.1vw, 2.25rem);
-    font-weight: var(--display-heavy);
+    font-weight: 600;
     letter-spacing: -0.02em;
     line-height: 1.2;
   }
@@ -470,7 +468,7 @@ const people = about.sections ?? [];
   }
   .reel-text {
     margin: 0;
-    font-size: calc(min(24svh, 19vw) * var(--display-scale));
+    font-size: min(24svh, 19vw);
     white-space: nowrap;
     /* No shade behind the big line, so a soft shadow holds it over bright footage. */
     text-shadow:
@@ -647,7 +645,7 @@ const people = about.sections ?? [];
       display: grid;
       justify-content: start;
       row-gap: 0.16em;
-      font-size: calc(var(--run-size) * var(--display-scale));
+      font-size: var(--run-size);
       line-height: 0.95;
       white-space: nowrap;
     }

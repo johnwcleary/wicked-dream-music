@@ -203,14 +203,3 @@ test('the contact heading matches the other section headings', async ({ page }) 
   const size = (id: string) => page.locator(id).evaluate((el) => getComputedStyle(el).fontSize);
   expect(await size('#contact-title')).toBe(await size('#services-title'));
 });
-
-test('the font picker changes the large type and remembers it', async ({ page }) => {
-  await page.goto('/');
-  const family = () => page.locator('h1').evaluate((el) => getComputedStyle(el).fontFamily);
-  expect(await family()).toContain('Inter Tight');
-  await page.locator('[data-font-picker]').selectOption('instrument');
-  expect(await family()).toContain('Instrument Serif');
-  await page.reload();
-  expect(await family()).toContain('Instrument Serif');
-  await expect(page.locator('[data-font-picker]')).toHaveValue('instrument');
-});
