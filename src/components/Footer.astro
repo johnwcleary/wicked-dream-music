@@ -1,6 +1,5 @@
 ---
 import { getSite, toSection } from '../lib/content';
-import logoUrl from '../assets/brand/wdm-lockup-white.webp?url';
 
 const site = await getSite();
 const year = new Date().getFullYear();
@@ -9,7 +8,6 @@ const year = new Date().getFullYear();
 <footer class="site-footer">
   <div class="wrap">
     <div class="colophon">
-      <span class="colo-logo" role="img" aria-label={site.name} style={`--logo-url: url(${logoUrl})`}></span>
       <p class="colo-loc label">
         {site.name}<br />
         <span class="label-muted">{site.location}</span>
@@ -38,26 +36,13 @@ const year = new Date().getFullYear();
   }
   .colophon {
     display: grid;
-    grid-template-columns: max-content minmax(0, max-content);
-    justify-content: center;
     justify-items: center;
-    gap: 0.75rem clamp(1rem, 2vw, 2rem);
+    gap: 0.75rem;
     padding-block: 1rem 1.25rem;
-  }
-  /* Beside the text, the two centred together. The white logo as a mask, in the page's own text color. */
-  .colo-logo {
-    grid-row: 1 / span 3;
-    display: block;
-    width: clamp(5.5rem, 11vw, 10rem);
-    aspect-ratio: 2000 / 1286;
-    background: currentColor;
-    -webkit-mask: var(--logo-url) center / contain no-repeat;
-    mask: var(--logo-url) center / contain no-repeat;
   }
   .colo-loc,
   .colo-nav,
   .colo-rights {
-    grid-column: 2;
     margin: 0;
   }
   .colo-nav ul {
