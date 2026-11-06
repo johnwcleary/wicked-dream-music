@@ -27,7 +27,7 @@ const pictures = await Promise.all(
       return (
         <details class="svc" id={`services-${anchor(s.id)}`} open>
           <summary class="svc-head">
-            <h3 class="svc-title display" style={picture ? `--still: url('${picture.src}')` : undefined} data-reveal>
+            <h3 class="svc-title display" style={picture ? `--still: url('${picture.src}')` : undefined}>
               {s.data.title}
             </h3>
             <span class="svc-icon" aria-hidden="true" />

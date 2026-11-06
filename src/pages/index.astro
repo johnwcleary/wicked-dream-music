@@ -184,12 +184,12 @@ const people = about.sections ?? [];
     {
       about.story && (
         <>
-          <SectionHead id="story-title" title={about.story.title} still />
+          <SectionHead id="story-title" title={about.story.title} />
           <p class="about-text about-story">{about.story.body}</p>
         </>
       )
     }
-    <SectionHead id="about-title" title={about.section_title ?? about.title} still />
+    <SectionHead id="about-title" title={about.section_title ?? about.title} />
     {
       people.map((person) => (
         <article class="bio">

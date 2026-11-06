@@ -198,6 +198,12 @@ test('the header logo appears once the opening has been scrolled past, and goes 
   await expect(logo).toBeHidden();
 });
 
+test('section and service titles arrive without moving', async ({ page }) => {
+  await page.goto('/');
+  await expect(page.locator('.sh-title').first()).toBeAttached();
+  await expect(page.locator('.sh-title[data-reveal], .svc-title[data-reveal]')).toHaveCount(0);
+});
+
 test('the contact heading matches the other section headings', async ({ page }) => {
   await page.goto('/');
   const size = (id: string) => page.locator(id).evaluate((el) => getComputedStyle(el).fontSize);

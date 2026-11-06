@@ -3,13 +3,11 @@
 interface Props {
   title: string;
   id: string;
-  /** No entrance animation. */
-  still?: boolean;
 }
-const { title, id, still = false } = Astro.props;
+const { title, id } = Astro.props;
 ---
 
-<h2 id={id} class="sh-title display" data-reveal={still ? undefined : ''}>{title}</h2>
+<h2 id={id} class="sh-title display">{title}</h2>
 
 <style>
   .sh-title {
