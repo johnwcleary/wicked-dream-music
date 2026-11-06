@@ -23,8 +23,14 @@ const [headOne = '', headTwo = ''] = splitHeadline(page.headline);
 const headLast = headTwo.split(' ').pop() ?? '';
 const headRest = headTwo.slice(0, -headLast.length).trim();
 const closing = page.hero_closing;
-// The closing line is built around the headline's last word, which is shared between them.
-const [closeBefore = '', closeAfter = ''] = closing ? closing.line.split(headLast).map((part) => part.trim()) : [];
+// Each line keeps a word of the one before: the middle line opens on the headline's last word,
+// and the closing line is built around the middle line's last word.
+const middle = closing?.middle.split(' ') ?? [];
+const midFirst = middle[0] ?? '';
+const midKept = middle.at(-1) ?? '';
+const midRest = middle.slice(1, -1);
+const midLeft = midRest.pop();
+const [closeBefore = '', closeAfter = ''] = closing ? closing.line.split(midKept).map((part) => part.trim()) : [];
 const closeRest = closeAfter.split(' ');
 const closeLast = closeRest.pop();
 const video = page.hero_video;
@@ -36,8 +42,8 @@ const people = about.sections ?? [];
 
 <BaseLayout title={page.title} intro>
   <!-- 00 — Hero: all the type is a window onto the footage, which holds still behind
-       a beige sheet. Scrolling keeps the headline's last word still and changes the words
-       around it into the closing line.
+       a beige sheet. Scrolling keeps one word of each line still and changes the words
+       around it into the next line.
        Without JS or with reduced
        motion the type sits still and stacked, over the poster. -->
   <section id="top" class={`hero${video ? ' has-video' : ''}`} aria-labelledby="hero-title" data-hero>
@@ -81,25 +87,36 @@ const people = about.sections ?? [];
       <div class="hero-cut">
         <div class="hero-track" data-hero-track>
           <div class="hero-stage">
-            <h1 id="hero-title" class="run display">
-              <span class="run-line"><span class="run-old" data-run-old>{headOne}</span></span>
-              <span class="run-line"><span class="run-old" data-run-old>{headRest}</span> <em data-sound-word>{headLast}</em></span>
-            </h1>
-            {
-              closing && (
-                <p class="closing display" data-closing>
-                  <span class="closing-line">
-                    <span class="closing-seg closing-lead" data-close-seg>{closeBefore}</span>{' '}
-                    <em data-sound-slot>{headLast}</em>{' '}
-                    <span class="closing-seg closing-lead" data-close-seg>{closeRest.join(' ')}</span>{' '}
-                    <span class="closing-seg" data-close-seg>
-                      <em>{closeLast}</em>
-                    </span>
-                  </span>
-                  {closing.note && <span class="closing-note" data-close-note>{closing.note}</span>}
-                </p>
-              )
-            }
+            <div class="steps" data-steps>
+              <h1 id="hero-title" class="step run display">
+                <span class="step-left step-lead" style="--row: 1; --row-sm: 1" data-step-out="1" data-step-lead>
+                  <span class="step-lead-top">{headOne}</span>{' '}
+                  {headRest}
+                </span>{' '}
+                <em class="step-right step-kept" style="--row: 1; --row-sm: 2" data-step-lead><span data-step-fade data-step-out="1">{headLast.charAt(0)}</span><span data-step-fade data-step-out="2" data-step-rest>{headLast.slice(1)}</span></em>
+              </h1>
+              {
+                closing && (
+                  <>
+                    <p class="step closing display">
+                      <span class="step-right step-top" style="--row: 1">
+                        <em class="step-kept" style="--row-sm: 2"><span data-step-fade data-step-in="1" data-step-out="2">{midFirst.charAt(0)}</span><span data-step-slot data-step-rest-slot>{midFirst.slice(1)}</span></em>{' '}
+                        <span style="--row-sm: 3" data-step-in="1" data-step-out="2">{midRest.join(' ')}</span>
+                      </span>{' '}
+                      <span class="step-left" style="--row: 2; --row-sm: 4" data-step-in="1" data-step-out="2">{midLeft}</span>{' '}
+                      <em class="step-right step-kept" style="--row: 2; --row-sm: 5" data-step-in="1">{midKept}</em>
+                    </p>
+                    <p class="step closing display">
+                      <span class="step-left" style="--row: 2; --row-sm: 4" data-step-in="2">{closeBefore}</span>{' '}
+                      <em class="step-right step-kept" style="--row: 2; --row-sm: 5" data-step-slot>{midKept}</em>{' '}
+                      <span class="step-left" style="--row: 3; --row-sm: 6" data-step-in="2">{closeRest.join(' ')}</span>{' '}
+                      <em class="step-right" style="--row: 3; --row-sm: 7" data-step-in="2">{closeLast}</em>
+                    </p>
+                  </>
+                )
+              }
+            </div>
+            {closing?.note && <p class="closing-note" data-close-note>{closing.note}</p>}
           </div>
         </div>
       </div>
@@ -382,15 +399,14 @@ const people = about.sections ?? [];
     margin: 0;
     font-size: var(--run-size);
   }
-  .run-line {
+  .step-lead-top {
     display: block;
   }
   .run em,
   .closing em {
     font-style: italic;
   }
-  [data-sound-word],
-  [data-sound-slot] {
+  .step-kept {
     color: var(--sound-type);
   }
   .closing {
@@ -398,26 +414,9 @@ const people = about.sections ?? [];
     font-size: var(--run-size);
     line-height: 0.95;
   }
-  /* "sound" and "brand" share a left edge, with the words before them set against it. The row
-     gap clears the descender of the y above. On phones all four stack on that edge. */
-  .closing-line {
-    display: grid;
-    justify-content: start;
-    column-gap: 0.15em;
-    row-gap: 0.16em;
-  }
-  @media (min-width: 768px) {
-    .closing-line {
-      grid-template-columns: max-content max-content;
-    }
-    .closing-lead {
-      justify-self: end;
-    }
-  }
   /* Large text for AA (24px or more), since it's also a window onto the footage. */
   .closing-note {
-    display: block;
-    margin-top: 1.9em;
+    margin: 1.9em 0 0;
     text-align: center;
     font-size: clamp(1.5rem, 2.4vw, 2.5rem);
     font-weight: 600;
@@ -426,7 +425,7 @@ const people = about.sections ?? [];
   }
   @media (min-width: 768px) {
     .hero {
-      --run-size: min(16svh, 6.8vw);
+      --run-size: min(13svh, 6.8vw);
     }
   }
 
@@ -627,10 +626,9 @@ const people = about.sections ?? [];
     :global(html.intro-foot) .hero-foot {
       background: transparent;
     }
-    /* A pinned stage: the word stays put while the script changes the words around it.
-       Both copies of the word share a box shape, so they line up exactly. */
+    /* A pinned stage: the kept word stays put while the script changes the words around it. */
     :global(html.js) .hero-track {
-      height: 185svh;
+      height: 285svh;
     }
     /* Sits above centre, leaving room under the word for the lines that arrive. */
     :global(html.js) .hero-stage {
@@ -639,53 +637,85 @@ const people = about.sections ?? [];
       justify-content: center;
       height: 100svh;
       min-height: 0;
-      padding-bottom: 36svh;
+      padding-bottom: 20svh;
     }
-    :global(html.js) .run-old {
+    /* All three lines share one grid, so each kept word and its copy in the next line sit in the
+       same cell. On phones everything stacks on one left edge. */
+    :global(html.js) .steps {
+      display: grid;
+      justify-content: start;
+      row-gap: 0.16em;
+      font-size: var(--run-size);
+      line-height: 0.95;
+      white-space: nowrap;
+    }
+    :global(html.js) .step {
+      display: contents;
+    }
+    :global(html.js) .steps > .step > *,
+    :global(html.js) .step-top > * {
+      grid-column: 1;
+      grid-row: var(--row-sm);
+    }
+    :global(html.js) .step-top {
+      display: contents;
+    }
+    :global(html.js) .step-lead-top {
+      margin-bottom: 0.16em;
+    }
+    :global(html.js) [data-step-in],
+    :global(html.js) [data-step-out],
+    :global(html.js) [data-step-fade] {
       display: inline-block;
-    }
-    :global(html.js) .run-old,
-    :global(html.js) .closing-seg {
       will-change: transform, opacity;
     }
-    :global(html.js) [data-sound-word],
-    :global(html.js) [data-sound-slot] {
-      display: inline-block;
-      line-height: 0.92;
-    }
-    :global(html.js) [data-sound-slot] {
+    :global(html.js) [data-step-in] {
       opacity: 0;
     }
-    :global(html.js) .closing {
+    :global(html.js) [data-step-slot] {
+      visibility: hidden;
+    }
+    :global(html.js) .closing-note {
       position: absolute;
       top: 0;
       left: 0;
       margin: 0;
-      font-size: var(--run-size);
       white-space: nowrap;
       pointer-events: none;
-    }
-    :global(html.js) .closing-seg,
-    :global(html.js) .closing-note {
       opacity: 0;
-    }
-    :global(html.js) .closing-note {
       will-change: opacity;
     }
-    /* The closing lines stack around the word, so the headline sits where they end up
-       centred: over the note on larger screens, and from the left edge on phones. */
+    /* Larger screens read in two columns either side of a shared left edge for the kept words.
+       The headline's first line hangs above its second, with room kept for it. */
     @media (min-width: 768px) {
-      :global(html.js) .run {
+      :global(html.js) .steps {
+        grid-template-columns: max-content max-content;
+        column-gap: 0.15em;
         width: fit-content;
         margin-inline: auto;
-        translate: -0.47em;
-        white-space: nowrap;
+        padding-top: 1.11em;
       }
-    }
-    @media (max-width: 767px) {
-      :global(html.js) [data-sound-word] {
+      :global(html.js) .steps > .step > * {
+        grid-row: var(--row);
+      }
+      :global(html.js) .steps > .step > .step-left {
+        grid-column: 1;
+        justify-self: end;
+      }
+      :global(html.js) .steps > .step > .step-right {
+        grid-column: 2;
+        justify-self: start;
+      }
+      :global(html.js) .step-top {
         display: block;
-        width: fit-content;
+      }
+      :global(html.js) .step-lead {
+        position: relative;
+      }
+      :global(html.js) .step-lead-top {
+        position: absolute;
+        bottom: 100%;
+        left: 0;
       }
     }
   }
@@ -769,8 +799,8 @@ const people = about.sections ?? [];
   .cta-lede {
     grid-column: 1 / -1;
     margin: 0 auto;
-    max-width: 24em;
-    white-space: pre-line; /* the content file sets the line break */
+    max-width: 32em;
+    text-wrap: balance;
     font-size: clamp(1.375rem, 2.2vw, 2.25rem);
     font-weight: 450;
     letter-spacing: -0.015em;
@@ -998,15 +1028,15 @@ const people = about.sections ?? [];
     else addEventListener('load', idle, { once: true });
   }
 
-  // Hero sequence. While the stage is pinned the headline's last word stays still, its other
-  // words leave, and the closing line's arrive around it. Past the sheet, the reel's line shrinks away so the films can be watched.
+  // Hero sequence. While the stage is pinned each line's kept word stays still, its other words
+  // leave, and the next line's arrive around it. Past the sheet, the reel's line shrinks away so the films can be watched.
   const frame = document.querySelector<HTMLElement>('[data-hero-frame]');
   const track = document.querySelector<HTMLElement>('[data-hero-track]');
-  const soundWord = document.querySelector<HTMLElement>('[data-sound-word]');
-  const soundSlot = document.querySelector<HTMLElement>('[data-sound-slot]');
-  const closingLine = document.querySelector<HTMLElement>('[data-closing]');
-  const oldWords = Array.from(document.querySelectorAll<HTMLElement>('[data-run-old]'));
-  const newWords = Array.from(document.querySelectorAll<HTMLElement>('[data-close-seg]'));
+  const steps = document.querySelector<HTMLElement>('[data-steps]');
+  const stepWords = Array.from(document.querySelectorAll<HTMLElement>('[data-step-in], [data-step-out]'));
+  const stepLead = Array.from(document.querySelectorAll<HTMLElement>('[data-step-lead]'));
+  const keptRest = document.querySelector<HTMLElement>('[data-step-rest]');
+  const keptRestSlot = document.querySelector<HTMLElement>('[data-step-rest-slot]');
   const closingNote = document.querySelector<HTMLElement>('[data-close-note]');
   const reel = document.querySelector<HTMLElement>('[data-reel]');
   const reelTitle = document.querySelector<HTMLElement>('[data-reel-title]');
@@ -1041,12 +1071,14 @@ const people = about.sections ?? [];
         trackTop = track.getBoundingClientRect().top + scrollY;
         trackSpan = track.offsetHeight - innerHeight;
       }
-      if (soundWord && soundSlot && closingLine) {
-        // Lay the closing line over the headline so its gap sits exactly on the word.
-        closingLine.style.transform = '';
-        const word = soundWord.getBoundingClientRect();
-        const slot = soundSlot.getBoundingClientRect();
-        closingLine.style.transform = `translate3d(${word.left - slot.left}px, ${word.top - slot.top}px, 0)`;
+      if (steps) {
+        // The kept word changes its first letter from lower to upper case. The headline moves
+        // by the difference, so the letters after it don't move at all.
+        if (keptRest && keptRestSlot) {
+          for (const el of stepLead) el.style.translate = '';
+          const shift = keptRestSlot.getBoundingClientRect().left - keptRest.getBoundingClientRect().left;
+          for (const el of stepLead) el.style.translate = `${shift}px`;
+        }
         // The note centres on the page, and in the space between the lines above it and the
         // sheet's bottom edge. Measured from the stage, since the stage is pinned while the sheet moves.
         if (closingNote) {
@@ -1054,11 +1086,11 @@ const people = about.sections ?? [];
           const note = closingNote.getBoundingClientRect();
           const x = document.documentElement.clientWidth / 2 - (note.left + note.width / 2);
           const stage = closingNote.closest('.hero-stage')?.getBoundingClientRect();
-          const lines = closingLine.querySelector('.closing-line')?.getBoundingClientRect();
+          const lines = steps.getBoundingClientRect();
           const below = (closingNote.closest('.hero-cut')?.getBoundingClientRect().bottom ?? 0) - (track?.getBoundingClientRect().bottom ?? 0);
           // On a short screen it stops above the footer row, which it would otherwise touch while pinned.
           const foot = document.querySelector<HTMLElement>('.hero-foot')?.offsetHeight ?? 0;
-          const y = stage && lines ? Math.min((lines.bottom - stage.top + stage.height + below) / 2 - (note.top + note.height / 2 - stage.top), stage.height - foot - (note.bottom - stage.top)) : 0;
+          const y = stage ? Math.min((lines.bottom - stage.top + stage.height + below) / 2 - (note.top + note.height / 2 - stage.top), stage.height - foot - (note.bottom - stage.top)) : 0;
           closingNote.style.translate = `${x}px ${y}px`;
         }
       }
@@ -1067,17 +1099,21 @@ const people = about.sections ?? [];
     const render = (y: number) => {
       const smooth = (t: number) => t * t * (3 - 2 * t);
       const p = trackSpan > 0 ? seg(y, trackTop, trackTop + trackSpan) : 0;
-      const out = smooth(seg(p, 0.02, 0.3));
-      const arrive = smooth(seg(p, 0.23, 0.52));
-      for (const el of oldWords) {
-        el.style.opacity = String(1 - out);
-        el.style.transform = out > 0 ? `translate3d(0, ${out * -38}%, 0)` : '';
+      // Index 0 is "always here" for arriving and "stays" for leaving; 1 and 2 are the two changes.
+      const arrive = [1, smooth(seg(p, 0.13, 0.28)), smooth(seg(p, 0.53, 0.68))];
+      const leave = [0, smooth(seg(p, 0.02, 0.17)), smooth(seg(p, 0.42, 0.57))];
+      // The kept word's first letter crosses straight over, with no moment missing.
+      const swap = smooth(seg(p, 0.1, 0.2));
+      for (const el of stepWords) {
+        const fade = 'stepFade' in el.dataset;
+        const a = Number(el.dataset.stepIn ?? 0);
+        const l = Number(el.dataset.stepOut ?? 0);
+        const shown = fade && a === 1 ? swap : arrive[a]!;
+        const gone = fade && l === 1 ? swap : leave[l]!;
+        el.style.opacity = String(shown * (1 - gone));
+        if (!fade) el.style.transform = `translate3d(0, ${(1 - shown) * 38 - gone * 38}%, 0)`;
       }
-      for (const el of newWords) {
-        el.style.opacity = String(arrive);
-        el.style.transform = `translate3d(0, ${(1 - arrive) * 38}%, 0)`;
-      }
-      if (closingNote) closingNote.style.opacity = String(smooth(seg(p, 0.4, 0.63)));
+      if (closingNote) closingNote.style.opacity = String(smooth(seg(p, 0.62, 0.78)));
       // Over the first screen of the reel the line shrinks to the top and the shade clears.
       const clear = reel ? seg(y, reelTop, reelTop + innerHeight * 0.7) : 0;
       const ease = clear * clear * (3 - 2 * clear);

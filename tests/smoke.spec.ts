@@ -137,3 +137,41 @@ test('video gaps sit either side of services and pause the loops', async ({ page
   await expect(toggle).toHaveText('Play video');
   await expect.poll(() => video.evaluate((v: HTMLVideoElement) => v.paused)).toBe(true);
 });
+
+test('the hero keeps vision, then sound, as its three lines change', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await page.goto('/');
+  await expect(page.locator('h1')).toHaveText(/^\s*Artist development\s+begins with\s+vision\s*$/);
+  await expect(page.locator('.step').nth(1)).toHaveText(/^\s*Vision\s+shapes\s+your\s+sound\s*$/);
+  await expect(page.locator('.step').nth(2)).toHaveText(/^\s*Your\s+sound\s+defines your\s+brand\s*$/);
+  const read = async (progress: number) => {
+    await page.evaluate((p) => {
+      const track = document.querySelector<HTMLElement>('[data-hero-track]')!;
+      const top = track.getBoundingClientRect().top + scrollY;
+      window.scrollTo({ top: top + p * (track.offsetHeight - innerHeight), behavior: 'instant' });
+    }, progress);
+    await page.waitForTimeout(1000);
+    return page.evaluate(() => {
+      const look = (el: Element) => {
+        const box = el.getBoundingClientRect();
+        return { x: Math.round(box.left), y: Math.round(box.top), opacity: Number(getComputedStyle(el).opacity), color: getComputedStyle(el).color };
+      };
+      return {
+        vision: look(document.querySelector('[data-step-rest]')!),
+        sound: look(document.querySelector('em[data-step-in="1"]')!),
+        brand: look(document.querySelector('em[data-step-in="2"]')!),
+      };
+    });
+  };
+  const first = await read(0);
+  const second = await read(0.35);
+  const third = await read(0.85);
+  expect(first.vision.opacity).toBe(1);
+  expect(first.sound.opacity).toBe(0);
+  expect(second.vision).toEqual(first.vision);
+  expect(second.sound.opacity).toBe(1);
+  expect(second.vision.color).toBe(second.sound.color);
+  expect(third.vision.opacity).toBe(0);
+  expect(third.sound).toEqual(second.sound);
+  expect(third.brand.opacity).toBe(1);
+});
