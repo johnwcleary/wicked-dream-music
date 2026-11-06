@@ -244,7 +244,7 @@ const people = about.sections ?? [];
   <!-- 04 — Contact: one email button -->
   <section id="contact" class="band" aria-labelledby="contact-title">
     <div class="wrap grid12 cta">
-      <h2 id="contact-title" class="cta-title display d-lg">{contact.headline}</h2>
+      <SectionHead id="contact-title" title={contact.headline} />
       <p class="cta-lede">{contact.lede}</p>
       <a class="cta-mail" href={`mailto:${site.email}`}>
         <ServiceIcon name="mail" />
@@ -791,19 +791,19 @@ const people = about.sections ?? [];
   .cta {
     row-gap: 1.5rem;
   }
-  .cta .cta-title {
+  .cta > :global(.sh-title) {
     grid-column: 1 / -1;
     margin: 0;
   }
   .cta-lede {
     grid-column: 1 / -1;
     margin: 0 auto;
-    max-width: 32em;
+    max-width: 34em;
     text-wrap: balance;
-    font-size: clamp(1.375rem, 2.2vw, 2.25rem);
+    font-size: clamp(1.125rem, 1.6vw, 1.625rem);
     font-weight: 450;
-    letter-spacing: -0.015em;
-    line-height: 1.15;
+    letter-spacing: -0.012em;
+    line-height: 1.25;
   }
   .cta-mail {
     grid-column: 1 / -1;

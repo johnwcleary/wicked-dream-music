@@ -197,3 +197,9 @@ test('the header logo appears once the opening has been scrolled past, and goes 
   await expect.poll(() => page.evaluate(() => scrollY)).toBeLessThan(5);
   await expect(logo).toBeHidden();
 });
+
+test('the contact heading matches the other section headings', async ({ page }) => {
+  await page.goto('/');
+  const size = (id: string) => page.locator(id).evaluate((el) => getComputedStyle(el).fontSize);
+  expect(await size('#contact-title')).toBe(await size('#services-title'));
+});
