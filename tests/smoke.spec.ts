@@ -142,7 +142,7 @@ test('the hero keeps vision, then sound, as its three lines change', async ({ pa
   await page.setViewportSize({ width: 1280, height: 800 });
   await page.goto('/');
   await expect(page.locator('h1')).toHaveText(/^\s*Artist development\s+begins with\s+vision\s*$/);
-  await expect(page.locator('.step').nth(1)).toHaveText(/^\s*Vision\s+shapes\s+your\s+sound\s*$/);
+  await expect(page.locator('.step').nth(1)).toHaveText(/^\s*vision\s+shapes\s+your\s+sound\s*$/);
   await expect(page.locator('.step').nth(2)).toHaveText(/^\s*Your\s+sound\s+defines your\s+brand\s*$/);
   const read = async (progress: number) => {
     await page.evaluate((p) => {
@@ -157,7 +157,7 @@ test('the hero keeps vision, then sound, as its three lines change', async ({ pa
         return { x: Math.round(box.left), y: Math.round(box.top), opacity: Number(getComputedStyle(el).opacity), color: getComputedStyle(el).color };
       };
       return {
-        vision: look(document.querySelector('[data-step-rest]')!),
+        vision: look(document.querySelector('em[data-step-out="2"]')!),
         sound: look(document.querySelector('em[data-step-in="1"]')!),
         brand: look(document.querySelector('em[data-step-in="2"]')!),
       };

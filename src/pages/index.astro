@@ -89,18 +89,18 @@ const people = about.sections ?? [];
           <div class="hero-stage">
             <div class="steps" data-steps>
               <h1 id="hero-title" class="step run display">
-                <span class="step-left step-lead" style="--row: 1; --row-sm: 1" data-step-out="1" data-step-lead>
+                <span class="step-left step-lead" style="--row: 1; --row-sm: 1" data-step-out="1">
                   <span class="step-lead-top">{headOne}</span>{' '}
                   {headRest}
                 </span>{' '}
-                <em class="step-right step-kept" style="--row: 1; --row-sm: 2" data-step-lead><span data-step-fade data-step-out="1">{headLast.charAt(0)}</span><span data-step-fade data-step-out="2" data-step-rest>{headLast.slice(1)}</span></em>
+                <em class="step-right step-kept" style="--row: 1; --row-sm: 2" data-step-out="2">{headLast}</em>
               </h1>
               {
                 closing && (
                   <>
                     <p class="step closing display">
                       <span class="step-right step-top" style="--row: 1">
-                        <em class="step-kept" style="--row-sm: 2"><span data-step-fade data-step-in="1" data-step-out="2">{midFirst.charAt(0)}</span><span data-step-slot data-step-rest-slot>{midFirst.slice(1)}</span></em>{' '}
+                        <em class="step-kept" style="--row-sm: 2" data-step-slot>{midFirst}</em>{' '}
                         <span style="--row-sm: 3" data-step-in="1" data-step-out="2">{midRest.join(' ')}</span>
                       </span>{' '}
                       <span class="step-left" style="--row: 2; --row-sm: 4" data-step-in="1" data-step-out="2">{midLeft}</span>{' '}
@@ -257,7 +257,7 @@ const people = about.sections ?? [];
 <style>
   /* ---------- Hero: the type is a window onto the footage ---------- */
   .hero {
-    --run-size: 11.5vw;
+    --run-size: 10vw;
     --ease-soft: cubic-bezier(0.16, 1, 0.3, 1);
     position: relative;
     isolation: isolate;
@@ -418,14 +418,14 @@ const people = about.sections ?? [];
   .closing-note {
     margin: 1.9em 0 0;
     text-align: center;
-    font-size: clamp(1.5rem, 2.4vw, 2.5rem);
+    font-size: clamp(1.5rem, 2.1vw, 2.25rem);
     font-weight: 600;
     letter-spacing: -0.02em;
     line-height: 1.2;
   }
   @media (min-width: 768px) {
     .hero {
-      --run-size: min(13svh, 6.8vw);
+      --run-size: min(11svh, 5.8vw);
     }
   }
 
@@ -664,8 +664,7 @@ const people = about.sections ?? [];
       margin-bottom: 0.16em;
     }
     :global(html.js) [data-step-in],
-    :global(html.js) [data-step-out],
-    :global(html.js) [data-step-fade] {
+    :global(html.js) [data-step-out] {
       display: inline-block;
       will-change: transform, opacity;
     }
@@ -1034,9 +1033,6 @@ const people = about.sections ?? [];
   const track = document.querySelector<HTMLElement>('[data-hero-track]');
   const steps = document.querySelector<HTMLElement>('[data-steps]');
   const stepWords = Array.from(document.querySelectorAll<HTMLElement>('[data-step-in], [data-step-out]'));
-  const stepLead = Array.from(document.querySelectorAll<HTMLElement>('[data-step-lead]'));
-  const keptRest = document.querySelector<HTMLElement>('[data-step-rest]');
-  const keptRestSlot = document.querySelector<HTMLElement>('[data-step-rest-slot]');
   const closingNote = document.querySelector<HTMLElement>('[data-close-note]');
   const reel = document.querySelector<HTMLElement>('[data-reel]');
   const reelTitle = document.querySelector<HTMLElement>('[data-reel-title]');
@@ -1072,13 +1068,6 @@ const people = about.sections ?? [];
         trackSpan = track.offsetHeight - innerHeight;
       }
       if (steps) {
-        // The kept word changes its first letter from lower to upper case. The headline moves
-        // by the difference, so the letters after it don't move at all.
-        if (keptRest && keptRestSlot) {
-          for (const el of stepLead) el.style.translate = '';
-          const shift = keptRestSlot.getBoundingClientRect().left - keptRest.getBoundingClientRect().left;
-          for (const el of stepLead) el.style.translate = `${shift}px`;
-        }
         // The note centres on the page, and in the space between the lines above it and the
         // sheet's bottom edge. Measured from the stage, since the stage is pinned while the sheet moves.
         if (closingNote) {
@@ -1102,16 +1091,11 @@ const people = about.sections ?? [];
       // Index 0 is "always here" for arriving and "stays" for leaving; 1 and 2 are the two changes.
       const arrive = [1, smooth(seg(p, 0.13, 0.28)), smooth(seg(p, 0.53, 0.68))];
       const leave = [0, smooth(seg(p, 0.02, 0.17)), smooth(seg(p, 0.42, 0.57))];
-      // The kept word's first letter crosses straight over, with no moment missing.
-      const swap = smooth(seg(p, 0.1, 0.2));
       for (const el of stepWords) {
-        const fade = 'stepFade' in el.dataset;
-        const a = Number(el.dataset.stepIn ?? 0);
-        const l = Number(el.dataset.stepOut ?? 0);
-        const shown = fade && a === 1 ? swap : arrive[a]!;
-        const gone = fade && l === 1 ? swap : leave[l]!;
+        const shown = arrive[Number(el.dataset.stepIn ?? 0)]!;
+        const gone = leave[Number(el.dataset.stepOut ?? 0)]!;
         el.style.opacity = String(shown * (1 - gone));
-        if (!fade) el.style.transform = `translate3d(0, ${(1 - shown) * 38 - gone * 38}%, 0)`;
+        el.style.transform = `translate3d(0, ${(1 - shown) * 38 - gone * 38}%, 0)`;
       }
       if (closingNote) closingNote.style.opacity = String(smooth(seg(p, 0.62, 0.78)));
       // Over the first screen of the reel the line shrinks to the top and the shade clears.
