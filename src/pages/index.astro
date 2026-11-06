@@ -42,7 +42,7 @@ const people = about.sections ?? [];
 
 <BaseLayout title={page.title} intro>
   <!-- 00 — Hero: all the type is a window onto the footage, which holds still behind
-       a beige sheet. Scrolling keeps one word of each line still and changes the words
+       a white sheet. Scrolling keeps one word of each line still and changes the words
        around it into the next line.
        Without JS or with reduced
        motion the type sits still and stacked, over the poster. -->
@@ -70,7 +70,7 @@ const people = about.sections ?? [];
         </div>
       )
     }
-    <!-- The opening: the footage at full screen with the logo centred. The beige sheet below
+    <!-- The opening: the footage at full screen with the logo centred. The white sheet below
          rises over it and the site carries on from there. -->
     <div class="opening" data-opening>
       <span class="opening-logo" role="img" aria-label={site.name} style={`--logo-url: url(${logoUrl})`}></span>
@@ -364,7 +364,7 @@ const people = about.sections ?? [];
   }
 
   /* The sheet scrolls over the footage with its own shade underneath: inside the
-     letters the brightest frame still gives 3.1:1 against the beige, and the footage
+     letters the brightest frame still gives 3.1:1 against the white, and the footage
      below the sheet's edge is untouched. */
   .hero-sheet {
     position: relative;
@@ -375,8 +375,8 @@ const people = about.sections ?? [];
     background: color-mix(in srgb, var(--lift-color) var(--lift), transparent);
   }
 
-  /* The sheet: beige everywhere, black type. "Lighten" keeps the higher of sheet and
-     footage, so the sheet stays exactly beige and the footage shows only in the type. */
+  /* The sheet: white everywhere, black type. "Lighten" keeps the higher of sheet and
+     footage, so the sheet stays exactly white and the footage shows only in the type. */
   .hero-cut {
     position: relative;
     background: var(--sheet);

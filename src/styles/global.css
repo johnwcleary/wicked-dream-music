@@ -11,9 +11,9 @@
   --wdm-black: #111111;
   --wdm-gradient: linear-gradient(180deg, var(--wdm-lavender), var(--wdm-pink));
 
-  /* design/archive — near-black type on light beige. Contrast on paper: ink 16.6, muted 5.9. */
+  /* design/archive — near-black type on white. Contrast on paper: ink 19.2, muted 6.9. */
   --ink: #0f0f10;
-  --paper: #f4eee3;
+  --paper: #fff;
   --muted: #5e5a54;
   --accent: #e4e2dc;              /* silver: the email link, quote and small accents */
   --accent-2: #a9a9b3;            /* pewter: second stop of the accent gradient */
@@ -41,9 +41,9 @@
   --sound-type: #5a2ca0;
   --sheet-blend: lighten;
   --foot-ground: var(--paper);
-  --card: #fff;
-  --on-card: var(--ink);
-  --on-card-muted: var(--muted);
+  --card: var(--ink);
+  --on-card: #fff;
+  --on-card-muted: #fff;
 
   --header-h: 5rem;
   --gutter: clamp(1rem, 2.2vw, 2rem);
@@ -83,7 +83,7 @@
     overflow-x: clip;
   }
   /* A little of the logo's lavender rises from the page's bottom right corner. At its strongest
-     the muted text keeps 4.6:1. */
+     the muted text keeps 5.0:1. */
   body::before {
     content: '';
     position: absolute;
