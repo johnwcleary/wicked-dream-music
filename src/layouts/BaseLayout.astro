@@ -2,6 +2,7 @@
 import '../styles/global.css';
 import { getImage } from 'astro:assets';
 import Nav from '../components/Nav.astro';
+import FontPicker from '../components/FontPicker.astro';
 import Footer from '../components/Footer.astro';
 import { getSite } from '../lib/content';
 import ogSource from '../assets/brand/logo-gradient.png';
@@ -46,6 +47,10 @@ const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url).href;
       var h = document.documentElement;
       h.classList.add('js');
       if (intro) h.classList.add('on-hero', 'on-intro', 'intro-foot');
+      try {
+        var font = new URLSearchParams(location.search).get('font') || localStorage.getItem('wdm-font');
+        if (font && font !== 'current') h.dataset.font = font;
+      } catch (e) {}
     </script>
   </head>
   <body>
@@ -55,6 +60,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url).href;
       <slot />
     </main>
     <Footer />
+    <FontPicker />
     <script>
       // Scroll reveals: mark [data-reveal] elements as they enter the viewport.
       const items = document.querySelectorAll<HTMLElement>('[data-reveal]');

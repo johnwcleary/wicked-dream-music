@@ -1,0 +1,68 @@
+/* The font audition: every option John can try from the picker. Remove this file, FontPicker and
+   its packages once one is chosen. Each sets the large type only, unless noted. */
+@import "@fontsource-variable/bodoni-moda/standard.css";
+@import "@fontsource-variable/bodoni-moda/standard-italic.css";
+@import "@fontsource/instrument-serif/400.css";
+@import "@fontsource/instrument-serif/400-italic.css";
+@import "@fontsource/gloock/400.css";
+@import "@fontsource-variable/cormorant-garamond/wght.css";
+@import "@fontsource-variable/cormorant-garamond/wght-italic.css";
+@import "@fontsource-variable/jost/wght.css";
+@import "@fontsource-variable/jost/wght-italic.css";
+@import "@fontsource-variable/archivo/standard.css";
+@import "@fontsource-variable/archivo/standard-italic.css";
+
+/* A sturdier cut than its largest optical size: those hairlines break up over the footage. */
+html[data-font='bodoni'] {
+  font-variation-settings: 'opsz' 20;
+  --font-display: 'Bodoni Moda Variable', Didot, serif;
+  --display-weight: 500;
+  --display-heavy: 600;
+  --display-tracking: -0.025em;
+  --display-leading: 1;
+  --display-scale: 0.94;
+}
+html[data-font='instrument'] {
+  --font-display: 'Instrument Serif', Georgia, serif;
+  --display-weight: 400;
+  --display-heavy: 400;
+  --display-tracking: -0.02em;
+  --display-leading: 0.98;
+  --display-scale: 1.16;
+}
+/* One weight and no italic, so the kept words stay upright. */
+html[data-font='gloock'] {
+  --font-display: 'Gloock', Georgia, serif;
+  --display-weight: 400;
+  --display-heavy: 400;
+  --display-tracking: -0.015em;
+  --display-leading: 1;
+  --display-scale: 0.94;
+  --em-style: normal;
+}
+html[data-font='cormorant'] {
+  --font-display: 'Cormorant Garamond Variable', Garamond, serif;
+  --display-weight: 500;
+  --display-heavy: 600;
+  --display-tracking: -0.025em;
+  --display-leading: 0.92;
+  --display-scale: 1.14;
+}
+/* All the type, small text included: it needs no partner. */
+html[data-font='jost'] {
+  --font-sans: 'Jost Variable', Futura, 'Century Gothic', sans-serif;
+  --display-weight: 400;
+  --display-heavy: 500;
+  --display-tracking: -0.025em;
+  --display-leading: 0.98;
+  --display-scale: 1;
+}
+html[data-font='archivo'] {
+  --font-display: 'Archivo Variable', 'Helvetica Neue', sans-serif;
+  --display-weight: 500;
+  --display-heavy: 500;
+  --display-tracking: -0.035em;
+  --display-leading: 0.95;
+  --display-scale: 0.8;
+  --display-stretch: 125%;
+}
