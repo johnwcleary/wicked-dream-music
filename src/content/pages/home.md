@@ -8,7 +8,7 @@ strapline: "Artist Development / A&R Consulting"
 hero_closing:
   middle: "vision shapes your sound"
   line: "Your sound defines your brand"
-  note: "Let's develop it together"
+  note: "Let's bring your vision to life"
   outro: "Our work"
 hero_films:
   - title: "Joe Marson - No Retreat"
