@@ -88,6 +88,26 @@ test('music plays only in the work section, after a tap, and the speaker stops i
   await expect(speaker).toBeHidden();
 });
 
+test('jumping to a section past the films plays none of their music on the way', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await page.goto('/');
+  // Count, frame by frame, how many films are audible while the page glides down to About.
+  await page.evaluate(() => {
+    const w = window as unknown as { loudest: number };
+    w.loudest = 0;
+    const watch = () => {
+      const audible = Array.from(document.querySelectorAll<HTMLVideoElement>('[data-film-video]')).filter((v) => !v.muted).length;
+      w.loudest = Math.max(w.loudest, audible);
+      requestAnimationFrame(watch);
+    };
+    requestAnimationFrame(watch);
+  });
+  await page.locator('#site-menu a[data-section="about"]').click();
+  await expect.poll(() => page.evaluate(() => document.getElementById('about')!.getBoundingClientRect().top), { timeout: 8000 }).toBeLessThan(200);
+  await page.waitForTimeout(600);
+  expect(await page.evaluate(() => (window as unknown as { loudest: number }).loudest)).toBe(0);
+});
+
 test('the pause control stops every loop and starts them again', async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 800 });
   await page.goto('/');
