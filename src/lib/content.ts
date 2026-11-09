@@ -42,6 +42,9 @@ export function splitHeadline(text: string): [string, string] {
 export const paragraphs = (body: string) =>
   body.split(/\n\s*\n/).map((p) => p.trim()).filter(Boolean);
 
+/** Join the last two words with a no-break space, so a paragraph never ends on one word alone. */
+export const keepLastWords = (text: string) => text.trim().replace(/\s+(\S+)$/, '\u00A0$1');
+
 /** Normalise a path for active-nav comparison. */
 export const isCurrent = (href: string, path: string) =>
   href === '/' ? path === '/' : path.replace(/\/$/, '') === href.replace(/\/$/, '');

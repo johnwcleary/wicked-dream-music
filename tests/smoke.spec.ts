@@ -58,6 +58,33 @@ test('artist development lists its offerings in John\'s order', async ({ page })
   ]);
 });
 
+test('no paragraph ends on a single word, at phone and computer widths', async ({ page }) => {
+  for (const width of [320, 390, 768, 1280, 1600]) {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto('/');
+    const alone = await page.evaluate(() =>
+      Array.from(document.querySelectorAll('.svc-def, .about-text, .cta-lede')).flatMap((el) => {
+        // Compare the start of the last word with the end of the one before it (which may itself break
+        // at a hyphen): on different lines means the last word is alone.
+        const text = el.lastChild;
+        if (!text || text.nodeType !== Node.TEXT_NODE) return [];
+        const words = [...text.textContent!.matchAll(/\S+/g)];
+        if (words.length < 2) return [];
+        const top = (at: number) => {
+          const range = document.createRange();
+          range.setStart(text, at);
+          range.setEnd(text, at + 1);
+          return range.getBoundingClientRect().top;
+        };
+        const last = words.at(-1)!;
+        const before = words.at(-2)!;
+        return Math.abs(top(last.index!) - top(before.index! + before[0].length - 1)) > 4 ? [text.textContent!.trim().slice(-40)] : [];
+      }),
+    );
+    expect(alone, `width ${width}`).toEqual([]);
+  }
+});
+
 test('the link preview uses the opening and the about copy', async ({ page }) => {
   await page.goto('/');
   const meta = (key: string) => page.locator(`meta[property="${key}"]`).getAttribute('content');

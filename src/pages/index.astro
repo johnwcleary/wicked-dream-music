@@ -7,7 +7,7 @@ import ServiceIcon from '../components/ServiceIcon.astro';
 import VideoGap from '../components/VideoGap.astro';
 import ServiceGrid from '../components/ServiceGrid.astro';
 import SoundToggle from '../components/SoundToggle.astro';
-import { getPage, getServices, getSite, paragraphs, splitHeadline, toSection } from '../lib/content';
+import { getPage, getServices, getSite, keepLastWords, paragraphs, splitHeadline, toSection } from '../lib/content';
 
 const site = await getSite();
 const page = await getPage('home');
@@ -187,7 +187,7 @@ const people = about.sections ?? [];
       about.story && (
         <>
           <SectionHead id="story-title" title={about.story.title} />
-          <p class="about-text about-story">{about.story.body}</p>
+          <p class="about-text about-story">{keepLastWords(about.story.body)}</p>
         </>
       )
     }
@@ -197,7 +197,7 @@ const people = about.sections ?? [];
         <article class="bio">
           {paragraphs(person.body).map((p, i) => (
             <p class="about-text">
-              {i === 0 && <strong class="bio-name">{person.heading}:</strong>} {p}
+              {i === 0 && <strong class="bio-name">{person.heading}:</strong>} {keepLastWords(p)}
             </p>
           ))}
         </article>
@@ -247,7 +247,7 @@ const people = about.sections ?? [];
   <section id="contact" class="band" aria-labelledby="contact-title">
     <div class="wrap grid12 cta">
       <SectionHead id="contact-title" title={contact.headline} />
-      <p class="cta-lede">{contact.lede}</p>
+      <p class="cta-lede">{keepLastWords(contact.lede)}</p>
       <a class="cta-mail" href={`mailto:${site.email}`}>
         <ServiceIcon name="mail" />
         {contact.email_button}
@@ -778,6 +778,7 @@ const people = about.sections ?? [];
     font-weight: 450;
     line-height: 1.25;
     letter-spacing: -0.012em;
+    text-wrap: pretty;
   }
   .about-story {
     margin-bottom: clamp(2rem, 4vw, 3.5rem);
