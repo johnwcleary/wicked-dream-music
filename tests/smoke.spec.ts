@@ -61,7 +61,8 @@ test('artist development lists its offerings in John\'s order', async ({ page })
 test('the link preview uses the opening and the about copy', async ({ page }) => {
   await page.goto('/');
   const meta = (key: string) => page.locator(`meta[property="${key}"]`).getAttribute('content');
-  expect(await meta('og:title')).toBe('Wicked Dream Music — Artist Development and A&R Strategy');
+  expect(await meta('og:title')).toBe('Wicked Dream Music, Artist Development and A&R Strategy');
+  await expect(page).toHaveTitle('Wicked Dream Music, Artist Development and A&R Strategy');
   expect(await meta('og:description')).toMatch(/^Wicked Dream Music is a boutique artist development company/);
   expect(await meta('og:image')).toMatch(/\/_astro\/og-image\.[\w-]+\.jpg$/);
   expect(await meta('og:image:width')).toBe('1200');
