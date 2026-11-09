@@ -3,10 +3,12 @@ title: About
 headline: "Creative by nature."
 lede: "We're an independent company that works worldwide, and we think the strongest music comes from artists who know who they are."
 eyebrow: "New York / Worldwide"
+story:
+  title: "Our story"
+  body: "Wicked Dream Music is a boutique artist development company serving independent artists and music companies. We believe an artist's sound is the most important part of their brand. We connect the craft of production and songwriting to an artist's expression and emotion, helping them become the best version of themselves."
+section_title: "Our founder"
 sections:
-  - heading: "Built for the music."
+  - heading: "David Kim"
     body: |
-      Wicked Dream Music works across artist development, A&R, songwriting, and production.
-
-      We bring more than 30 years in the music industry to each project, along with relationships in markets around the world. We use that experience to turn an artist's ambition into a workable plan.
+      Award-winning music industry executive with 30+ years of experience spanning production, songwriting, artist development, and global touring. Renowned for shaping and branding world-class talent and high-impact events, he has collaborated with iconic artists including Gwen Stefani, Miley Cyrus, Nirvana, Lamont Dozier, Linda Perry, and Mozella. Backed by a deep cross-industry network, he is a visionary leader and culture driver—consistently delivering commercially successful, creatively defining moments in music.
 ---

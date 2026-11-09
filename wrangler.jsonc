@@ -1,0 +1,11 @@
+// Cloudflare Workers Builds: `npm run build` writes the static site to dist/, and Workers serves it
+// as static assets, with no Worker code. The name must match the Worker's name in the dashboard.
+{
+  "name": "wicked-dream-music",
+  "compatibility_date": "2026-11-01",
+  "assets": {
+    "directory": "./dist",
+    // Unknown paths get the site's own 404 page, with a 404 status.
+    "not_found_handling": "404-page"
+  }
+}
