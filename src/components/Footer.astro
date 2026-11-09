@@ -1,17 +1,65 @@
 ---
-import { getSite } from '../lib/content';
+import { getSite, toSection } from '../lib/content';
 
 const site = await getSite();
 const year = new Date().getFullYear();
 ---
 
-<div class="border-t p-4 text-sm">
-  <p>{site.name} — {site.location}</p>
-  <p><a class="underline" href={`mailto:${site.email}`}>{site.email}</a></p>
-  <nav aria-label={site.ui.footer_nav_label}>
-    <ul class="flex flex-wrap gap-4">
-      {site.nav.map((item) => <li><a class="underline" href={item.href}>{item.label}</a></li>)}
-    </ul>
-  </nav>
-  <p>© {year} {site.name}. {site.ui.rights}</p>
-</div>
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="colophon">
+      <p class="colo-loc label">
+        {site.name}<br />
+        <span class="label-muted">{site.location}</span>
+      </p>
+      <nav class="colo-nav" aria-label={site.ui.footer_nav_label}>
+        <ul>
+          {
+            site.nav.map((item) => (
+              <li>
+                <a class="label" href={toSection(item.href)}>
+                  {item.label}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </nav>
+      <p class="colo-rights label label-muted">© {year} {site.name}. {site.ui.rights}</p>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    margin-top: clamp(1.5rem, 2.5vw, 2.25rem);
+  }
+  .colophon {
+    display: grid;
+    justify-items: center;
+    gap: 0.75rem;
+    padding-block: 1rem 1.25rem;
+  }
+  .colo-loc,
+  .colo-nav,
+  .colo-rights {
+    margin: 0;
+  }
+  .colo-nav ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0 1rem;
+  }
+  .colo-nav a {
+    display: inline-block;
+    padding-block: 0.3rem;
+  }
+  .colo-nav a:hover {
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+</style>

@@ -1,6 +1,8 @@
+@import "@fontsource-variable/inter-tight/wght.css";
+@import "@fontsource-variable/inter-tight/wght-italic.css";
 @import "tailwindcss";
 
-/* Brand tokens, sampled from the supplied logo PNGs. Directions may override. */
+/* Brand tokens, sampled from the supplied logo PNGs. */
 :root {
   --wdm-ink: #13061a;      /* gradient logo ground */
   --wdm-lavender: #d4b2fd; /* gradient top */
@@ -8,12 +10,256 @@
   --wdm-paper: #fdfcf8;    /* flat logo letterforms */
   --wdm-black: #111111;
   --wdm-gradient: linear-gradient(180deg, var(--wdm-lavender), var(--wdm-pink));
+
+  /* design/archive — near-black type on white. Contrast on paper: ink 19.2, muted 6.9. */
+  --ink: #0f0f10;
+  --paper: #fff;
+  --muted: #5e5a54;
+  --accent: #e4e2dc;              /* silver: the email link, quote and small accents */
+  --accent-2: #a9a9b3;            /* pewter: second stop of the accent gradient */
+  --accent-gradient: linear-gradient(180deg, var(--accent), var(--accent-2));
+  --plate: #1c1c1e;               /* empty image ground */
+
+  /* Type: one tight neo-grotesk, Inter Tight. Large type runs very tight;
+     small type sits at normal spacing. */
+  --font-sans: "Inter Tight Variable", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --font-display: var(--font-sans);
+  --display-weight: 500;
+  --display-tracking: -0.04em;
+  --display-leading: 0.92;
+
+  /* Roles that can part ways from the page's own colors. */
+  --shade: var(--ink);            /* the pill's text and behind footage */
+  --on-shade: var(--paper);
+  --scrim: #000;                  /* neutral, only behind text that sits on footage */
+  --lift-color: var(--ink);       /* over footage shown through type */
+  --lift: 50%;
+  --sheet: var(--paper);
+  --sheet-type: #000;
+  /* "Lighten" keeps the higher of this purple and the footage, so the footage still shows in
+     the word "sound", at 3:1 or better. */
+  --sound-type: #5a2ca0;
+  --sheet-blend: lighten;
+  --foot-ground: var(--paper);
+  --card: #fff;
+  --on-card: var(--ink);
+  --on-card-muted: var(--ink);
+
+  --header-h: 5rem;
+  --gutter: clamp(1rem, 2.2vw, 2rem);
+  --col-gap: clamp(0.75rem, 1.6vw, 1.5rem);
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 @theme {
-  --color-ink: var(--wdm-ink);
-  --color-lavender: var(--wdm-lavender);
-  --color-pink: var(--wdm-pink);
-  --color-paper: var(--wdm-paper);
-  --color-black: var(--wdm-black);
+  --color-ink: var(--ink);
+  --color-paper: var(--paper);
+  --color-accent: var(--accent);
+  --color-muted: var(--muted);
+  --font-sans: "Inter Tight Variable", "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+@layer base {
+  html {
+    color-scheme: light;
+    background: var(--paper);
+    color: var(--ink);
+    -webkit-text-size-adjust: 100%;
+    text-rendering: optimizeLegibility;
+  }
+  /* The height lets a short page's footer and lavender corner reach the foot of the screen. */
+  body {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-height: 100svh;
+    color: var(--ink);
+    font-family: var(--font-sans);
+    font-size: 1rem;
+    line-height: 1.4;
+    font-feature-settings: "kern";
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: clip;
+  }
+  /* A little of the logo's lavender rises from the page's bottom right corner. At its strongest
+     the muted text keeps 5.0:1. */
+  body::before {
+    content: '';
+    position: absolute;
+    inset: auto 0 0;
+    z-index: -1;
+    height: 70vmax;
+    background: radial-gradient(
+      90vmax 70vmax at 100% 100%,
+      color-mix(in srgb, var(--wdm-lavender) 55%, transparent) 0,
+      color-mix(in srgb, var(--wdm-lavender) 20%, transparent) 40%,
+      color-mix(in srgb, var(--wdm-lavender) 6%, transparent) 70%,
+      transparent 100%
+    );
+  }
+  ::selection {
+    background: var(--accent);
+    color: var(--ink);
+  }
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+  :focus-visible {
+    outline: 2px solid var(--ink);
+    outline-offset: 3px;
+    border-radius: 1px;
+  }
+  main {
+    flex: 1 0 auto;
+  }
+  main:focus {
+    outline: none;
+  }
+  img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+  }
+}
+
+@layer components {
+  .wrap {
+    width: 100%;
+    max-width: 1720px;
+    margin-inline: auto;
+    padding-inline: var(--gutter);
+  }
+  /* Everything below the films is centred and sits closer to the screen's edges. The service
+     boxes and the playlist share one width. */
+  .sec,
+  .band,
+  .site-footer {
+    --gutter: clamp(0.75rem, 1.4vw, 1.25rem);
+    --svc-title-size: calc((100vw - 2 * var(--gutter) - 3rem) / 8.7);
+    --block-width: 100%;
+    text-align: center;
+  }
+  @media (min-width: 700px) {
+    .sec,
+    .band,
+    .site-footer {
+      --block-width: 92%;
+    }
+  }
+  @media (min-width: 768px) {
+    .sec,
+    .band,
+    .site-footer {
+      --svc-title-size: clamp(3rem, 5.8vw, 6.25rem);
+    }
+  }
+  @media (min-width: 1100px) {
+    .sec,
+    .band,
+    .site-footer {
+      --block-width: min(82%, 78rem);
+    }
+  }
+  .grid12 {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: var(--col-gap);
+  }
+
+  /* Small text for labels and captions. */
+  .label {
+    font-size: 0.8125rem;
+    line-height: 1.35;
+  }
+  .label-muted {
+    color: var(--muted);
+  }
+
+  /* Display type: large and tight. */
+  .display {
+    font-family: var(--font-display);
+    font-weight: var(--display-weight);
+    letter-spacing: var(--display-tracking);
+    line-height: var(--display-leading);
+  }
+  .d-xl {
+    font-size: clamp(2.75rem, 6.5vw, 7rem);
+  }
+  .d-lg {
+    font-size: clamp(2.5rem, 5.5vw, 5.75rem);
+  }
+  .d-md {
+    font-size: clamp(1.875rem, 3.5vw, 3.5rem);
+    line-height: 0.92;
+  }
+  .d-sm {
+    font-size: clamp(1.5rem, 2.4vw, 2.5rem);
+    line-height: 1;
+    letter-spacing: -0.035em;
+  }
+  @media (max-width: 767px) {
+    .d-xl {
+      font-size: 12vw;
+    }
+    .d-lg {
+      font-size: 11vw;
+    }
+  }
+  .statement {
+    font-size: clamp(1.25rem, 2vw, 2rem);
+    font-weight: 470;
+    line-height: 1.06;
+    letter-spacing: -0.022em;
+  }
+  .body-lg {
+    font-size: clamp(1rem, 1.15vw, 1.125rem);
+    line-height: 1.5;
+    letter-spacing: -0.005em;
+  }
+
+  .link-line {
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.18em;
+  }
+  .link-line:hover {
+    text-decoration-thickness: 2px;
+  }
+}
+
+/* ------------------------------------------------------------------
+   Scroll motion. Everything lives behind `prefers-reduced-motion:
+   no-preference`; content is only hidden once JS has marked <html>.
+   - [data-reveal]          fade + rise as it enters (IntersectionObserver)
+   - --i                    stagger index (80ms steps)
+------------------------------------------------------------------- */
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+  html.js [data-reveal] {
+    opacity: 0;
+    transform: translateY(1.75rem);
+    transition:
+      opacity 0.9s var(--ease-out),
+      transform 1.1s var(--ease-out);
+    transition-delay: calc(var(--i, 0) * 80ms);
+  }
+  html.js [data-reveal].is-in {
+    opacity: 1;
+    transform: none;
+  }
+
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
 }

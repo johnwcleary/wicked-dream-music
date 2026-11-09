@@ -1,28 +1,1158 @@
 ---
+import { Image } from 'astro:assets';
+import logoUrl from '../assets/brand/wdm-lockup-white.webp?url';
 import BaseLayout from '../layouts/BaseLayout.astro';
-import ServiceCard from '../components/ServiceCard.astro';
-import WorkCard from '../components/WorkCard.astro';
-import { getPage, getServices, getSite, getWork } from '../lib/content';
+import SectionHead from '../components/SectionHead.astro';
+import ServiceIcon from '../components/ServiceIcon.astro';
+import VideoGap from '../components/VideoGap.astro';
+import ServiceGrid from '../components/ServiceGrid.astro';
+import SoundToggle from '../components/SoundToggle.astro';
+import { getPage, getServices, getSite, paragraphs, splitHeadline, toSection } from '../lib/content';
 
 const site = await getSite();
 const page = await getPage('home');
+const about = await getPage('about');
+const servicesPage = await getPage('services');
+const workPage = await getPage('work');
+const playlist = workPage.playlist;
+const customers = servicesPage.customers;
+const contact = await getPage('contact');
 const services = await getServices();
-const work = await getWork();
+// The headline, on two lines. Its last word is in italics, and the lines start from it.
+const [headOne = '', headTwo = ''] = splitHeadline(page.headline);
+const headLast = headTwo.split(' ').pop() ?? '';
+const headRest = headTwo.slice(0, -headLast.length).trim();
+const closing = page.hero_closing;
+// Each line keeps a word of the one before: the middle line opens on the headline's last word,
+// and the closing line is built around the middle line's last word.
+const middle = closing?.middle.split(' ') ?? [];
+const midFirst = middle[0] ?? '';
+const midKept = middle.at(-1) ?? '';
+const midRest = middle.slice(1, -1);
+const midLeft = midRest.pop();
+const [closeBefore = '', closeAfter = ''] = closing ? closing.line.split(midKept).map((part) => part.trim()) : [];
+const closeRest = closeAfter.split(' ');
+const closeLast = closeRest.pop();
+const video = page.hero_video;
+// The opening's footage stays in the opening. The films below it, the bands around services and
+// the service titles' stills all come from the reel's films, the bands from the last one.
+const films = page.hero_films ?? [];
+const lastFilm = films.at(-1);
+
+const people = about.sections ?? [];
 ---
 
-<BaseLayout title={page.title} description={page.lede}>
-  <section class="grid gap-4 py-8">
-    <p class="text-sm uppercase">{page.eyebrow}</p>
-    <h1 class="text-4xl font-bold">{page.headline}</h1>
-    <p>{page.lede}</p>
-    {page.cta && <a class="justify-self-start border px-4 py-2" href={page.cta.href}>{page.cta.label}</a>}
-    <p class="font-bold uppercase">{site.ticker.join(' ')}</p>
-    <p>{page.strapline}</p>
+<BaseLayout title={page.title} intro>
+  <!-- 00 — Hero: all the type is a window onto the footage, which holds still behind
+       a white sheet. Scrolling keeps one word of each line still and changes the words
+       around it into the next line.
+       Without JS or with reduced
+       motion the type sits still and stacked, over the poster. -->
+  <section id="top" class={`hero${video ? ' has-video' : ''}`} aria-labelledby="hero-title" data-hero>
+    {
+      video && (
+        <div class="hero-media" aria-hidden="true">
+          <div class="hero-frame" data-hero-frame>
+            <Image
+              src={video.poster}
+              alt=""
+              widths={[640, 960, 1280, 1920].filter((w) => w <= video.poster.width)}
+              width={Math.min(1920, video.poster.width)}
+              sizes="100vw"
+              loading="eager"
+              fetchpriority="high"
+              quality={62}
+              class="hero-poster"
+            />
+            <video class="hero-video" muted loop playsinline preload="none" disablepictureinpicture data-hero-video>
+              {video.mobile_mp4 && <source src={video.mobile_mp4} type="video/mp4" media="(max-width: 767px)" />}
+              <source src={video.mp4} type="video/mp4" />
+            </video>
+          </div>
+        </div>
+      )
+    }
+    <!-- The opening: the footage at full screen with the logo centred. The white sheet below
+         rises over it and the site carries on from there. -->
+    <div class="opening" data-opening>
+      <span class="opening-logo" role="img" aria-label={site.name} style={`--logo-url: url(${logoUrl})`}></span>
+      {
+        page.cta && (
+          <a class="opening-cta" href={toSection(page.cta.href)}>
+            {page.cta.label} <span aria-hidden="true">↓</span>
+          </a>
+        )
+      }
+    </div>
+    <div class="hero-sheet">
+      <span class="hero-lift" aria-hidden="true"></span>
+      <div class="hero-cut">
+        <div class="hero-track" data-hero-track>
+          <div class="hero-stage">
+            <div class="steps" data-steps>
+              <h1 id="hero-title" class="step run display">
+                <span class="step-left step-lead" style="--row: 1; --row-sm: 1" data-step-out="1">
+                  <span class="step-lead-top">{headOne}</span>{' '}
+                  {headRest}
+                </span>{' '}
+                <em class="step-right step-kept" style="--row: 1; --row-sm: 2" data-step-out="2">{headLast}</em>
+              </h1>
+              {
+                closing && (
+                  <>
+                    <p class="step closing display">
+                      <span class="step-right step-top" style="--row: 1">
+                        <em class="step-kept" style="--row-sm: 2" data-step-slot>{midFirst}</em>{' '}
+                        <span style="--row-sm: 3" data-step-in="1" data-step-out="2">{midRest.join(' ')}</span>
+                      </span>{' '}
+                      <span class="step-left" style="--row: 2; --row-sm: 4" data-step-in="1" data-step-out="2">{midLeft}</span>{' '}
+                      <em class="step-right step-kept" style="--row: 2; --row-sm: 5" data-step-in="1">{midKept}</em>
+                    </p>
+                    <p class="step closing display">
+                      <span class="step-left" style="--row: 2; --row-sm: 4" data-step-in="2">{closeBefore}</span>{' '}
+                      <em class="step-right step-kept" style="--row: 2; --row-sm: 5" data-step-slot>{midKept}</em>{' '}
+                      <span class="step-left" style="--row: 3; --row-sm: 6" data-step-in="2">{closeRest.join(' ')}</span>{' '}
+                      <em class="step-right" style="--row: 3; --row-sm: 7" data-step-in="2">{closeLast}</em>
+                    </p>
+                  </>
+                )
+              }
+            </div>
+            {closing?.note && <p class="closing-note" data-close-note>{closing.note}</p>}
+          </div>
+        </div>
+      </div>
+    </div>
+    {
+      closing?.outro && (
+        <div class="reel" data-reel>
+          <div class="reel-top">
+            <span class="reel-edge" data-reel-edge />
+            <div class="reel-title" data-reel-title>
+              <p class="reel-text display" data-reel-text>
+                {closing.outro}
+              </p>
+            </div>
+          </div>
+          {films.map((film, i) => (
+            <div class:list={['reel-film', { 'is-first': i === 0 }]} data-reel-film>
+              <div class="reel-stage">
+                <Image
+                  src={film.poster}
+                  alt=""
+                  widths={[640, 960, 1280, 1920].filter((w) => w <= film.poster.width)}
+                  width={Math.min(1920, film.poster.width)}
+                  sizes="100vw"
+                  loading="lazy"
+                  decoding="async"
+                  quality={62}
+                  class="film-poster"
+                />
+                <video class="film-video" muted loop playsinline preload="none" disablepictureinpicture aria-hidden="true" data-film-video>
+                  {film.mobile_mp4 && <source src={film.mobile_mp4} type="video/mp4" media="(max-width: 767px)" />}
+                  <source src={film.mp4} type="video/mp4" />
+                </video>
+                <p class="film-credit">{film.title}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      )
+    }
+    <div class="hero-bar">
+        <div class="wrap hero-foot">
+          {
+            video && (
+              <>
+                <SoundToggle on={site.ui.sound_on} off={site.ui.sound_off} />
+                <button
+                  type="button"
+                  class="hero-credit label"
+                  data-hero-toggle
+                  data-play={site.ui.play_video}
+                  data-pause={site.ui.pause_video}
+                >
+                  {site.ui.pause_video}
+                </button>
+              </>
+            )
+          }
+        </div>
+    </div>
   </section>
-  <section class="grid gap-4 py-8 md:grid-cols-2" aria-label={site.nav[2]?.label}>
-    {services.map((s) => <ServiceCard service={s} />)}
+
+  <!-- 01 — About -->
+  <section id="about" class="sec wrap" aria-labelledby={about.story ? 'story-title' : 'about-title'}>
+    {
+      about.story && (
+        <>
+          <SectionHead id="story-title" title={about.story.title} />
+          <p class="about-text about-story">{about.story.body}</p>
+        </>
+      )
+    }
+    <SectionHead id="about-title" title={about.section_title ?? about.title} />
+    {
+      people.map((person) => (
+        <article class="bio">
+          {paragraphs(person.body).map((p, i) => (
+            <p class="about-text">
+              {i === 0 && <strong class="bio-name">{person.heading}:</strong>} {p}
+            </p>
+          ))}
+        </article>
+      ))
+    }
   </section>
-  <section class="grid gap-4 py-8 md:grid-cols-2" aria-label={site.nav[3]?.label}>
-    {work.map((w) => <WorkCard item={w} />)}
+
+  {lastFilm && <VideoGap video={lastFilm} />}
+
+  <!-- 02 — Services -->
+  <section id="services" class="sec wrap" aria-labelledby="services-title">
+    <SectionHead id="services-title" title={servicesPage.headline} />
+    <ServiceGrid items={services} stills={[lastFilm?.poster, films[0]?.poster, films[1]?.poster]} />
+    {
+      customers && (
+        <p class="customers" data-reveal>
+          <span class="customers-label">{customers.label}:</span> {customers.list}
+        </p>
+      )
+    }
+  </section>
+
+  {lastFilm && <VideoGap video={lastFilm} />}
+
+  <!-- 03 — Selected work: one Spotify playlist -->
+  <section id="work" class="sec wrap" aria-labelledby="work-title">
+    <SectionHead id="work-title" title={workPage.headline} />
+    {
+      playlist && (
+        <>
+          <iframe
+            class="playlist"
+            src={`https://open.spotify.com/embed/playlist/${playlist.spotify_id}`}
+            title={playlist.title}
+            loading="lazy"
+            allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+          />
+          <a class="sec-foot label link-line" href={`https://open.spotify.com/playlist/${playlist.spotify_id}`}>
+            {playlist.link_label} <span aria-hidden="true">↗</span>
+          </a>
+        </>
+      )
+    }
+  </section>
+
+  <!-- 04 — Contact: one email button -->
+  <section id="contact" class="band" aria-labelledby="contact-title">
+    <div class="wrap grid12 cta">
+      <SectionHead id="contact-title" title={contact.headline} />
+      <p class="cta-lede">{contact.lede}</p>
+      <a class="cta-mail" href={`mailto:${site.email}`}>
+        <ServiceIcon name="mail" />
+        {contact.email_button}
+      </a>
+    </div>
   </section>
 </BaseLayout>
+
+<style>
+  /* ---------- Hero: the type is a window onto the footage ---------- */
+  .hero {
+    --run-size: 10vw;
+    --ease-soft: cubic-bezier(0.16, 1, 0.3, 1);
+    position: relative;
+    isolation: isolate;
+    margin-top: calc(var(--header-h) * -1);
+    scroll-margin-top: 0;
+    overflow: clip;
+  }
+
+  /* Media stack: optimised poster (the LCP image) and the loop over it once it
+     plays. The grade is baked into the footage and poster, so nothing is filtered
+     per frame. */
+  /* The large viewport height, so footage reaches the foot of the screen on phones when
+     the browser's toolbar collapses. */
+  .hero-media {
+    position: sticky;
+    top: 0;
+    height: 100lvh;
+    margin-bottom: -100lvh;
+    overflow: clip;
+  }
+  .hero-frame {
+    position: absolute;
+    inset: 0;
+  }
+  .hero-frame :global(.hero-poster),
+  .hero-video {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  /* The poster sits over the video and fades once it plays. A video with no opacity stays
+     eligible to play on iPhones, which can hold back video they consider hidden. */
+  .hero-frame :global(.hero-poster) {
+    z-index: 1;
+    transition: opacity 1.2s var(--ease-out);
+  }
+  .hero.is-playing .hero-frame :global(.hero-poster) {
+    opacity: 0;
+  }
+  /* The opening: the footage untouched, with a neutral fade only behind the footer row to
+     keep its small text AA, the logo centred and one pill beneath it. */
+  .opening {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    place-content: center;
+    justify-items: center;
+    gap: clamp(1.5rem, 3vw, 2.5rem);
+    height: 100svh;
+    padding: var(--header-h) var(--gutter) 3.5rem;
+    background: linear-gradient(to bottom, transparent calc(100% - 7rem), color-mix(in srgb, var(--scrim) 70%, transparent) calc(100% - 1rem));
+    color: var(--on-shade);
+    --on-shade: #fff; /* the pill matches the logo */
+  }
+  .opening-logo {
+    display: block;
+    width: min(clamp(14rem, 34vw, 30rem), 80svh);
+    aspect-ratio: 2000 / 1286;
+    background: #fff;
+    -webkit-mask: var(--logo-url) center / contain no-repeat;
+    mask: var(--logo-url) center / contain no-repeat;
+  }
+  .opening-cta {
+    display: inline-flex;
+    gap: 0.5rem;
+    padding: 0.55rem 1.1rem;
+    border-radius: 999px;
+    background: var(--on-shade);
+    color: var(--shade);
+    font-size: 0.9375rem;
+    font-weight: 500;
+    text-align: center;
+    text-wrap: balance;
+    transition: transform 0.4s var(--ease-out);
+  }
+  .opening-cta:hover {
+    transform: translateY(2px);
+  }
+  .opening-cta:focus-visible {
+    outline-color: var(--on-shade);
+  }
+  @media (max-width: 480px) {
+    .opening-cta {
+      padding: 0.5rem 0.9rem;
+      font-size: 0.8125rem;
+    }
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    :global(html.js) .opening-logo,
+    :global(html.js) .opening-cta {
+      animation: opening-in 1.6s var(--ease-out) both;
+    }
+    :global(html.js) .opening-cta {
+      animation-delay: 0.35s;
+    }
+    @keyframes opening-in {
+      from {
+        opacity: 0;
+        transform: translateY(0.75rem);
+      }
+    }
+  }
+
+  /* The sheet scrolls over the footage with its own shade underneath: inside the
+     letters the brightest frame still gives 3.1:1 against the white, and the footage
+     below the sheet's edge is untouched. */
+  .hero-sheet {
+    position: relative;
+  }
+  .hero-lift {
+    position: absolute;
+    inset: 0;
+    background: color-mix(in srgb, var(--lift-color) var(--lift), transparent);
+  }
+
+  /* The sheet: white everywhere, black type. "Lighten" keeps the higher of sheet and
+     footage, so the sheet stays exactly white and the footage shows only in the type. */
+  .hero-cut {
+    position: relative;
+    background: var(--sheet);
+    padding-bottom: 18svh;
+    color: var(--sheet-type);
+    mix-blend-mode: var(--sheet-blend);
+  }
+  .run,
+  .closing {
+    font-weight: 600;
+  }
+  .hero-stage {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    min-height: 100svh;
+    padding: calc(var(--header-h) + 1rem) var(--gutter) 4.5rem;
+  }
+  .run {
+    margin: 0;
+    font-size: var(--run-size);
+  }
+  .step-lead-top {
+    display: block;
+  }
+  .run em,
+  .closing em {
+    font-style: italic;
+  }
+  .step-kept {
+    color: var(--sound-type);
+  }
+  .closing {
+    margin: 1.5rem 0 0;
+    font-size: var(--run-size);
+    line-height: 0.95;
+  }
+  /* Large text for AA (24px or more), since it's also a window onto the footage. */
+  .closing-note {
+    margin: 1.9em 0 0;
+    text-align: center;
+    font-size: clamp(1.5rem, 2.1vw, 2.25rem);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+  }
+  @media (min-width: 768px) {
+    .hero {
+      --run-size: min(11svh, 5.8vw);
+    }
+  }
+
+  /* Past the sheet: one line over the first film at full screen, then the others.
+     The 50% ink keeps the line AA over white footage (3.4:1). */
+  .reel {
+    position: relative;
+  }
+  .reel-top {
+    position: absolute;
+    inset: 0 0 auto;
+    z-index: 3;
+    display: grid;
+    place-items: center;
+    height: 100lvh;
+    overflow: clip;
+    color: var(--on-shade);
+    text-align: center;
+    pointer-events: none;
+  }
+  .reel-edge {
+    position: absolute;
+    inset: 0;
+  }
+  /* The films run untouched. A neutral fade sits only behind the small text: the shrunken
+     line, once it has shrunk, and each film's credit and the footer row. */
+  .reel-edge {
+    opacity: 0;
+    background: linear-gradient(
+      to bottom,
+      color-mix(in srgb, var(--scrim) 55%, transparent) 0,
+      color-mix(in srgb, var(--scrim) 50%, transparent) 8.5rem,
+      color-mix(in srgb, var(--scrim) 22%, transparent) 11rem,
+      color-mix(in srgb, var(--scrim) 7%, transparent) 13.5rem,
+      transparent 16rem
+    );
+  }
+  .reel-title {
+    position: relative;
+  }
+  .reel-text {
+    margin: 0;
+    font-size: min(24svh, 19vw);
+    white-space: nowrap;
+    /* No shade behind the big line, so a soft shadow holds it over bright footage. */
+    text-shadow:
+      0 0 0.12em color-mix(in srgb, var(--scrim) 45%, transparent),
+      0 0 0.5em color-mix(in srgb, var(--scrim) 45%, transparent);
+  }
+  .reel-film {
+    position: relative;
+    z-index: 1;
+    background: var(--shade);
+  }
+  .reel-stage {
+    position: relative;
+    height: 100lvh;
+    overflow: clip;
+  }
+  .reel-stage :global(.film-poster),
+  .film-video {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .reel-stage :global(.film-poster) {
+    z-index: 1;
+    transition: opacity 0.8s var(--ease-out);
+  }
+  .reel-film.is-playing :global(.film-poster) {
+    opacity: 0;
+  }
+  .reel-stage::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    background: linear-gradient(
+      to bottom,
+      transparent calc(100svh - 11rem),
+      color-mix(in srgb, var(--scrim) 12%, transparent) calc(100svh - 9.25rem),
+      color-mix(in srgb, var(--scrim) 42%, transparent) calc(100svh - 7rem),
+      color-mix(in srgb, var(--scrim) 65%, transparent) calc(100svh - 5.25rem),
+      color-mix(in srgb, var(--scrim) 70%, transparent) calc(100svh - 1rem)
+    );
+  }
+  /* Above the footer row, in the svh so a phone's toolbar doesn't hide it. 5:1 or better over
+     white footage. */
+  .film-credit {
+    position: absolute;
+    top: calc(100svh - 5rem);
+    right: var(--gutter);
+    z-index: 3;
+    margin: 0;
+    color: var(--on-shade);
+    font-size: clamp(0.9375rem, 1.1vw, 1.0625rem);
+    font-weight: 500;
+    line-height: 1.2;
+    text-align: right;
+  }
+
+  .hero-bar {
+    position: relative;
+    z-index: 4;
+    background: var(--foot-ground);
+    transition:
+      background-color 0.4s,
+      color 0.4s;
+  }
+  /* Over the opening and the films the row drops its ground, leaving the frame clear. */
+  .hero.in-reel .hero-bar,
+  :global(html.intro-foot) .hero-bar {
+    background: transparent;
+    color: var(--on-shade);
+  }
+  :global(html.intro-foot) .hero-bar {
+    --on-shade: #fff;
+  }
+  .hero-foot {
+    display: flex;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.35rem 2rem;
+    padding-block: 0.75rem;
+  }
+  /* A quiet pause/play control for the loops. */
+  .hero-credit {
+    padding: 0.35rem 0;
+    border: 0;
+    background: none;
+    color: inherit;
+    cursor: pointer;
+  }
+  .hero-credit:hover {
+    text-decoration: underline;
+    text-underline-offset: 0.25em;
+  }
+  :global(html.intro-foot) .hero-bar :focus-visible,
+  .hero.in-reel .hero-bar :focus-visible {
+    outline-color: var(--on-shade);
+  }
+
+  /* The sequence. The footage stays pinned for the whole hero while the sheet
+     scrolls over it: words pop as the lines (drawn by the script below) reach them. */
+  @media (prefers-reduced-motion: no-preference) {
+    :global(html.js) .hero-frame {
+      will-change: transform;
+    }
+    :global(html.js) .reel-top {
+      position: sticky;
+      top: 0;
+      margin-bottom: -100lvh;
+    }
+    :global(html.js) .reel-title {
+      will-change: transform;
+    }
+    :global(html.js) .reel-text {
+      opacity: 0;
+      transform: translateY(0.2em) scale(0.92);
+      transition:
+        opacity 0.6s var(--ease-out),
+        transform 1s var(--ease-out);
+    }
+    :global(html.js) .reel.is-in .reel-text {
+      opacity: 1;
+      transform: none;
+    }
+    :global(html.js) .reel-film {
+      height: 160svh;
+    }
+    /* The first film also holds while the line shrinks away. */
+    :global(html.js) .reel-film.is-first {
+      height: 230svh;
+    }
+    :global(html.js) .reel-stage {
+      position: sticky;
+      top: 0;
+    }
+    /* Stays on screen for the whole hero (it holds the video's pause control), taking
+       no space of its own, so it leaves with the last film. */
+    :global(html.js) .hero-bar {
+      position: sticky;
+      bottom: 0;
+      height: 0;
+      background: none;
+    }
+    :global(html.js) .hero-foot {
+      position: absolute;
+      inset: auto 0 0;
+      max-width: none;
+      background: var(--foot-ground);
+      transition: background-color 0.4s;
+    }
+    :global(html.js) .hero.in-reel .hero-foot,
+    :global(html.intro-foot) .hero-foot {
+      background: transparent;
+    }
+    /* A pinned stage: the kept word stays put while the script changes the words around it. */
+    :global(html.js) .hero-track {
+      height: 285svh;
+    }
+    /* Sits above centre, leaving room under the word for the lines that arrive. */
+    :global(html.js) .hero-stage {
+      position: sticky;
+      top: 0;
+      justify-content: center;
+      height: 100svh;
+      min-height: 0;
+      padding-bottom: 20svh;
+    }
+    /* All three lines share one grid, so each kept word and its copy in the next line sit in the
+       same cell. On phones everything stacks on one left edge. */
+    :global(html.js) .steps {
+      display: grid;
+      justify-content: start;
+      row-gap: 0.16em;
+      font-size: var(--run-size);
+      line-height: 0.95;
+      white-space: nowrap;
+    }
+    :global(html.js) .step {
+      display: contents;
+    }
+    :global(html.js) .steps > .step > *,
+    :global(html.js) .step-top > * {
+      grid-column: 1;
+      grid-row: var(--row-sm);
+    }
+    :global(html.js) .step-top {
+      display: contents;
+    }
+    :global(html.js) .step-lead-top {
+      margin-bottom: 0.16em;
+    }
+    :global(html.js) [data-step-in],
+    :global(html.js) [data-step-out] {
+      display: inline-block;
+      will-change: transform, opacity;
+    }
+    :global(html.js) [data-step-in] {
+      opacity: 0;
+    }
+    :global(html.js) [data-step-slot] {
+      visibility: hidden;
+    }
+    :global(html.js) .closing-note {
+      position: absolute;
+      top: 0;
+      left: 0;
+      margin: 0;
+      white-space: nowrap;
+      pointer-events: none;
+      opacity: 0;
+      will-change: opacity;
+    }
+    /* Larger screens read in two columns either side of a shared left edge for the kept words.
+       The headline's first line hangs above its second, with room kept for it. */
+    @media (min-width: 768px) {
+      :global(html.js) .steps {
+        grid-template-columns: max-content max-content;
+        column-gap: 0.15em;
+        width: fit-content;
+        margin-inline: auto;
+        padding-top: 1.11em;
+      }
+      :global(html.js) .steps > .step > * {
+        grid-row: var(--row);
+      }
+      :global(html.js) .steps > .step > .step-left {
+        grid-column: 1;
+        justify-self: end;
+      }
+      :global(html.js) .steps > .step > .step-right {
+        grid-column: 2;
+        justify-self: start;
+      }
+      :global(html.js) .step-top {
+        display: block;
+      }
+      :global(html.js) .step-lead {
+        position: relative;
+      }
+      :global(html.js) .step-lead-top {
+        position: absolute;
+        bottom: 100%;
+        left: 0;
+      }
+    }
+  }
+
+  /* ---------- Sections ---------- */
+  .sec {
+    padding-block: clamp(1.25rem, 2.5vw, 2.25rem);
+    scroll-margin-top: 4rem;
+  }
+  .sec-foot {
+    display: inline-block;
+    margin-top: 1.25rem;
+  }
+  /* Each fills at least the screen, with its content centred up and down between what's above
+     and below it. The same padding on both sides clears the header. */
+  #about,
+  #services {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 100svh;
+    padding-block: calc(var(--header-h) + 1.25rem);
+    scroll-margin-top: 0;
+  }
+  /* Who the company has worked for, directly under the last service. */
+  .customers {
+    margin: 0.5rem 0 0;
+    font-size: clamp(1rem, 1.15vw, 1.125rem);
+    font-weight: 450;
+    letter-spacing: -0.005em;
+    line-height: 1.3;
+  }
+  .customers-label {
+    color: var(--muted);
+  }
+  .playlist {
+    display: block;
+    width: var(--block-width);
+    margin-inline: auto;
+    height: clamp(22rem, 58svh, 34rem);
+    border: 0;
+    border-radius: 12px;
+  }
+  .playlist.is-focused {
+    outline: 2px solid var(--ink);
+    outline-offset: 3px;
+  }
+
+  /* ---------- Full-width sections ---------- */
+  .band {
+    padding-block: clamp(1.25rem, 2.5vw, 2.25rem);
+    scroll-margin-top: 4rem;
+  }
+  /* About — the story, then the founder with his name inline. */
+  .about-text {
+    margin: 0 auto;
+    max-width: 34em;
+    font-size: clamp(1.125rem, 1.6vw, 1.625rem);
+    font-weight: 450;
+    line-height: 1.25;
+    letter-spacing: -0.012em;
+  }
+  .about-story {
+    margin-bottom: clamp(2rem, 4vw, 3.5rem);
+  }
+  .bio + .bio {
+    margin-top: clamp(2.5rem, 5vw, 4.5rem);
+  }
+  .bio-name {
+    font-weight: 650;
+  }
+
+  /* Contact — one email button, in the style of the service boxes. */
+  .cta {
+    row-gap: 1.5rem;
+  }
+  .cta > :global(.sh-title) {
+    grid-column: 1 / -1;
+    margin: 0;
+  }
+  .cta-lede {
+    grid-column: 1 / -1;
+    margin: 0 auto;
+    max-width: 34em;
+    text-wrap: balance;
+    font-size: clamp(1.125rem, 1.6vw, 1.625rem);
+    font-weight: 450;
+    letter-spacing: -0.012em;
+    line-height: 1.25;
+  }
+  .cta-mail {
+    grid-column: 1 / -1;
+    justify-self: center;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-top: clamp(0.5rem, 1.5vw, 1.25rem);
+    padding: clamp(1rem, 1.5vw, 1.5rem) clamp(1.5rem, 2.5vw, 2.25rem);
+    border: 1.5px solid var(--on-card);
+    border-radius: 1.25rem;
+    background: var(--card);
+    color: var(--on-card);
+    font-size: clamp(1.125rem, 1.6vw, 1.5rem);
+    font-weight: 550;
+    letter-spacing: -0.012em;
+    transition: transform 0.4s var(--ease-out);
+  }
+  .cta-mail:hover {
+    transform: translateY(2px);
+  }
+
+</style>
+
+<script>
+  // The loops: they start after the page has loaded (so they never compete with the
+  // poster image), pause off-screen and never autoplay under reduced motion. The small
+  // pause controls, in the hero's footer row and the video gaps, work on all of them
+  // (WCAG 2.2.2). Some phones block autoplay, in Low Power Mode for example: the posters stay
+  // up, the controls offer play, and the next tap anywhere starts the videos.
+  // Sound belongs to the work section: each film's music plays while it is at the middle of
+  // the screen, and the opening loop stays silent. Browsers only allow sound once
+  // the visitor has tapped, clicked or pressed a key on the page, so the first of those
+  // switches it on. Until then the films play silently and the speaker offers sound.
+  const hero = document.getElementById('top');
+  const video = document.querySelector<HTMLVideoElement>('[data-hero-video]');
+  const toggles = Array.from(document.querySelectorAll<HTMLButtonElement>('[data-hero-toggle]'));
+  if (hero && video && toggles.length) {
+    const clips = [{ video, host: hero, seen: true, film: false }];
+    document.querySelectorAll<HTMLElement>('[data-reel-film]').forEach((host) => {
+      const clip = host.querySelector<HTMLVideoElement>('[data-film-video]');
+      if (clip) clips.push({ video: clip, host, seen: false, film: true });
+    });
+
+    document.querySelectorAll<HTMLElement>('[data-sliver]').forEach((host) => {
+      const clip = host.querySelector<HTMLVideoElement>('[data-sliver-video]');
+      if (clip) clips.push({ video: clip, host, seen: false, film: false });
+    });
+
+    let wanted = !matchMedia('(prefers-reduced-motion: reduce)').matches; // play unless paused or reduced motion
+    let started = false;
+
+    let blocked = false;
+    let armed = false;
+    let unblockedAt = 0;
+    const render = () => {
+      for (const toggle of toggles) toggle.textContent = (wanted && !blocked ? toggle.dataset.pause : toggle.dataset.play) ?? '';
+    };
+    const onBlocked = (error: unknown) => {
+      if ((error as Error)?.name !== 'NotAllowedError') return;
+      blocked = true;
+      render();
+      if (armed) return;
+      armed = true;
+      document.addEventListener('click', unblock, { capture: true });
+      document.addEventListener('touchend', unblock, { capture: true, passive: true });
+    };
+    // Inside a tap the browser allows play(), and a video started once can play from then on.
+    const unblock = () => {
+      armed = false;
+      unblockedAt = Date.now();
+      document.removeEventListener('click', unblock, { capture: true });
+      document.removeEventListener('touchend', unblock, { capture: true });
+      blocked = false;
+      render();
+      if (!wanted) return;
+      for (const clip of clips) {
+        clip.video.preload = 'auto';
+        clip.video
+          .play()
+          .then(() => {
+            if (!clip.seen) clip.video.pause();
+          })
+          .catch(onBlocked);
+      }
+    };
+    const sync = () => {
+      if (!started) return;
+      for (const clip of clips) {
+        if (wanted && clip.seen) {
+          clip.video.preload = 'auto';
+          clip.video.play().catch(onBlocked);
+        } else clip.video.pause();
+      }
+    };
+    for (const clip of clips) clip.video.addEventListener('playing', () => clip.host.classList.add('is-playing'));
+
+    const films = clips.filter((clip) => clip.film);
+    const speakers = Array.from(document.querySelectorAll<HTMLButtonElement>('[data-sound-toggle]'));
+    let sound = true; // unless the visitor turns it off
+    let granted = false; // the browser has allowed sound
+    let current: (typeof clips)[number] | null = null;
+    const renderSound = () => {
+      for (const speaker of speakers) {
+        const on = sound && granted;
+        speaker.hidden = !current;
+        speaker.classList.toggle('is-on', on);
+        speaker.setAttribute('aria-label', (on ? speaker.dataset.off : speaker.dataset.on) ?? '');
+      }
+    };
+    const applySound = () => {
+      for (const clip of films) {
+        const audible = sound && granted && clip === current;
+        if (clip.video.muted !== audible) continue;
+        // A refused video stops the moment it is unmuted, so note whether it was playing first.
+        const playing = !clip.video.paused;
+        clip.video.muted = !audible;
+        if (!audible || !playing) continue;
+        clip.video.play().catch((error: unknown) => {
+          // Only a refusal: a pause or a reload interrupting this play() says nothing about sound.
+          if ((error as Error)?.name !== 'NotAllowedError') return;
+          granted = false;
+          clip.video.muted = true;
+          renderSound();
+          sync();
+        });
+      }
+      renderSound();
+    };
+    const grant = () => {
+      if (granted) return;
+      granted = true;
+      // iPhones only let a video be unmuted later if it was started unmuted inside a tap.
+      for (const clip of films) {
+        clip.video.muted = false;
+        clip.video.preload = 'auto';
+        clip.video
+          .play()
+          .then(() => {
+            if (!clip.seen || !wanted) clip.video.pause();
+          })
+          .catch(() => {});
+      }
+      for (const clip of films) clip.video.muted = true;
+      applySound();
+    };
+    const onGesture = (event: Event) => {
+      if (event.target instanceof Element && event.target.closest('[data-sound-toggle]')) return;
+      // The end of a scroll on a phone isn't a tap, and sound would be refused.
+      if ('userActivation' in navigator && !navigator.userActivation.isActive) return;
+      grant();
+    };
+    document.addEventListener('click', onGesture, { capture: true });
+    document.addEventListener('keydown', onGesture, { capture: true });
+    document.addEventListener('touchend', onGesture, { capture: true, passive: true });
+    for (const speaker of speakers) {
+      speaker.addEventListener('click', () => {
+        sound = !(sound && granted);
+        if (sound) {
+          if (!wanted) {
+            wanted = true;
+            render();
+            sync();
+          }
+          grant();
+        }
+        applySound();
+      });
+    }
+    const isCentred = (el: Element) => {
+      const box = el.getBoundingClientRect();
+      return box.top <= innerHeight / 2 && box.bottom >= innerHeight / 2;
+    };
+    const atCentre = new IntersectionObserver(
+      () => {
+        current = films.find((clip) => isCentred(clip.host)) ?? null;
+        applySound();
+      },
+      { rootMargin: '-50% 0px -50% 0px' },
+    );
+    for (const clip of films) atCentre.observe(clip.host);
+
+    for (const toggle of toggles) {
+      toggle.addEventListener('click', () => {
+        // The tap that unblocked the videos has already started them.
+        if (blocked || Date.now() - unblockedAt < 800) return;
+        wanted = !wanted;
+        render();
+        sync();
+      });
+    }
+
+    // The first loop is in view from the opening until the first film has covered it.
+    const cover = [document.querySelector('[data-opening]'), document.querySelector('.hero-sheet')].filter((el): el is Element => !!el);
+    const inView = new Set<Element>();
+    const firstWatch = new IntersectionObserver((entries) => {
+      for (const e of entries) {
+        if (e.isIntersecting) inView.add(e.target);
+        else inView.delete(e.target);
+      }
+      clips[0]!.seen = inView.size > 0;
+      sync();
+    });
+    cover.forEach((el) => firstWatch.observe(el));
+    for (const clip of clips.slice(1)) {
+      new IntersectionObserver(
+        ([e]) => {
+          clip.seen = !!e?.isIntersecting;
+          sync();
+        },
+        { rootMargin: '200px 0px' },
+      ).observe(clip.host);
+    }
+
+    render();
+    const begin = () => {
+      started = true;
+      sync();
+    };
+    const idle = () => ('requestIdleCallback' in window ? requestIdleCallback(begin, { timeout: 1500 }) : setTimeout(begin, 300));
+    if (document.readyState === 'complete') idle();
+    else addEventListener('load', idle, { once: true });
+  }
+
+  // Hero sequence. While the stage is pinned each line's kept word stays still, its other words
+  // leave, and the next line's arrive around it. Past the sheet, the reel's line shrinks away so the films can be watched.
+  const frame = document.querySelector<HTMLElement>('[data-hero-frame]');
+  const track = document.querySelector<HTMLElement>('[data-hero-track]');
+  const steps = document.querySelector<HTMLElement>('[data-steps]');
+  const stepWords = Array.from(document.querySelectorAll<HTMLElement>('[data-step-in], [data-step-out]'));
+  const closingNote = document.querySelector<HTMLElement>('[data-close-note]');
+  const reel = document.querySelector<HTMLElement>('[data-reel]');
+  const reelTitle = document.querySelector<HTMLElement>('[data-reel-title]');
+  const reelText = document.querySelector<HTMLElement>('[data-reel-text]');
+  const reelEdge = document.querySelector<HTMLElement>('[data-reel-edge]');
+  if (hero && matchMedia('(prefers-reduced-motion: no-preference)').matches) {
+    const seg = (v: number, from: number, to: number) => Math.min(1, Math.max(0, (v - from) / (to - from)));
+
+    let heroTop = 0;
+    let reelTop = 0;
+    let reelEnd = 0;
+    let titleLift = 0;
+    let titleScale = 1;
+    let trackTop = 0;
+    let trackSpan = 0;
+
+    // Coordinates are the hero's own.
+    const measure = () => {
+      const b = hero.getBoundingClientRect();
+      heroTop = b.top + scrollY;
+      if (reel && reelText) {
+        const r = reel.getBoundingClientRect();
+        reelTop = r.top + scrollY;
+        reelEnd = r.bottom + scrollY;
+        // The line ends just under the header, small enough to watch the film beneath it.
+        const header = document.querySelector<HTMLElement>('.site-header')?.offsetHeight ?? 0;
+        const reelFrame = reelText.closest<HTMLElement>('.reel-top');
+        titleLift = (reelFrame?.offsetHeight ?? innerHeight) / 2 - (header + 36);
+        titleScale = 28 / parseFloat(getComputedStyle(reelText).fontSize);
+      }
+      if (track) {
+        trackTop = track.getBoundingClientRect().top + scrollY;
+        trackSpan = track.offsetHeight - innerHeight;
+      }
+      if (steps) {
+        // The note centres on the page, and in the space between the lines above it and the
+        // sheet's bottom edge. Measured from the stage, since the stage is pinned while the sheet moves.
+        if (closingNote) {
+          closingNote.style.translate = '';
+          const note = closingNote.getBoundingClientRect();
+          const x = document.documentElement.clientWidth / 2 - (note.left + note.width / 2);
+          const stage = closingNote.closest('.hero-stage')?.getBoundingClientRect();
+          const lines = steps.getBoundingClientRect();
+          const below = (closingNote.closest('.hero-cut')?.getBoundingClientRect().bottom ?? 0) - (track?.getBoundingClientRect().bottom ?? 0);
+          // On a short screen it stops above the footer row, which it would otherwise touch while pinned.
+          const foot = document.querySelector<HTMLElement>('.hero-foot')?.offsetHeight ?? 0;
+          const y = stage ? Math.min((lines.bottom - stage.top + stage.height + below) / 2 - (note.top + note.height / 2 - stage.top), stage.height - foot - (note.bottom - stage.top)) : 0;
+          closingNote.style.translate = `${x}px ${y}px`;
+        }
+      }
+    };
+
+    const render = (y: number) => {
+      const smooth = (t: number) => t * t * (3 - 2 * t);
+      const p = trackSpan > 0 ? seg(y, trackTop, trackTop + trackSpan) : 0;
+      // Index 0 is "always here" for arriving and "stays" for leaving; 1 and 2 are the two changes.
+      const arrive = [1, smooth(seg(p, 0.13, 0.28)), smooth(seg(p, 0.53, 0.68))];
+      const leave = [0, smooth(seg(p, 0.02, 0.17)), smooth(seg(p, 0.42, 0.57))];
+      for (const el of stepWords) {
+        const shown = arrive[Number(el.dataset.stepIn ?? 0)]!;
+        const gone = leave[Number(el.dataset.stepOut ?? 0)]!;
+        el.style.opacity = String(shown * (1 - gone));
+        el.style.transform = `translate3d(0, ${(1 - shown) * 38 - gone * 38}%, 0)`;
+      }
+      if (closingNote) closingNote.style.opacity = String(smooth(seg(p, 0.62, 0.78)));
+      // Over the first screen of the reel the line shrinks to the top and the shade clears.
+      const clear = reel ? seg(y, reelTop, reelTop + innerHeight * 0.7) : 0;
+      const ease = clear * clear * (3 - 2 * clear);
+      if (frame) frame.style.transform = `scale(${1 + seg(y, heroTop, reelTop || heroTop + 1) * 0.16 * (1 - ease)})`;
+      if (reelTitle) reelTitle.style.transform = `translate3d(0, ${-titleLift * ease}px, 0) scale(${1 + (titleScale - 1) * ease})`;
+      if (reelEdge) reelEdge.style.opacity = String(ease);
+      if (reel) {
+        // The line arrives once the sheet has lifted about halfway off the footage.
+        reel.classList.toggle('is-in', y + innerHeight * 0.45 >= reelTop);
+        // From when the first film reaches the footer row at the foot of the screen.
+        const inReel = y >= reelTop - innerHeight + 50 && y <= reelEnd;
+        hero.classList.toggle('in-reel', inReel);
+      }
+      // The header turns light over the films.
+      const overFilm = reel ? y >= reelTop - 40 && y <= reelEnd - 40 : false;
+      document.documentElement.classList.toggle('on-reel', overFilm);
+    };
+
+    let now = scrollY;
+    let raf = 0;
+    const tick = () => {
+      now += (scrollY - now) * 0.1;
+      if (Math.abs(scrollY - now) < 0.25) now = scrollY;
+      render(now);
+      raf = now === scrollY ? 0 : requestAnimationFrame(tick);
+    };
+    const wake = () => {
+      if (!raf) raf = requestAnimationFrame(tick);
+    };
+    const refresh = () => {
+      measure();
+      render(now);
+    };
+    addEventListener('scroll', wake, { passive: true });
+    addEventListener('resize', refresh);
+    document.fonts?.ready.then(refresh);
+    refresh();
+  }
+
+  // Focus moves inside the playlist's frame, where CSS focus states can't see it, so
+  // tabbing in marks the frame from here to give keyboard users a visible ring.
+  const playlist = document.querySelector<HTMLIFrameElement>('.playlist');
+  if (playlist) {
+    let tabbing = false;
+    addEventListener('keydown', (e) => (tabbing = e.key === 'Tab'), true);
+    addEventListener('pointerdown', () => (tabbing = false), true);
+    document.addEventListener('focusin', () => playlist.classList.remove('is-focused'));
+    document.addEventListener('focusout', (e) => {
+      if (tabbing && e.relatedTarget === playlist) playlist.classList.add('is-focused');
+    });
+    addEventListener('blur', () => {
+      if (tabbing && document.activeElement === playlist) playlist.classList.add('is-focused');
+    });
+  }
+</script>

@@ -1,0 +1,239 @@
+---
+/**
+ * The services, one under the other. Each title is a window onto a still from the
+ * films, which drifts as the page scrolls, and starts open (native <details>) on its
+ * offerings, each with an icon and a definition.
+ */
+import type { ImageMetadata } from 'astro';
+import { getImage, Image } from 'astro:assets';
+import { anchor, type Service } from '../lib/content';
+import ServiceIcon from './ServiceIcon.astro';
+
+interface Props {
+  items: Service[];
+  /** Stills for the titles, used in turn. */
+  stills?: (ImageMetadata | undefined)[];
+}
+const { items, stills = [] } = Astro.props;
+const pictures = await Promise.all(
+  stills.map((src) => (src ? getImage({ src, width: Math.min(1400, src.width), format: 'webp', quality: 58 }) : undefined)),
+);
+---
+
+<div class="svc-list">
+  {
+    items.map((s, i) => {
+      const picture = pictures[i % Math.max(pictures.length, 1)];
+      return (
+        <details class="svc" id={`services-${anchor(s.id)}`} open>
+          <summary class="svc-head">
+            <h3 class="svc-title display" style={picture ? `--still: url('${picture.src}')` : undefined}>
+              {s.data.title}
+            </h3>
+            <span class="svc-icon" aria-hidden="true" />
+          </summary>
+          <ul class="svc-grid">
+            {(s.data.offerings ?? []).map((offering) => (
+              <li class="svc-item">
+                <ServiceIcon name={offering.icon} />
+                <div>
+                  <h4 class="svc-name">{offering.name}</h4>
+                  <p class="svc-def">{offering.definition}</p>
+                </div>
+              </li>
+            ))}
+          </ul>
+          {s.data.brands && (
+            <ul class="svc-brands" aria-label="Brands">
+              {s.data.brands.map((brand) => (
+                <li>{brand.logo ? <Image src={brand.logo} alt={brand.name} height={144} class="svc-brand-logo" /> : brand.name}</li>
+              ))}
+            </ul>
+          )}
+        </details>
+      );
+    })
+  }
+</div>
+
+<style>
+  .svc-list {
+    display: grid;
+    gap: clamp(1.75rem, 3vw, 2.75rem);
+  }
+  .svc {
+    scroll-margin-top: 6rem;
+  }
+  .svc-head {
+    display: grid;
+    grid-template-columns: 1fr max-content 1fr;
+    align-items: center;
+    column-gap: clamp(0.75rem, 1.4vw, 1.25rem);
+    list-style: none;
+    cursor: pointer;
+  }
+  .svc-head::-webkit-details-marker {
+    display: none;
+  }
+  /* Sits right beside the centred title, level with its lowercase letters. */
+  /* The padding is a larger target for the mouse, without moving the mark. */
+  .svc-icon {
+    grid-area: 1 / 3;
+    justify-self: start;
+    position: relative;
+    box-sizing: content-box;
+    width: clamp(1.25rem, 2vw, 1.75rem);
+    aspect-ratio: 1;
+    margin: -0.75rem;
+    padding: 0.75rem;
+    translate: 0 0.15em;
+  }
+  .svc-icon::before,
+  .svc-icon::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0.75rem;
+    right: 0.75rem;
+    height: 1.5px;
+    background: var(--ink);
+    transition: transform 0.5s var(--ease-out);
+  }
+  .svc-icon::after {
+    transform: rotate(90deg);
+  }
+  .svc[open] .svc-icon::after {
+    transform: rotate(0deg);
+  }
+  .svc-title {
+    grid-area: 1 / 2;
+    margin: 0;
+    font-size: var(--svc-title-size);
+    font-weight: 600;
+    line-height: 0.92;
+    /* Room for descenders: the still only paints inside this box. */
+    padding-block: 0.08em 0.22em;
+    margin-block: -0.08em -0.22em;
+  }
+  /* The still shows only through the letters, darkened so its brightest parts keep
+     3.1:1 against the page. */
+  @supports ((-webkit-background-clip: text) or (background-clip: text)) {
+    .svc-title {
+      color: transparent;
+      background-image:
+        linear-gradient(color-mix(in srgb, var(--lift-color) var(--lift), transparent), color-mix(in srgb, var(--lift-color) var(--lift), transparent)),
+        var(--still, linear-gradient(var(--lift-color), var(--lift-color)));
+      background-position: 50% 40%;
+      background-size: 135% auto;
+      -webkit-background-clip: text;
+      background-clip: text;
+    }
+  }
+  .svc-grid {
+    --gap: clamp(0.625rem, 1vw, 1rem);
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--gap);
+    width: var(--block-width);
+    margin: 0 auto;
+    padding: clamp(1.25rem, 2.5vw, 2rem) 0 clamp(0.75rem, 1.5vw, 1.25rem);
+    list-style: none;
+  }
+  /* Rows of four, each logo fitted inside the same size of cell. A brand without a logo file
+     shows its name. */
+  .svc-brands {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 9rem));
+    justify-content: center;
+    place-items: center;
+    gap: clamp(1rem, 2vw, 1.75rem) clamp(1rem, 3vw, 3rem);
+    margin: clamp(1.5rem, 3vw, 2.75rem) 0 0;
+    padding: 0;
+    list-style: none;
+    font-size: clamp(1.125rem, 1.6vw, 1.5rem);
+    font-weight: 600;
+    letter-spacing: -0.015em;
+  }
+  .svc-brands :global(.svc-brand-logo) {
+    width: 100%;
+    height: clamp(3rem, 5vw, 4.5rem);
+    object-fit: contain;
+  }
+  /* The section's own padding is what sits below the last boxes, matching the space above. */
+  .svc:last-child .svc-grid {
+    padding-bottom: 0;
+  }
+  .svc-item {
+    flex: 0 0 100%;
+    display: grid;
+    justify-items: center;
+    align-content: start;
+    gap: 0.625rem;
+    padding: clamp(1rem, 1.5vw, 1.5rem);
+    border: 1.5px solid var(--on-card);
+    border-radius: 1.25rem;
+    background: var(--card);
+    color: var(--on-card);
+  }
+  .svc-name {
+    margin: 0;
+    font-size: clamp(1rem, 1.2vw, 1.1875rem);
+    font-weight: 550;
+    letter-spacing: -0.012em;
+    line-height: 1.2;
+  }
+  .svc-def {
+    margin: 0.3rem 0 0;
+    color: var(--on-card-muted);
+    font-size: 0.9375rem;
+    line-height: 1.35;
+  }
+
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .svc-title {
+        animation: svc-drift linear both;
+        animation-timeline: view();
+      }
+      .svc:nth-child(even) .svc-title {
+        animation-direction: reverse;
+      }
+      @keyframes svc-drift {
+        from {
+          background-position: 15% 25%;
+        }
+        to {
+          background-position: 85% 65%;
+        }
+      }
+    }
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .svc {
+      interpolate-size: allow-keywords;
+    }
+    .svc::details-content {
+      block-size: 0;
+      overflow: clip;
+      transition:
+        block-size 0.6s var(--ease-out),
+        content-visibility 0.6s allow-discrete;
+    }
+    .svc[open]::details-content {
+      block-size: auto;
+    }
+  }
+
+  @media (min-width: 700px) {
+    .svc-item {
+      flex-basis: calc((100% - var(--gap)) / 2);
+    }
+  }
+  @media (min-width: 1100px) {
+    .svc-item {
+      flex-basis: calc((100% - 2 * var(--gap)) / 3);
+    }
+  }
+</style>

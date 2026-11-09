@@ -1,0 +1,18 @@
+---
+/** A section title. */
+interface Props {
+  title: string;
+  id: string;
+}
+const { title, id } = Astro.props;
+---
+
+<h2 id={id} class="sh-title display">{title}</h2>
+
+<style>
+  .sh-title {
+    margin: 0 0 clamp(1.25rem, 2.5vw, 2.25rem);
+    font-size: clamp(1.875rem, 3.2vw, 3.25rem);
+    line-height: 1;
+  }
+</style>

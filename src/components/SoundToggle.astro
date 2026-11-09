@@ -1,0 +1,55 @@
+---
+interface Props {
+  on: string;
+  off: string;
+}
+const { on, off } = Astro.props;
+---
+
+<!-- A small speaker for the films' music, shown while a film is on screen. It names itself
+     while the music is off, since a browser may be holding it back until a tap. -->
+<button type="button" class="sound label" data-sound-toggle data-on={on} data-off={off} aria-label={on} hidden>
+  <span class="sound-label">{on}</span>
+  <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+    <path fill="currentColor" d="M3.5 9.25v5.5H7L11.75 19V5L7 9.25H3.5Z"></path>
+    <g fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round">
+      <g class="waves">
+        <path d="M15 9.25a3.9 3.9 0 0 1 0 5.5"></path>
+        <path d="M17.75 6.5a7.8 7.8 0 0 1 0 11"></path>
+      </g>
+      <path class="off" d="m15.5 9.75 4.5 4.5m0-4.5-4.5 4.5"></path>
+    </g>
+  </svg>
+</button>
+
+<style>
+  .sound {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    min-width: 2rem;
+    height: 2rem;
+    padding: 0 0.35rem;
+    border: 0;
+    border-radius: 999px;
+    background: none;
+    color: inherit;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  .sound:hover {
+    background: color-mix(in srgb, currentColor 16%, transparent);
+  }
+  .sound[hidden],
+  .sound .waves,
+  .sound.is-on .off,
+  .sound.is-on .sound-label {
+    display: none;
+  }
+  .sound.is-on .waves {
+    display: inline;
+  }
+  :global(html:not(.js)) .sound {
+    display: none;
+  }
+</style>

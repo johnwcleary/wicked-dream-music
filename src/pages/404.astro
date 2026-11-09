@@ -1,13 +1,41 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHead from '../components/PageHead.astro';
 import { getPage } from '../lib/content';
 
 const page = await getPage('not-found');
 ---
 
 <BaseLayout title={page.title} description={page.lede}>
-  <p class="text-sm uppercase">{page.eyebrow}</p>
-  <h1 class="text-4xl font-bold">{page.headline}</h1>
-  <p>{page.lede}</p>
-  {page.cta && <a class="underline" href={page.cta.href}>{page.cta.label}</a>}
+  <PageHead headline={page.headline}>
+    <div class="nf">
+      <p class="nf-lede statement">{page.lede}</p>
+      {
+        page.cta && (
+          <a class="nf-cta" href={page.cta.href}>
+            <span aria-hidden="true">←</span> <span class="link-line">{page.cta.label}</span>
+          </a>
+        )
+      }
+    </div>
+  </PageHead>
 </BaseLayout>
+
+<style>
+  .nf {
+    display: grid;
+    gap: 1.5rem;
+    justify-items: start;
+    align-content: start;
+    margin-top: 1.5rem;
+  }
+  .nf-lede {
+    margin: 0;
+    max-width: 22ch;
+  }
+  .nf-cta {
+    font-size: 1.0625rem;
+    font-weight: 500;
+    padding-block: 0.25rem;
+  }
+</style>

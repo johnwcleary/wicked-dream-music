@@ -1,0 +1,30 @@
+---
+/** Plain page opener: a two-line display headline. */
+import { splitHeadline } from '../lib/content';
+
+interface Props {
+  headline: string;
+}
+const { headline } = Astro.props;
+const [a, b] = splitHeadline(headline);
+---
+
+<div class="ph wrap">
+  <h1 class="ph-title display d-lg">
+    <span>{a}</span>
+    {b && <span>{b}</span>}
+  </h1>
+  <slot />
+</div>
+
+<style>
+  .ph {
+    padding-top: clamp(1.5rem, 4vw, 3.5rem);
+  }
+  .ph-title {
+    margin: 0.5rem 0 0;
+  }
+  .ph-title span {
+    display: block;
+  }
+</style>
