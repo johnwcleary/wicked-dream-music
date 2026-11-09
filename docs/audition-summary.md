@@ -15,7 +15,7 @@ Screenshots are local and gitignored. Regenerate with `npm run screenshots` on a
 
 ## A — `design/signal` · Poster / loud accent
 
-**Pitch.** Every page is a poster: enormous condensed uppercase type against tiny tracked labels, on full-bleed bands that alternate ink and paper on a strict 12-column grid. The lavender→pink gradient is the only colour on the site, so it reads like a signal light.
+**Pitch.** A title sequence, then the whole company on one scroll. It opens on full-screen footage with the WDM logo centred. The footage then plays inside the letters of a headline on a white sheet; "sound" holds still and the words around it change to "your *sound* is your *brand*". "our work" and three full-screen films follow, then short sections, ending in one email button and the logo.
 
 **Type.** Anton (display, `@fontsource/anton`, preloaded) + Instrument Sans Variable (body/labels, `@fontsource-variable/instrument-sans`). Anton's tall, heavy condensed caps sit closest to the wordmark.
 
@@ -54,33 +54,46 @@ Photos are grayscale and high contrast, multiplied over the gradient, with the b
 
 *Revised over several review rounds: a single page with a full-screen video hero, expandable services and work, and one email call to action.*
 
-**Pitch.** The whole company on one fast scroll. It opens on a full-screen loop from the ALL MY GIRLS video with the lavender wordmark over it, then runs through services, about and work as numbered, expandable sections, and ends on a single big email link.
+**Pitch.** A title sequence, then the whole company on one scroll. It opens with the headline cut out of a dark sheet, so the Love Crushed Velvet loop plays inside the letters; thin lines draw from "sound" to the words below it, then close on "your sound is your brand". The sheet lifts to show the video at full screen under "Our work", and numbered, expandable sections follow, ending in one big email call to action.
 
-**Type.** Instrument Sans Variable, using the width axis at ~88% for tight statements that echo the logo (`@fontsource-variable/instrument-sans`, preloaded) + IBM Plex Mono 400 for labels and numbering (`@fontsource/ibm-plex-mono`).
+**Type.** One typeface, Inter Tight (`@fontsource-variable/inter-tight`, OFL, preloaded): large type at weight 500–600 with very tight spacing, small type at normal spacing. Text uses standard capitalization, as written in the content files. Only "sound" and "brand" are italic. The direction takes its restraint from a neutral portfolio reference John supplied.
+
+**Color.** John chose black over the blue and purple auditioned here: black type on the white page, with deep purple in the word "sound" and a little of the logo's lavender rising from the page's bottom right corner. The films run untinted: color only appears over footage inside the type, and a neutral fade or shade sits behind small text on footage to keep it AA. Over the opening, the nav and buttons are white to match the logo.
+
+**Palette.** Near-black `#0F0F10` type on white (19.2:1), `#5E5A54` for small text (6.9:1). The service boxes and the email button are white with a thin near-black outline and near-black text. The wordmark, font and colour are set out in `docs/brand/wdm/`.
+- The hero loop is in full color; the footage shows through the type on the white sheet (`mix-blend-mode: lighten`), shaded 50% so the brightest frames keep 3.1:1 (large text).
+- "our work" and the header over the films sit on dark shades instead (3.4:1 or better).
+- The brand lavender and pink remain the client's logo colours in `--wdm-*`. This direction only uses the lavender, in the corner at the foot of the page.
+
+Chosen from an in-page audition of 6 palettes × 5 type pairings. The comparison sheets are in `screenshots/design/archive/audition/` (local).
 
 **Page order.**
-1. **Hero.** A full-screen video loop under a transparent header, with the solid lavender wordmark, headline, intro and a lavender "See what we do" button. The footer row lists the services and the video title.
-2. **Words and photos.** "Artists. Ideas. Sound. Culture." set huge, with the four work photos inline. Each word keeps its photo beside it: two pairs per line on desktop, one per line on phones. Each photo opens its work entry.
-3. **Services** (`#services`). Numbered rows that expand to show their bullets.
-4. **About** (`#about`). An ink band. Each chapter is a row with the title on the left and the body on the right; there is one chapter for now, to be expanded. The pull quote below is set in lavender-to-pink gradient type.
-5. **Selected work** (`#work`). Expandable rows: the Miley portrait, the click-to-play YouTube video for International A&R, and the photos.
-6. **Contact** (`#contact`). A lavender band with the headline, intro and one giant `mailto:` link. **The form was removed at John's request.** Phase 2 needs no form backend for this direction.
+1. **Hero.** The page opens on an orange loop from Love Crushed Velvet's "Arizona" at full screen, with the white Wicked Dream Music logo centred (`src/assets/brand/wdm-lockup-white.webp`, John's own clean export at 2000px, larger than the hero ever draws it), an "artist development and a&r strategy" pill and the nav centred at the top, drawing on AWAL's opening. A white sheet then scrolls up over the footage, with the type as a window onto it. "Artist development begins with *vision*" pins, and "vision" stays exactly where it is while the other words leave and "shapes your *sound*" arrives around it. "sound" then stays still in the same way while "Your … defines your *brand*" arrives, followed by "Let's bring your vision to life", centred on the page beneath them. "vision" and "sound" are purple. All the kept words share a left edge, with the words before them set against it; on phones everything stacks on that edge. Next, "our work" sits over IMIN's "Satisfied" and shrinks to the top, followed by Joe Marson's "No Retreat", Torii Wolf's "Ten Billion Years" and Lawd Ito's "Composure", all full screen. The Arizona loop appears only in the opening. The words and films are in `pages/home.md` (`headline`, `hero_closing`, `hero_video`, `hero_films`); the middle line must start with the headline's last word and end on a word the closing line also has. With reduced motion or no JS the type is still and stacked, over the posters. Once the opening has scrolled away, John's round WD mark (`src/assets/brand/wd-mark.webp`) stays in the centre nav, first in the row and as tall as the links, for the rest of the page, linking back to the top.
+2. **About** (`#about`). "our story" with a short paragraph (`story`, John's copy), then "our founder" with David Kim's name inline at the start of his bio, straight after the last film, on the page's own background so it flows into services. Both are in `pages/about.md`.
+3. **Services** (`#services`). An "our services" title, then artist development, a&r strategy and sync licensing under one another. Each title is filled with a still from one of the films, drifting as you scroll, and starts open on a compact grid of its offerings, which the + closes. The "customers include" line is off the page for now, commented out in `pages/services.md`; John supplied the names, so confirm they can be named before it returns.
+4. **Selected works** (`#work`). A large centred title over one embedded Spotify playlist, set in `pages/work.md` (`playlist`). The playlist is WDM Highlights. The iframe loads lazily as it nears the screen, and Spotify may set cookies once it loads, so check that against the privacy policy.
+5. **Contact** (`#contact`). The headline, intro and one giant `mailto:` link. **The form was removed at John's request.** Phase 2 needs no form backend for this direction.
 
-**Gradient.** Used on the hovered photos, the video play button and the pull quote's type. The wordmark is solid lavender, and lavender also fills the contact band and the main button.
+**Accent.** None: the current nav item is a dark pill. There are no section numbers, sub-labels or horizontal rules, at John's request.
 
 **Video hero.**
 - The loop starts after the page has loaded, pauses off-screen, and never autoplays for visitors with reduced motion turned on.
-- The title in the hero's footer row ("ALICE - ALL MY GIRLS") is also the pause/play button, so the WCAG 2.2.2 pause requirement is met without a visible control.
+- A small "pause video" control in the hero's footer row pauses and plays both loops, which WCAG 2.2.2 requires for video that keeps moving.
 - The poster is the LCP image.
+
+Everything below the films, from the about section through the footer, has tighter margins than the hero. Everything there is centred, and the service boxes and the playlist share one narrower width. About and services each fill at least the screen with their content centred up and down. A band above and below services shows the last film's footage (Composure) held still behind the page; tapping one pauses the loops.
+
+**Sync brands.** Netflix, Hulu, Paramount, MTV, Nickelodeon, AMC, NFL and Discovery Channel logos sit under sync licensing (`services/sync-licensing.md`, `brands`), from files John supplied, cropped and with their white backgrounds removed (`src/assets/brand/sync/`). Confirm the rights to name and show each brand. The sync definitions are drafts for John and David to check.
+
+**Favicon.** The WD mark from John's logo, white on the site's near-black (`public/favicon.svg`, with PNGs for browsers and phones that don't use the SVG).
 
 **Old routes.** `/about`, `/services`, `/work` and `/contact` redirect to their sections (static meta-refresh pages; Phase 2 should replace these with real 301s in the host's redirect config).
 
 **Motion** (all off under reduced motion):
-- Masked line reveals.
-- Photos unmask and drift with parallax.
-- The video pushes in and darkens, and the wordmark lifts away as you leave the hero.
+- The services and selected works titles fade up; the hero's words change around "sound" with the scroll. The founder and contact text don't animate, at John's request.
+- The video pushes in slowly through the hero sequence.
 
-**Push further.** Short loops cut from the Imin film for the work rows. A nav order that matches the page order (Services now comes before About). Real metadata per work entry.
+**Push further.** A portrait of David Kim beside his bio.
 
 **JS.** Vanilla only:
 - Mobile menu.
@@ -171,7 +184,7 @@ The strip's progress bar uses CSS scroll-driven animation, no JS.
    - paper `#FDFCF8` (`#F5F2EB`)
 
    `--wdm-black` stays at `#111111`; the flat logo's ground is actually `#151514`.
-3. **Placeholder email** `hello@wickeddreammusic.com` (in `site/global.json`) is **unconfirmed**. So is the production URL `https://wickeddreammusic.com` in `astro.config.mjs`, which is used only for canonical and OG tags.
+3. **Email** `david.kim@wickeddreammusic.com` (in `site/global.json`) is the address John gave for the email button; the menu shows it too. It needs a working mailbox on the domain before launch. The production URL is still **unconfirmed**: `https://wickeddreammusic.com` in `astro.config.mjs`, used only for canonical and OG tags.
 4. **Copy corrections:**
    - `A&R;` → `A&R` throughout.
    - "Miley Cyrus - Wrecking Ball" (hyphen in the PDF) → "Miley Cyrus — Wrecking Ball" (em dash, as in the brief).
@@ -185,13 +198,15 @@ The strip's progress bar uses CSS scroll-driven animation, no JS.
 6. **Miley Cyrus portrait** (`src/assets/photos/miley-cyrus.webp`, 2400×3600), supplied by John for the Wrecking Ball entry. It is a third-party press-style photo, so confirm the licence or permission before launch.
 7. **YouTube video** on International A&R: "ALICE - ALL MY GIRLS (VISUALIZER)", title taken from YouTube's oEmbed. Confirm it's the right video and that the client has the right to feature it. Only archive renders it.
 8. **Hero video (archive).**
-   - The loop behind archive's hero is cut from John's "Alice Vid.mp4" (the ALL MY GIRLS music video).
-   - It uses six shots, about 10.5 seconds in all, with no sound. The strobe-like stretch at 47–50s is deliberately left out.
-   - There are two encodes in `public/media/hero/`: a 1280×720 landscape cut and a 720×1280 portrait crop for phones, each as MP4 and WebM (1.2–2 MB each).
+   - The loop behind archive's hero is John's choice of the orange section of "LOVE CRUSHED VELVET--ARIZONA OFFICIAL MUSIC VIDEO (1).mp4": 1:26.1 up to the cut at 1:34.8, 8.7 seconds of silhouette against orange. It replaced the ALICE loop, which is no longer on the page.
+   - There are two encodes in `public/media/arizona/`: a 1280×720 landscape cut and a 720×1280 portrait crop for phones, each as MP4 (about 1.2 MB each; iPhones play MP4 most reliably).
    - It is set in `pages/home.md` under `hero_video`, so it can be swapped later.
    - The source files in `src/assets/videos/` are gitignored. Confirm the client may use this footage.
    - The loops were cut with `ffmpeg-static`, a dev dependency.
+   - All the loops carry sound, heard only in the work section, while a film is at the middle of the screen; the opening loop stays silent. Browsers refuse sound until a visitor has tapped, clicked or pressed a key on the page, so until then the films play silently and the speaker reads "turn sound on". Each track is one unbroken passage of the song (IMIN from 2:01, chosen by loudness and not in sync with its cut-together picture; No Retreat, Ten Billion Years and Composure in sync with theirs), evened out to -14 LUFS. Confirm the recordings may be used as well as the footage.
 9. **Photos are Unsplash placeholders** and must be replaced with licensed or owned imagery before launch. Their pairing with work entries is arbitrary.
+10. **Service definitions** in `services/*.md` (`offerings`) are drafted from John's service list and the site's "your sound is your brand" line, for John and David to check they describe the work as it's really done. **David Kim bio** is John's supplied copy, used verbatim; the artist names and "award-winning" should be confirmed by David before launch. **Hero blend** (`mix-blend-mode` over `<video>`) has been checked in desktop Chromium only, so test it in iOS Safari.
+    **No Retreat loop** is John's choice of 1:27–1:37 from "Joe Marson No Retreat NSFW.mp4". That file is marked NSFW, and these ten seconds show a mouth in close-up and then a shirtless dancer in low light, so confirm the rights and that it suits the page. **Ten Billion Years loop** is John's choice of 16:14–16:24 from "Torii Wolf Live from Betawave Studios.mp4"; confirm the rights. On phones its crop starts on the drummer and eases to the middle. **IMIN loop** is back, first in the work section, as it was before: cut from John's "Imin vid.mp4" (shots chosen to avoid its burned-in captions). John named the song as "Satisfied"; confirm the right to use the footage. **Composure loop** is John's choice of 1:35–1:50 from Lawd Ito's "Composure" music video, cut from the shot change at 1:34.9 to the next at 1:49.5 so it loops on a cut. It has a few one-frame glitch flashes, as in the video, and is capped at about 3.4 MB because its grain and fast cuts made it four times larger than the other films. Confirm the rights. Each film shows its `title` as a credit at bottom right.
 10. **Contact form** has correct `name`s and `method="POST"` but no action. A comment marks the Phase 2 hookup (Cloudflare Pages Function or Netlify form). Archive has no form; it uses a single mailto link.
 11. **Content the designers wished existed** (not added, to keep content identical across branches; worth deciding before Phase 2):
    - Per-work `year`/`role` fields.

@@ -1,0 +1,37 @@
+---
+order: 3
+category: "For film, TV and brands"
+title: "Sync Licensing"
+summary: "Music found, pitched and written for picture."
+bullets:
+  - "Sync-focused A&R"
+  - "Pitching"
+  - "Co-writing"
+offerings:
+  - name: "Sync-focused A&R"
+    icon: "film"
+    definition: "We find and develop music with picture in mind, so your sound is ready when a film, show or campaign needs it."
+  - name: "Pitching"
+    icon: "send"
+    definition: "We put the right songs in front of the people choosing music, with a clear case for why your sound fits the scene."
+  - name: "Co-writing"
+    icon: "pencil"
+    definition: "We write with you toward specific briefs, so the song serves the picture and still sounds like you."
+brands:
+  - name: "Netflix"
+    logo: "../../assets/brand/sync/netflix.png"
+  - name: "Hulu"
+    logo: "../../assets/brand/sync/hulu.png"
+  - name: "Paramount"
+    logo: "../../assets/brand/sync/paramount.png"
+  - name: "MTV"
+    logo: "../../assets/brand/sync/mtv.png"
+  - name: "Nickelodeon"
+    logo: "../../assets/brand/sync/nickelodeon.png"
+  - name: "AMC"
+    logo: "../../assets/brand/sync/amc.png"
+  - name: "NFL"
+    logo: "../../assets/brand/sync/nfl.png"
+  - name: "Discovery Channel"
+    logo: "../../assets/brand/sync/discovery.png"
+---

@@ -24,6 +24,8 @@ const site = defineCollection({
       rights: z.string(),
       play_video: z.string(),
       pause_video: z.string(),
+      sound_on: z.string(),
+      sound_off: z.string(),
     }),
   }),
 });
@@ -53,6 +55,7 @@ const pages = defineCollection({
     form_fields: z.array(formField).optional(),
     submit_label: z.string().optional(),
     email_label: z.string().optional(),
+    email_button: z.string().optional(),
     // A muted background loop. Video files live in public/ (served as-is); the
     // poster is an optimised image. The mobile cut is optional (below 768px).
     hero_video: z
@@ -60,9 +63,48 @@ const pages = defineCollection({
         title: z.string(),
         poster: image(),
         mp4: z.string(),
-        webm: z.string().optional(),
         mobile_mp4: z.string().optional(),
-        mobile_webm: z.string().optional(),
+      })
+      .optional(),
+    // A short section above the page's content on the home page.
+    story: z.object({ title: z.string(), body: z.string() }).optional(),
+    // A short title over the page's content when it's shown as a home page section.
+    section_title: z.string().optional(),
+    // Who the company has worked for: a lead-in, then the names as a sentence.
+    customers: z
+      .object({
+        label: z.string(),
+        list: z.string(),
+      })
+      .optional(),
+    // A Spotify playlist embed. The ID is the last part of the playlist's URL.
+    playlist: z
+      .object({
+        spotify_id: z.string(),
+        title: z.string(),
+        link_label: z.string(),
+      })
+      .optional(),
+    // More full-screen loops, after the outro line. Same shape as hero_video.
+    hero_films: z
+      .array(
+        z.object({
+          title: z.string(),
+          poster: image(),
+          mp4: z.string(),
+          mobile_mp4: z.string().optional(),
+        }),
+      )
+      .optional(),
+    // The lines after the headline, a small note under them, and the short line shown
+    // over the video after that. Each line keeps a word of the one before: `middle` opens on
+    // the headline's last word and ends on a word that `line` also has.
+    hero_closing: z
+      .object({
+        middle: z.string(),
+        line: z.string(),
+        note: z.string().optional(),
+        outro: z.string().optional(),
       })
       .optional(),
   }),
@@ -70,12 +112,24 @@ const pages = defineCollection({
 
 const services = defineCollection({
   loader: glob({ pattern: '*.md', base: './src/content/services' }),
-  schema: z.object({
+  schema: ({ image }) => z.object({
     order: z.number().int(),
     category: z.string(),
     title: z.string(),
     summary: z.string(),
     bullets: z.array(z.string()),
+    // The same services with a definition and an icon, where a design has room for them.
+    offerings: z
+      .array(
+        z.object({
+          name: z.string(),
+          definition: z.string(),
+          icon: z.enum(['compass', 'faders', 'microphone', 'ticket', 'waveform', 'disc', 'people', 'listen', 'setlist', 'film', 'send', 'pencil']),
+        }),
+      )
+      .optional(),
+    // Brands shown under the offerings: the logo if there's a file, otherwise the name.
+    brands: z.array(z.object({ name: z.string(), logo: image().optional() })).optional(),
   }),
 });
 
