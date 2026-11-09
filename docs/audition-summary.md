@@ -184,7 +184,7 @@ The strip's progress bar uses CSS scroll-driven animation, no JS.
    - paper `#FDFCF8` (`#F5F2EB`)
 
    `--wdm-black` stays at `#111111`; the flat logo's ground is actually `#151514`.
-3. **Email** `wickeddreammusic@gmail.com` (in `site/global.json`) is John's. The production URL is still **unconfirmed**: `https://wickeddreammusic.com` in `astro.config.mjs`, used only for canonical and OG tags.
+3. **Email** `david.kim@wickeddreammusic.com` (in `site/global.json`) is the address John gave for the email button; the menu shows it too. It needs a working mailbox on the domain before launch. The production URL is still **unconfirmed**: `https://wickeddreammusic.com` in `astro.config.mjs`, used only for canonical and OG tags.
 4. **Copy corrections:**
    - `A&R;` → `A&R` throughout.
    - "Miley Cyrus - Wrecking Ball" (hyphen in the PDF) → "Miley Cyrus — Wrecking Ball" (em dash, as in the brief).
