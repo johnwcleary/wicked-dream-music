@@ -23,6 +23,8 @@
     "play_video": "Play video",
     "pause_video": "Pause video",
     "sound_on": "Turn sound on",
-    "sound_off": "Turn sound off"
+    "sound_off": "Turn sound off",
+    "sound_tap": "Tap for sound",
+    "sound_click": "Click for sound"
   }
 }
