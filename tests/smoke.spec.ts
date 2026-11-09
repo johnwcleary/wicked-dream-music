@@ -116,7 +116,7 @@ test('each service starts open on offerings with an icon and a definition', asyn
   await expect(rows.first().locator('.svc-def').first()).toBeHidden();
   await rows.first().locator('summary').click();
   await expect(rows.first().locator('.svc-def').first()).toBeVisible();
-  await expect(page.locator('a[href^="mailto:"]').first()).toHaveAttribute('href', /wickeddreammusic@gmail\.com/);
+  await expect(page.locator('a[href^="mailto:"]').first()).toHaveAttribute('href', 'mailto:david.kim@wickeddreammusic.com');
 });
 
 test('about sits above services and has no video behind it', async ({ page }) => {
