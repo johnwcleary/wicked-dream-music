@@ -49,13 +49,24 @@ test('A&R renders correctly', async ({ page }) => {
 test('artist development lists its offerings in John\'s order', async ({ page }) => {
   await page.goto('/');
   await expect(page.locator('#services-artist-development .svc-name')).toHaveText([
-    'Songwriting & production',
-    'Performance coaching',
-    'Live performance development',
+    'Songwriting & Production',
+    'Performance Coaching',
+    'Live Performance Development',
     'Mentorship',
-    'Sonic development',
-    'Release preparation and strategy',
+    'Sonic Development',
+    'Release Preparation & Strategy',
   ]);
+});
+
+test('the link preview uses the opening and the about copy', async ({ page }) => {
+  await page.goto('/');
+  const meta = (key: string) => page.locator(`meta[property="${key}"]`).getAttribute('content');
+  expect(await meta('og:title')).toBe('Wicked Dream Music, Artist Development and A&R Strategy');
+  await expect(page).toHaveTitle('Wicked Dream Music, Artist Development and A&R Strategy');
+  expect(await meta('og:description')).toMatch(/^Wicked Dream Music is a boutique artist development company/);
+  expect(await meta('og:image')).toMatch(/\/_astro\/og-image\.[\w-]+\.jpg$/);
+  expect(await meta('og:image:width')).toBe('1200');
+  expect(await meta('og:image:height')).toBe('630');
 });
 
 test('music plays only in the work section, after a tap, and the speaker stops it', async ({ page }) => {

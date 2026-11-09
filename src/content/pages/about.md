@@ -5,7 +5,7 @@ lede: "We're an independent company that works worldwide, and we think the stron
 eyebrow: "New York / Worldwide"
 story:
   title: "Our story"
-  body: "Wicked Dream Music is a boutique artist development company serving independent artists and music companies. We believe an artist's sound is the most important part of their brand. We connect the craft of production and songwriting to an artist's expression and emotion, helping them become the best version of themselves."
+  body: "Wicked Dream Music is a boutique artist development company dedicated to empowering independent artists and music companies. We believe an artist’s unique creative identity is the foundation of their brand. By bringing together the art of songwriting, music production, and authentic emotional expression, we help artists refine their vision, define their sound, and realize their full creative potential."
 section_title: "Our founder"
 sections:
   - heading: "David Kim"
