@@ -60,12 +60,29 @@
 }
 
 @layer base {
+  /* A slim grey scroll bar on a clear track, where the browser shows one beside the page (a Mac
+     set to always show scroll bars, or Windows). Safari reads the -webkit- rules; the others the
+     standard properties. */
   html {
     color-scheme: light;
     background: var(--paper);
     color: var(--ink);
     -webkit-text-size-adjust: 100%;
     text-rendering: optimizeLegibility;
+    scrollbar-width: thin;
+    scrollbar-color: rgb(128 128 128 / 0.55) transparent;
+  }
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    border: 2px solid transparent;
+    border-radius: 8px;
+    background: rgb(128 128 128 / 0.55) padding-box;
   }
   /* The height lets a short page's footer and lavender corner reach the foot of the screen. */
   body {
