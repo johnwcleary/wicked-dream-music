@@ -130,7 +130,7 @@ test('about sits above services and has no video behind it', async ({ page }) =>
 
 test('each film in the work section is credited', async ({ page }) => {
   await page.goto('/');
-  await expect(page.locator('[data-reel-film] .film-credit')).toHaveText([/^imin$/i, /joe marson - no retreat/i, /torii wolf - ten billion years/i, /lawd ito - composure/i]);
+  await expect(page.locator('[data-reel-film] .film-credit')).toHaveText([/imin - satisfied/i, /joe marson - no retreat/i, /torii wolf - ten billion years/i, /lawd ito - composure/i]);
 });
 
 test('video gaps sit either side of services and pause the loops', async ({ page }) => {
