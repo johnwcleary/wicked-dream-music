@@ -8,7 +8,7 @@ form_fields:
   - { name: "name", label: "Your name", type: "text", required: true }
   - { name: "email", label: "Email address", type: "email", required: true }
   - { name: "company", label: "Artist / Company name", type: "text" }
-  - { name: "interest", label: "What do you need help with?", type: "select", options: ["Artist Development", "A&R Consulting", "Other"] }
+  - { name: "interest", label: "What do you need help with?", type: "select", options: ["Artist Development", "A&R Strategy", "Other"] }
   - { name: "message", label: "Tell us about your project", type: "textarea", required: true }
 submit_label: "Send message"
 email_label: "Prefer email?"

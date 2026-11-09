@@ -1,7 +1,7 @@
 ---
 order: 2
 category: "For music companies"
-title: "A&R Consulting"
+title: "A&R Strategy"
 summary: "Talent scouting, song selection, and development for your roster, backed by 30 years in the industry."
 bullets:
   - "Artist development services for your roster"
