@@ -4,7 +4,8 @@ import { getImage } from 'astro:assets';
 import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
 import { getSite } from '../lib/content';
-import ogSource from '../assets/brand/logo-gradient.png';
+// The link preview (iMessage, social): the opening at 3 seconds, captured at 1200×630.
+import ogSource from '../assets/brand/og-image.jpg';
 import displayFont from '@fontsource-variable/inter-tight/files/inter-tight-latin-wght-normal.woff2?url';
 
 interface Props {
@@ -16,7 +17,7 @@ interface Props {
 const site = await getSite();
 const { title, description = site.description, intro = false } = Astro.props;
 const fullTitle = title === 'Home' ? `${site.name} — ${site.tagline}` : `${title} — ${site.name}`;
-const og = await getImage({ src: ogSource, width: 1200, format: 'jpg' });
+const og = await getImage({ src: ogSource, width: 1200, format: 'jpg', quality: 82 });
 const ogUrl = new URL(og.src, Astro.site ?? Astro.url).href;
 const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url).href;
 ---
@@ -40,6 +41,9 @@ const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url).href;
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
     <meta property="og:image" content={ogUrl} />
+    <meta property="og:image:width" content={String(og.attributes.width ?? 1200)} />
+    <meta property="og:image:height" content={String(og.attributes.height ?? 630)} />
+    <meta property="og:image:alt" content={`${site.name}: ${site.tagline}`} />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="generator" content={Astro.generator} />
     <script is:inline define:vars={{ intro }}>
