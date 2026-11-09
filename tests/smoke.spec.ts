@@ -42,7 +42,20 @@ test('no external font or CDN stylesheets', async ({ page }) => {
 test('A&R renders correctly', async ({ page }) => {
   await page.goto('/');
   await expect(page.locator('body')).not.toContainText('A&R;');
-  await expect(page.getByText('A&R Consulting').first()).toBeVisible();
+  await expect(page.getByText('A&R Strategy').first()).toBeVisible();
+  await expect(page.getByText(/A&R Consulting/i)).toHaveCount(0);
+});
+
+test('artist development lists its offerings in John\'s order', async ({ page }) => {
+  await page.goto('/');
+  await expect(page.locator('#services-artist-development .svc-name')).toHaveText([
+    'Songwriting & production',
+    'Performance coaching',
+    'Live performance development',
+    'Mentorship',
+    'Sonic development',
+    'Release preparation and strategy',
+  ]);
 });
 
 test('music plays only in the work section, after a tap, and the speaker stops it', async ({ page }) => {
