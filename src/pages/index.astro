@@ -907,11 +907,12 @@ const people = about.sections ?? [];
     const speakers = Array.from(document.querySelectorAll<HTMLButtonElement>('[data-sound-toggle]'));
     let sound = true; // unless the visitor turns it off
     let granted = false; // the browser has allowed sound
-    let current: (typeof clips)[number] | null = null;
+    let centred: (typeof clips)[number] | null = null; // the film at the middle of the screen
+    let current: (typeof clips)[number] | null = null; // the film the sound belongs to
     const renderSound = () => {
       for (const speaker of speakers) {
         const on = sound && granted;
-        speaker.hidden = !current;
+        speaker.hidden = !centred;
         speaker.classList.toggle('is-on', on);
         speaker.setAttribute('aria-label', (on ? speaker.dataset.off : speaker.dataset.on) ?? '');
       }
@@ -979,14 +980,47 @@ const people = about.sections ?? [];
       const box = el.getBoundingClientRect();
       return box.top <= innerHeight / 2 && box.bottom >= innerHeight / 2;
     };
+    // A film only takes the sound once it has held the middle of the screen for a moment, and
+    // none takes it while a link glides the page past them (to About, say), so passing films
+    // stay quiet. A film that leaves the middle goes quiet at once.
+    let gliding = false;
+    let hold = 0;
+    let glideEnd = 0;
+    const pickSound = () => {
+      clearTimeout(hold);
+      if (centred !== current) {
+        current = null;
+        applySound();
+      }
+      if (!centred || gliding || centred === current) return;
+      hold = window.setTimeout(() => {
+        current = centred;
+        applySound();
+      }, 350);
+    };
     const atCentre = new IntersectionObserver(
       () => {
-        current = films.find((clip) => isCentred(clip.host)) ?? null;
-        applySound();
+        centred = films.find((clip) => isCentred(clip.host)) ?? null;
+        pickSound();
       },
       { rootMargin: '-50% 0px -50% 0px' },
     );
     for (const clip of films) atCentre.observe(clip.host);
+    const endGlide = () => {
+      if (!gliding) return;
+      gliding = false;
+      clearTimeout(glideEnd);
+      pickSound();
+    };
+    document.addEventListener('click', (event) => {
+      const link = event.target instanceof Element ? event.target.closest<HTMLAnchorElement>('a[href*="#"]') : null;
+      if (!link || link.origin !== location.origin || link.pathname !== location.pathname) return;
+      gliding = true;
+      clearTimeout(glideEnd);
+      // In case the browser never reports the end of the scroll, or there was nothing to scroll.
+      glideEnd = window.setTimeout(endGlide, 2500);
+    });
+    addEventListener('scrollend', endGlide);
 
     for (const toggle of toggles) {
       toggle.addEventListener('click', () => {
