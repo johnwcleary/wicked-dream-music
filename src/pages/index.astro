@@ -34,8 +34,10 @@ const [closeBefore = '', closeAfter = ''] = closing ? closing.line.split(midKept
 const closeRest = closeAfter.split(' ');
 const closeLast = closeRest.pop();
 const video = page.hero_video;
-// The reel plays the other films first and the opening's footage last.
-const films = [...(page.hero_films ?? []), ...(video ? [video] : [])];
+// The opening's footage stays in the opening. The films below it, the bands around services and
+// the service titles' stills all come from the reel's films, the bands from the last one.
+const films = page.hero_films ?? [];
+const lastFilm = films.at(-1);
 
 const people = about.sections ?? [];
 ---
@@ -203,12 +205,12 @@ const people = about.sections ?? [];
     }
   </section>
 
-  {video && <VideoGap video={video} />}
+  {lastFilm && <VideoGap video={lastFilm} />}
 
   <!-- 02 — Services -->
   <section id="services" class="sec wrap" aria-labelledby="services-title">
     <SectionHead id="services-title" title={servicesPage.headline} />
-    <ServiceGrid items={services} stills={[video?.poster, films[0]?.poster, films[1]?.poster]} />
+    <ServiceGrid items={services} stills={[lastFilm?.poster, films[0]?.poster, films[1]?.poster]} />
     {
       customers && (
         <p class="customers" data-reveal>
@@ -218,7 +220,7 @@ const people = about.sections ?? [];
     }
   </section>
 
-  {video && <VideoGap video={video} />}
+  {lastFilm && <VideoGap video={lastFilm} />}
 
   <!-- 03 — Selected work: one Spotify playlist -->
   <section id="work" class="sec wrap" aria-labelledby="work-title">
