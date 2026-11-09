@@ -11,6 +11,10 @@ hero_closing:
   note: "Let's bring your vision to life"
   outro: "Our work"
 hero_films:
+  - title: "IMIN"
+    poster: "../../assets/photos/imin-poster.jpg"
+    mp4: "/media/imin/imin-1280.mp4"
+    mobile_mp4: "/media/imin/imin-720x1280.mp4"
   - title: "Joe Marson - No Retreat"
     poster: "../../assets/photos/no-retreat-poster.jpg"
     mp4: "/media/no-retreat/no-retreat-1280.mp4"
@@ -19,9 +23,13 @@ hero_films:
     poster: "../../assets/photos/ten-billion-years-poster.jpg"
     mp4: "/media/ten-billion-years/ten-billion-years-1280.mp4"
     mobile_mp4: "/media/ten-billion-years/ten-billion-years-720x1280.mp4"
+  - title: "Lawd Ito - Composure"
+    poster: "../../assets/photos/composure-poster.jpg"
+    mp4: "/media/composure/composure-1280.mp4"
+    mobile_mp4: "/media/composure/composure-720x1280.mp4"
 hero_video:
-  title: "ALICE - ALL MY GIRLS"
-  poster: "../../assets/photos/hero-poster.jpg"
-  mp4: "/media/hero/hero-1280.mp4"
-  mobile_mp4: "/media/hero/hero-720x1280.mp4"
+  title: "Love Crushed Velvet - Arizona"
+  poster: "../../assets/photos/arizona-poster.jpg"
+  mp4: "/media/arizona/arizona-1280.mp4"
+  mobile_mp4: "/media/arizona/arizona-720x1280.mp4"
 ---
