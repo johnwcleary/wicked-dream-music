@@ -85,6 +85,17 @@ test('no paragraph ends on a single word, at phone and computer widths', async (
   }
 });
 
+test('the page scroll bar is slim on a clear track', async ({ page }) => {
+  await page.goto('/');
+  const style = await page.evaluate(() => {
+    const css = getComputedStyle(document.documentElement);
+    return { width: css.scrollbarWidth, color: css.scrollbarColor };
+  });
+  expect(style.width).toBe('thin');
+  // The track is clear: browsers report transparent as rgba(0, 0, 0, 0).
+  expect(style.color).toMatch(/ (transparent|rgba\(0, 0, 0, 0\))$/);
+});
+
 test('the link preview uses the opening and the about copy', async ({ page }) => {
   await page.goto('/');
   const meta = (key: string) => page.locator(`meta[property="${key}"]`).getAttribute('content');
