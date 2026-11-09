@@ -11,7 +11,7 @@ hero_closing:
   note: "Let's bring your vision to life"
   outro: "Our work"
 hero_films:
-  - title: "IMIN"
+  - title: "IMIN - Satisfied"
     poster: "../../assets/photos/imin-poster.jpg"
     mp4: "/media/imin/imin-1280.mp4"
     mobile_mp4: "/media/imin/imin-720x1280.mp4"
