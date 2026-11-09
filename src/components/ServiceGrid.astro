@@ -6,7 +6,7 @@
  */
 import type { ImageMetadata } from 'astro';
 import { getImage, Image } from 'astro:assets';
-import { anchor, type Service } from '../lib/content';
+import { anchor, keepLastWords, type Service } from '../lib/content';
 import ServiceIcon from './ServiceIcon.astro';
 
 interface Props {
@@ -38,7 +38,7 @@ const pictures = await Promise.all(
                 <ServiceIcon name={offering.icon} />
                 <div>
                   <h4 class="svc-name">{offering.name}</h4>
-                  <p class="svc-def">{offering.definition}</p>
+                  <p class="svc-def">{keepLastWords(offering.definition)}</p>
                 </div>
               </li>
             ))}
@@ -185,6 +185,7 @@ const pictures = await Promise.all(
   }
   .svc-def {
     margin: 0.3rem 0 0;
+    text-wrap: pretty;
     color: var(--on-card-muted);
     font-size: 0.9375rem;
     line-height: 1.35;
