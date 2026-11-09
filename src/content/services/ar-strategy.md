@@ -6,7 +6,7 @@ summary: "Talent scouting, song selection, and development for your roster, back
 bullets:
   - "Artist development services for your roster"
   - "Talent discovery and evaluation"
-  - "Roster and repertoire strategy"
+  - "Executive production"
 offerings:
   - name: "Artist development services for your roster"
     icon: "people"
@@ -14,7 +14,7 @@ offerings:
   - name: "Talent discovery and evaluation"
     icon: "listen"
     definition: "We listen for a voice or point of view that is already unmistakable, then tell you honestly how far we think it can go."
-  - name: "Roster and repertoire strategy"
+  - name: "Executive production"
     icon: "setlist"
-    definition: "Every signing and every song teaches listeners what to expect. We shape the roster and its repertoire to sharpen that picture, release by release."
+    definition: "We run a project from the first session to release day: the production, the collaborators around it, and the schedule and rollout, so the finished record sounds like one clear vision."
 ---
