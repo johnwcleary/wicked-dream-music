@@ -164,7 +164,7 @@ const people = about.sections ?? [];
           {
             video && (
               <>
-                <SoundToggle on={site.ui.sound_on} off={site.ui.sound_off} />
+                <SoundToggle on={site.ui.sound_on} off={site.ui.sound_off} tap={site.ui.sound_tap} click={site.ui.sound_click} />
                 <button
                   type="button"
                   class="hero-credit label"
@@ -910,13 +910,31 @@ const people = about.sections ?? [];
     let granted = false; // the browser has allowed sound
     let centred: (typeof clips)[number] | null = null; // the film at the middle of the screen
     let current: (typeof clips)[number] | null = null; // the film the sound belongs to
+    let hinting = false;
+    let hintEnd = 0;
+    const fine = matchMedia('(hover: hover) and (pointer: fine)');
     const renderSound = () => {
       for (const speaker of speakers) {
         const on = sound && granted;
+        const hinted = hinting && !on && !!current;
         speaker.hidden = !centred;
         speaker.classList.toggle('is-on', on);
-        speaker.setAttribute('aria-label', (on ? speaker.dataset.off : speaker.dataset.on) ?? '');
+        speaker.classList.toggle('is-hint', hinted);
+        // The name always contains the words on show.
+        const label = hinted ? (fine.matches ? speaker.dataset.click : speaker.dataset.tap) : on ? speaker.dataset.off : speaker.dataset.on;
+        speaker.setAttribute('aria-label', label ?? '');
       }
+    };
+    // For a few seconds as a film arrives without its sound, the speaker says how to hear it.
+    const hint = () => {
+      if (granted || !sound || !current) return;
+      hinting = true;
+      clearTimeout(hintEnd);
+      hintEnd = window.setTimeout(() => {
+        hinting = false;
+        renderSound();
+      }, 4000);
+      renderSound();
     };
     const applySound = () => {
       for (const clip of films) {
@@ -997,7 +1015,29 @@ const people = about.sections ?? [];
       hold = window.setTimeout(() => {
         current = centred;
         applySound();
+        if (current && !granted) trySound(current);
       }, 350);
+    };
+    // Some browsers allow sound without a tap (Chrome for a visitor who has used the site before,
+    // Safari set to allow autoplay), so the first film tries it once before falling back to
+    // silence and the hint.
+    let tried = false;
+    const trySound = (clip: (typeof clips)[number]) => {
+      if (tried || !sound || !wanted || clip.video.paused) return hint();
+      tried = true;
+      clip.video.muted = false;
+      clip.video
+        .play()
+        .then(() => {
+          if (clip.video.muted) return;
+          grant();
+        })
+        .catch(() => {
+          // Refused: the browser paused it, so carry on silently.
+          clip.video.muted = true;
+          if (wanted) clip.video.play().catch(onBlocked);
+          hint();
+        });
     };
     const atCentre = new IntersectionObserver(
       () => {

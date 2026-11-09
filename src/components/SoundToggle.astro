@@ -2,14 +2,20 @@
 interface Props {
   on: string;
   off: string;
+  /** The hint, worded for touch screens and for a mouse. */
+  tap: string;
+  click: string;
 }
-const { on, off } = Astro.props;
+const { on, off, tap, click } = Astro.props;
 ---
 
 <!-- A small speaker for the films' music, shown while a film is on screen. It names itself
-     while the music is off, since a browser may be holding it back until a tap. -->
-<button type="button" class="sound label" data-sound-toggle data-on={on} data-off={off} aria-label={on} hidden>
+     while the music is off, since a browser may be holding it back until a tap, and for a few
+     seconds as a film arrives it grows into a hint (is-hint). -->
+<button type="button" class="sound label" data-sound-toggle data-on={on} data-off={off} data-tap={tap} data-click={click} aria-label={on} hidden>
   <span class="sound-label">{on}</span>
+  <span class="sound-hint sound-hint-tap">{tap}</span>
+  <span class="sound-hint sound-hint-click">{click}</span>
   <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
     <path fill="currentColor" d="M3.5 9.25v5.5H7L11.75 19V5L7 9.25H3.5Z"></path>
     <g fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round">
@@ -48,6 +54,37 @@ const { on, off } = Astro.props;
   }
   .sound.is-on .waves {
     display: inline;
+  }
+  /* The hint: a white pill over the film, worded for how the visitor points. */
+  .sound-hint,
+  .sound.is-hint .sound-label {
+    display: none;
+  }
+  .sound.is-hint {
+    padding: 0 0.75rem;
+    background: var(--paper);
+    color: var(--ink);
+  }
+  .sound.is-hint .sound-hint-tap {
+    display: inline;
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .sound.is-hint .sound-hint-tap {
+      display: none;
+    }
+    .sound.is-hint .sound-hint-click {
+      display: inline;
+    }
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .sound.is-hint {
+      animation: sound-hint 1.2s var(--ease-out) 2;
+    }
+    @keyframes sound-hint {
+      50% {
+        transform: scale(1.06);
+      }
+    }
   }
   :global(html:not(.js)) .sound {
     display: none;

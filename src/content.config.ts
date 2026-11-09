@@ -26,6 +26,9 @@ const site = defineCollection({
       pause_video: z.string(),
       sound_on: z.string(),
       sound_off: z.string(),
+      // Shown for a few seconds while a film is on screen and the browser still holds its sound back.
+      sound_tap: z.string(),
+      sound_click: z.string(),
     }),
   }),
 });
