@@ -107,25 +107,33 @@ test('the link preview uses the opening and the about copy', async ({ page }) =>
   expect(await meta('og:image:height')).toBe('630');
 });
 
-test('music plays only in the work section, after a tap, and the speaker stops it', async ({ page }) => {
+test('the opening and each film play their music, one at a time, and the speaker stops it', async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 800 });
   await page.goto('/');
   const speaker = page.locator('.hero-foot [data-sound-toggle]');
   const audible = () => page.evaluate(() => Array.from(document.querySelectorAll('video')).filter((v) => !v.muted).length);
+  const heard = () => page.evaluate(() => Array.from(document.querySelectorAll('video')).find((v) => !v.muted)?.hasAttribute('data-hero-video') ?? null);
   const scrollTo = async (selector: string) => {
     await page.evaluate((s) => {
       const top = document.querySelector(s)!.getBoundingClientRect().top + scrollY;
       window.scrollTo({ top, behavior: 'instant' });
     }, selector);
-    await page.waitForTimeout(300);
+    await page.waitForTimeout(500);
   };
-  await expect(speaker).toBeHidden();
+  await expect(speaker).toBeVisible();
   await page.mouse.click(5, 400);
-  expect(await audible()).toBe(0);
+  await expect.poll(heard).toBe(true);
+  expect(await audible()).toBe(1);
+
+  // The sheet rising over the opening quiets it.
+  await scrollTo('.hero-sheet');
+  await expect.poll(audible).toBe(0);
+  await expect(speaker).toBeHidden();
 
   await scrollTo('[data-reel-film]');
   await expect(speaker).toBeVisible();
-  await expect.poll(audible).toBe(1);
+  await expect.poll(heard).toBe(false);
+  expect(await audible()).toBe(1);
   await speaker.click();
   await expect(speaker).toHaveAttribute('aria-label', 'Turn sound on');
   expect(await audible()).toBe(0);

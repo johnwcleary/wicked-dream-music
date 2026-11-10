@@ -837,23 +837,26 @@ const people = about.sections ?? [];
   // pause controls, in the hero's footer row and the video gaps, work on all of them
   // (WCAG 2.2.2). Some phones block autoplay, in Low Power Mode for example: the posters stay
   // up, the controls offer play, and the next tap anywhere starts the videos.
-  // Sound belongs to the work section: each film's music plays while it is at the middle of
-  // the screen, and the opening loop stays silent. Browsers only allow sound once
+  // The opening and each film play their music while they are at the middle of the screen.
+  // Browsers only allow sound once
   // the visitor has tapped, clicked or pressed a key on the page, so the first of those
   // switches it on. Until then the films play silently and the speaker offers sound.
   const hero = document.getElementById('top');
   const video = document.querySelector<HTMLVideoElement>('[data-hero-video]');
   const toggles = Array.from(document.querySelectorAll<HTMLButtonElement>('[data-hero-toggle]'));
   if (hero && video && toggles.length) {
-    const clips = [{ video, host: hero, seen: true, film: false }];
+    // Each film's music belongs to the part of the page it fills (zone): the opening's to the
+    // opening, which the sheet then rises over.
+    const opening = document.querySelector<HTMLElement>('[data-opening]') ?? hero;
+    const clips = [{ video, host: hero, zone: opening, seen: true, film: true }];
     document.querySelectorAll<HTMLElement>('[data-reel-film]').forEach((host) => {
       const clip = host.querySelector<HTMLVideoElement>('[data-film-video]');
-      if (clip) clips.push({ video: clip, host, seen: false, film: true });
+      if (clip) clips.push({ video: clip, host, zone: host, seen: false, film: true });
     });
 
     document.querySelectorAll<HTMLElement>('[data-sliver]').forEach((host) => {
       const clip = host.querySelector<HTMLVideoElement>('[data-sliver-video]');
-      if (clip) clips.push({ video: clip, host, seen: false, film: false });
+      if (clip) clips.push({ video: clip, host, zone: host, seen: false, film: false });
     });
 
     let wanted = !matchMedia('(prefers-reduced-motion: reduce)').matches; // play unless paused or reduced motion
@@ -1020,10 +1023,12 @@ const people = about.sections ?? [];
     };
     // Some browsers allow sound without a tap (Chrome for a visitor who has used the site before,
     // Safari set to allow autoplay), so the first film tries it once before falling back to
-    // silence and the hint.
+    // silence and the hint. A film still starting (the opening, as the page loads) tries once it
+    // plays.
     let tried = false;
     const trySound = (clip: (typeof clips)[number]) => {
-      if (tried || !sound || !wanted || clip.video.paused) return hint();
+      if (!tried && sound && wanted && clip.video.paused) return;
+      if (tried || !sound || !wanted) return hint();
       tried = true;
       clip.video.muted = false;
       clip.video
@@ -1041,12 +1046,17 @@ const people = about.sections ?? [];
     };
     const atCentre = new IntersectionObserver(
       () => {
-        centred = films.find((clip) => isCentred(clip.host)) ?? null;
+        centred = films.find((clip) => isCentred(clip.zone)) ?? null;
         pickSound();
       },
       { rootMargin: '-50% 0px -50% 0px' },
     );
-    for (const clip of films) atCentre.observe(clip.host);
+    for (const clip of films) {
+      atCentre.observe(clip.zone);
+      clip.video.addEventListener('playing', () => {
+        if (clip === current && !granted && !tried) trySound(clip);
+      });
+    }
     const endGlide = () => {
       if (!gliding) return;
       gliding = false;
